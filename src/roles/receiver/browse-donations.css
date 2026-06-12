@@ -1,1 +1,354 @@
 /* Browse Food Specific Styles */
+/* Browse Food Specific Styles */
+/* PAGE CONT */
+.PageCont{
+    padding-left:3%;
+    padding-right:3%;
+}
+
+/* MAIN CARD CONT */
+.MainCont {
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  padding-top: 2%;
+  font-size: x-large;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  color: #000000;        
+}
+
+.bookingCardCont {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* page top bar — heading left, toggle right */
+.pageTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* list map filter */
+.listMapFilter {
+  display: flex;
+  gap: 0.25rem;
+  background: #fff;
+  border-radius: 100px;
+  padding: 0.25rem;
+  border: 1px solid #e0e0e0;
+}
+
+.Filter {
+  background: transparent;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 100px;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+
+.Filter:hover {
+  background: transparent;
+  color: #1a1a1a;
+}
+
+.Filter.active {
+  background: #C8F04A;
+  color: #1a2e1a;
+}
+
+
+.categoryFilterCont {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 5%;
+  margin-top: 5%;
+}
+
+/* category filter */
+.categoryBtn {
+  background: #fff;
+  color: #1a1a1a;
+  border: 1px solid #ccc;
+  border-radius: 100px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.categoryBtn.active {
+  background: #053f07;
+  color: #fff;
+  border-color: #000000;
+}
+
+.categoryBtn:hover:not(.active) {
+  border-color: #000000;
+}
+
+
+/* donation cards */
+
+.donationImageCont {
+  position: relative;
+}
+
+.donationImageCont img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.donationCardCont {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.donationCard {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.donationCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.donationImageCont {
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  transition: transform 0.25s ease;
+}
+
+
+.donationDetails {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.donationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.donationHeader h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.donationCategory {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #d4f5e2;
+  color: #1a6b3a;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.donationDetails p {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.donationDetails strong {
+  color: #1a1a1a;
+}
+
+.expiryBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+}
+
+.expiryBadge.expired {
+  background: #e74c3c;
+}
+
+/* Distance */
+.donationDistance {
+  font-size: 0.8rem;
+  color: #444;
+  white-space: nowrap;
+}
+
+/* Donor + score */
+.donationDonor {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.donorScore {
+  background: #d4f5e2;
+  color: #1a6b3a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+/* Allergy tags */
+.allergyTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: #fff3e0;
+  color: #b35c00;
+  border: 1px solid #f5cfa0;
+}
+
+
+/* BOOK BUTTONS */
+.BookDonation {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 0.8rem;
+  background: #2e7d4f;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.BookDonation:hover {
+  background: #1a5c38;
+}
+
+/* MAP VIEW */
+#map {
+  height: 500px;
+  width: 100%;
+  border-radius: 8px;
+  z-index: 1; /* Prevents map controls from overlapping topbar */
+  border: 1px solid #ddd;
+}
+
+.btn {
+  padding: 10px 20px;
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background-color: #333333;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 0;
+}
+
+.leaflet-popup-content {
+  margin: 16px 20px 20px 20px;
+  min-width: 220px;
+  font-family: inherit;
+}
+
+.leaflet-popup-close-button {
+  color: #888 !important;
+  font-size: 18px !important;
+  padding: 8px 25px !important;
+}
+
+.popup-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.popup-subtitle {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 12px 0;
+}
+
+.popup-distance {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a5d38; /* Dark green */
+  margin-bottom: 16px;
+}
+
+.popup-btn {
+  display: block;
+  width: 100%;
+  background-color: #1a5d38;
+  color: white;
+  border: none;
+  border-radius: 24px; 
+  padding: 10px 0;
+  font-weight: bold;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.popup-btn:hover {
+  background-color: #124528;
+}
+
+@media (max-width: 768px) {
+    .donationCardCont {
+        grid-template-columns: 1fr;
+    }
+
+    .pageTopBar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
