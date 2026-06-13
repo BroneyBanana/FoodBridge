@@ -127,13 +127,6 @@
   background-color: rgba(28, 43, 30, 0.05);
 }
 
-.action-btn-circle img,
-.hamburger-btn img {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
 .profile-avatar {
   width: 40px;
   height: 40px;
