@@ -38,25 +38,18 @@
     
    <div class="dashboard-actions">
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.html">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-        </svg>
+        <img src="../../assets/images/bell.svg" alt="">
         <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.html" class="profile-avatar">DO</a>
       
       <a href="../../auth/login.html" class="action-btn-circle hide-mobile" title="Log Out">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <img src="../../assets/images/logout.svg" alt="">
       </a>
 
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+        <img src="../../assets/images/menu.svg" alt="">
       </button>
     </div>
   </header>
@@ -65,11 +58,101 @@
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
       <h1 class="page-heading">Collection History</h1>
-      <p class="page-subheading">Review past collections, download receipts, and write feedback ratings.</p>
+      <p class="page-subheading">Review completed food collections and report any issue to the admin team.</p>
       
-      <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      
+      <section class="history-panel" aria-labelledby="historyTitle">
+        <div class="history-list" id="historyList"></div>
+      </section>
     </main>
+  </div>
+
+  <div class="modal-overlay hidden" id="reviewModal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+    <form class="modal-card" id="reviewForm">
+      <div class="modal-header">
+        <div>
+          <span class="modal-kicker">Review</span>
+          <h2 id="reviewModalTitle">Write a Review</h2>
+        </div>
+        <button type="button" class="icon-btn ghost" data-close-modal aria-label="Close review modal">
+          <img src="../../assets/images/close.svg" alt="">
+        </button>
+      </div>
+
+      <div class="readonly-review hidden" id="readonlyReview"></div>
+
+      <div class="form-fields" id="reviewFields">
+        <label>
+          Rating
+          <div class="rating-options" role="radiogroup" aria-label="Rating">
+            <input type="radio" name="rating" id="star5" value="5" required>
+            <label for="star5">5</label>
+            <input type="radio" name="rating" id="star4" value="4">
+            <label for="star4">4</label>
+            <input type="radio" name="rating" id="star3" value="3">
+            <label for="star3">3</label>
+            <input type="radio" name="rating" id="star2" value="2">
+            <label for="star2">2</label>
+            <input type="radio" name="rating" id="star1" value="1">
+            <label for="star1">1</label>
+          </div>
+        </label>
+
+        <label>
+          Comment
+          <textarea name="comment" rows="4" placeholder="Share how the collection went..." required></textarea>
+        </label>
+
+        <label>
+          Picture
+          <span class="upload-box">
+            <input type="file" name="picture" accept="image/*" data-file-input="review">
+            <span class="upload-button">Choose Image</span>
+            <span class="upload-name" id="reviewFileName">No image selected</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="modal-actions" id="reviewActions">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-overlay hidden" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+    <form class="modal-card" id="reportForm">
+      <div class="modal-header">
+        <div>
+          <span class="modal-kicker">Report</span>
+          <h2 id="reportModalTitle">Report a Problem</h2>
+        </div>
+        <button type="button" class="icon-btn ghost" data-close-modal aria-label="Close report modal">
+          <img src="../../assets/images/close.svg" alt="">
+        </button>
+      </div>
+
+      <div class="form-fields">
+        <label>
+          Problem encountered
+          <textarea name="problem" rows="5" placeholder="Example: food was spoiled, collection address was wrong..." required></textarea>
+        </label>
+
+        <label>
+          Images
+          <span class="upload-box">
+            <input type="file" name="images" accept="image/*" multiple data-file-input="report">
+            <span class="upload-button">Choose Images</span>
+            <span class="upload-name" id="reportFileName">No images selected</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit Report</button>
+      </div>
+    </form>
   </div>
 
   <!-- Page Specific Logic -->

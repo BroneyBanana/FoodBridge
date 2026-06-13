@@ -1,1 +1,376 @@
 /* History Page Specific Styles */
+.history-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 32px 0 24px;
+}
+
+.summary-card,
+.history-panel,
+.history-card,
+.modal-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-glow);
+}
+
+.summary-card {
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.summary-label {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.summary-card strong {
+  display: block;
+  font-family: var(--font-syne);
+  font-size: 2rem;
+  margin-top: 6px;
+}
+
+.history-panel {
+  border-radius: 18px;
+  padding: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+}
+
+.section-header p {
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.history-list {
+  display: grid;
+  gap: 14px;
+}
+
+.history-card {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.history-card img {
+  width: 112px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.history-info h3 {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.history-meta,
+.history-date {
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+.history-date {
+  margin-top: 8px;
+}
+
+.status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.status-pill {
+  border-radius: var(--border-radius-btn);
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 5px 10px;
+}
+
+.status-pill.completed,
+.status-pill.reviewed {
+  background: #e7f7ec;
+  color: #1a6b3a;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.text-action-btn {
+  min-width: 92px;
+  min-height: 40px;
+  border-radius: var(--border-radius-btn);
+  border: 1px solid var(--color-border);
+  background: var(--color-parchment);
+  color: var(--color-forest);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 800;
+  padding: 9px 16px;
+}
+
+.text-action-btn:hover {
+  background: var(--color-lime);
+  transform: translateY(-2px);
+}
+
+.text-action-btn.report:hover {
+  background: #ffe0db;
+  color: var(--color-terracotta);
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  color: var(--color-forest);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-btn.ghost {
+  background: transparent;
+}
+
+.icon-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(28, 43, 30, 0.4);
+  backdrop-filter: blur(6px);
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(520px, 100%);
+  border-radius: 18px;
+  padding: 24px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.modal-kicker {
+  color: var(--color-text-muted);
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modal-header h2 {
+  font-size: 1.7rem;
+}
+
+.form-fields {
+  display: grid;
+  gap: 16px;
+}
+
+.form-fields label {
+  display: grid;
+  gap: 8px;
+  color: var(--color-forest);
+  font-weight: 800;
+}
+
+.form-fields textarea,
+.upload-box {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font: inherit;
+  padding: 12px;
+  background: var(--color-parchment);
+  color: var(--color-forest);
+}
+
+.upload-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.upload-box input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-button {
+  border-radius: var(--border-radius-btn);
+  background: var(--color-forest);
+  color: var(--color-parchment);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+
+.upload-name {
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.form-fields textarea {
+  resize: vertical;
+}
+
+.rating-options {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.rating-options input {
+  position: absolute;
+  opacity: 0;
+}
+
+.rating-options label {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--color-parchment);
+}
+
+.rating-options input:checked ~ label,
+.rating-options label:hover,
+.rating-options label:hover ~ label {
+  background: var(--color-lime);
+  border-color: var(--color-lime);
+}
+
+.readonly-review {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-parchment);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.readonly-review.hidden,
+.form-fields.hidden,
+.modal-actions.hidden {
+  display: none;
+}
+
+.readonly-review strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.review-image-link {
+  display: inline-block;
+  margin-top: 14px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.review-image-link img {
+  display: block;
+  width: 180px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-actions .btn {
+  padding: 11px 18px;
+}
+
+@media (max-width: 760px) {
+  .dashboard-content {
+    padding: 28px 18px;
+  }
+
+  .history-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .history-panel {
+    padding: 16px;
+  }
+
+  .history-card {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+
+  .history-card img {
+    width: 84px;
+    height: 84px;
+  }
+
+  .card-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}

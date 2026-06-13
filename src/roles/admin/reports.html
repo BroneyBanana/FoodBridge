@@ -39,25 +39,18 @@
     
     <div class="dashboard-actions">
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.html">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-        </svg>
+        <img src="../../assets/images/bell.svg" alt="">
         <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.html" class="profile-avatar">DO</a>
       
       <a href="../../auth/login.html" class="action-btn-circle hide-mobile" title="Log Out">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <img src="../../assets/images/logout.svg" alt="">
       </a>
 
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+        <img src="../../assets/images/menu.svg" alt="">
       </button>
     </div>
   </header>
@@ -66,10 +59,22 @@
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
       <h1 class="page-heading">Platform Reports</h1>
-      <p class="page-subheading">Analyze platform impact, waste reduction charts, and resolve user-submitted issue reports.</p>
-      
-      <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      <p class="page-subheading">Review current receiver reports and choose the correct trust-score penalty for the donor.</p>
+
+      <section class="admin-report-panel" aria-labelledby="reportsTitle">
+        <div class="section-header">
+          <div>
+            <h2 id="reportsTitle">User Reports</h2>
+            <p>Handled reports are removed from this list so admins only see current reports.</p>
+          </div>
+        </div>
+
+        <div class="admin-report-list" id="adminReportList"></div>
+        <div class="empty-state hidden" id="emptyReports">
+          <h3>No current reports</h3>
+          <p>All reports have been handled.</p>
+        </div>
+      </section>
     </main>
   </div>
 
