@@ -16,6 +16,8 @@
   
   <!-- Page Specific Styles -->
   <link rel="stylesheet" href="browse-donations.css">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
   <div class="noise-bg"></div>
@@ -64,14 +66,103 @@
   <!-- Main Content Area -->
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
-      <h1 class="page-heading">Browse Food Nearby</h1>
-      <p class="page-subheading">View listings from local food donors, map layouts, and schedule convenient pickup slots.</p>
-      
-      <!-- Main content body left entirely blank for user coding -->
+
+      <div class="pageTopBar">
+        <div>
+          <h1 class="page-heading">Browse Food Nearby</h1>
+          <p class="page-subheading">View listings from local food donors, map layouts, and schedule convenient pickup slots.</p>
+        </div>
+        <div class="listMapFilter">
+          <button class="Filter active" onclick="switchView('list', this)">List View</button>
+          <button class="Filter" onclick="switchView('map', this)">Map View</button>
+        </div>
+      </div>
+
+      <div class="PageCont">
+        <div id="listView">
+          <div class="bookingContent">
+
+            <div class="categoryFilterCont">
+              <button class="categoryBtn active">All Categories</button>
+              <button class="categoryBtn">Cooked Meals</button>
+              <button class="categoryBtn">Raw Produce</button>
+              <button class="categoryBtn">Bakery</button>
+              <button class="categoryBtn">Canned Goods</button>
+            </div>
+
+            <div class="donationCardCont">
+              <div class="donationCard">
+                <div class="donationImageCont">
+                  <img src="../../assets/images/food2.jpg" alt="Donation Image">
+                  <span class="expiryBadge">⏱ 18h 16m remaining</span>
+                </div>
+                <div class="donationDetails">
+                  <div class="donationHeader">
+                    <h3>Vegetable Stir Fry</h3>
+                    <span class="donationDistance">📍 1.2km</span>
+                  </div>
+                  <p class="donationDonor">By Healthy Bowls • <span class="donorScore">Score 98</span></p>
+                  <div class="allergyTags">
+                    <span class="tag">Gluten</span>
+                    <span class="tag">Dairy</span>
+                  </div>
+                  <button class="BookDonation">Select Pickup Time</button>
+                </div>
+              </div>
+
+              <div class="donationCard">
+                <div class="donationImageCont">
+                  <img src="../../assets/images/food2.jpg" alt="Donation Image">
+                  <span class="expiryBadge">⏱ 18h 16m remaining</span>
+                </div>
+                <div class="donationDetails">
+                  <div class="donationHeader">
+                    <h3>Vegetable Stir Fry</h3>
+                    <span class="donationDistance">📍 1.2km</span>
+                  </div>
+                  <p class="donationDonor">By Healthy Bowls • <span class="donorScore">Score 98</span></p>
+                  <div class="allergyTags">
+                    <span class="tag">Gluten</span>
+                    <span class="tag">Dairy</span>
+                  </div>
+                  <button class="BookDonation">Select Pickup Time</button>
+                </div>
+              </div>
+              
+              <div class="donationCard">
+                <div class="donationImageCont">
+                  <img src="../../assets/images/food2.jpg" alt="Donation Image">
+                  <span class="expiryBadge">⏱ 18h 16m remaining</span>
+                </div>
+                <div class="donationDetails">
+                  <div class="donationHeader">
+                    <h3>Vegetable Stir Fry</h3>
+                    <span class="donationDistance">📍 1.2km</span>
+                  </div>
+                  <p class="donationDonor">By Healthy Bowls • <span class="donorScore">Score 98</span></p>
+                  <div class="allergyTags">
+                    <span class="tag">Gluten</span>
+                    <span class="tag">Dairy</span>
+                  </div>
+                  <button class="BookDonation">Select Pickup Time</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div id="mapView" style="display: none; margin-bottom: 2rem;">
+            <div id="map"></div>
+        </div>
+
+      </div>
       <div class="content-body"></div>
     </main>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
   <!-- Page Specific Logic -->
   <script src="../../assets/js/header.js"></script>
   <script src="browse-donations.js"></script>

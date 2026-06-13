@@ -1,1 +1,375 @@
 /* Donate Page Specific Styles */
+/* Donate Page Specific Styles */
+.publish-donations-box{
+    background:#fff;
+    border-radius:24px;
+    padding:32px;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+    height: 100%;
+}
+
+.box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.box-header h1 {
+    margin-top: 0;
+}
+
+.close-button {
+    background-color: #f2f2f2;
+    color: #797979;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 25px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center; /* center vertically */
+    justify-content: center; /* center horizontally */
+    padding-bottom: 2px;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: #d7d7d7;
+    color: #595959;
+}
+
+.close-button a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.box-details form {
+    display: grid;
+    grid-template-columns:280px 1fr;
+    gap:32px;
+    align-items:start;
+    margin-top:32px;
+}
+
+.upload-panel{
+    background-color: var(--color-forest);
+    color:white;
+    border-radius:24px;
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.upload-panel > img{
+    width:20px;
+    height:20px;
+}
+
+.upload-panel h3{
+    margin:0;
+    font-size:1.2rem;
+}
+
+.image-upload{
+    display:block;
+    cursor:pointer;
+}
+
+.image-upload input{
+    display:none;
+}
+
+.upload-content{
+    border:2px dashed rgba(255,255,255,.2);
+    border-radius:18px;
+    min-height:280px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:20px;
+}
+
+.upload-icon{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:rgba(255,255,255,.12);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:12px;
+}
+
+.upload-icon img{
+    width:28px;
+    height:28px;
+}
+
+.upload-content h4{
+    margin:0 0 8px;
+}
+
+.upload-content p{
+    margin:0;
+    font-size:.9rem;
+    opacity:.8;
+}
+
+.upload-guidelines{
+    background:rgba(255,255,255,.05);
+    border-radius:12px;
+    padding:16px;
+}
+
+.upload-guidelines h5{
+    margin:0 0 10px;
+    text-transform:uppercase;
+    font-size:.75rem;
+    letter-spacing:1px;
+}
+
+.upload-guidelines ul{
+    margin:0;
+    padding-left:18px;
+}
+
+.upload-guidelines li{
+    margin-bottom:6px;
+    font-size:.9rem;
+}
+
+.form-panel {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:30px;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label{
+    font-size:0.95rem;
+    font-weight:600;
+    color:#374151;
+}
+
+.full-width{
+    grid-column:1 / -1;
+}
+
+.form-group input,
+.form-group select,
+.slot-row input {
+    width:100%;
+    padding:12px 16px;
+    border:1px solid #E5E7EB;
+    border-radius:12px;
+    background:#FFFFFF;
+    color:#111827;
+    font-size:0.95rem;
+    transition:all .2s ease;
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.slot-row input:focus {
+    outline:none;
+    border-color:#173D1C;
+    box-shadow:0 0 0 4px rgba(23,61,28,.08);
+}
+
+.form-group input::placeholder {
+    color:#9CA3AF;
+}
+
+.allergyTagsCheckBox {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+/* Hide the checkbox square */
+.checkBoxTags input[type = "checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.checkBoxTags span {
+    display: inline-block;
+    padding: 10px 24px;         /* Gives it the spacious pill look from your image */
+    border: 1px solid #e5e7eb;   /* Explicit light gray border so it actually shows up */
+    border-radius: 24px;         /* Perfect rounded pill shape */
+    font-size: 0.95rem;
+    font-weight: 700;            /* Makes the text bold like your image */
+    color: #111827;              /* Darker text color to match */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none; 
+    background-color: #ffffff;
+}
+
+.checkBoxTags span:hover {
+    background-color: #f9fafb;
+    border-color: #000000;       /* Darkens slightly on hover */
+}
+
+.checkBoxTags input[type = "checkbox"]:checked + span {
+    background-color: #173D1C;
+    color: white;
+    border-color: #173D1C;
+}
+
+.slots-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.addSlotButton {
+    padding: 0;
+    border: none;
+    background: none;
+    color: #173D1C;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.addSlotButton:hover {
+    text-decoration: underline;
+}
+
+.noSlotsText {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-style: italic;
+}
+
+
+.slots {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 5px;
+    margin-bottom: 30px;
+}
+
+.slot-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.slot-row input[type="datetime-local"] {
+    flex: 1; 
+}
+
+.remove-slot-button {
+    background: none;
+    border: none;
+    color: #C62828; 
+    font-size: 1.6rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.remove-slot-button:hover {
+    transform: scale(1.2);
+}
+
+
+
+
+.form-submit {
+    grid-column: 1 / -1;
+}
+
+.submitButton {
+    width: 100%;
+    background-color: #C8F04A;
+    color: black;
+    border: none;
+    padding: 16px;
+    border-radius: 30px; 
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(23, 61, 28, 0.15);
+    transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+    background-color:#a0c433;
+    color: #000000;
+    transform: translateY(-1px); /* Soft lift animation */
+}
+
+
+@media screen and (max-width: 768px) {
+    .publish-donations-box {
+        order: 2;
+    }
+
+    .upload-panel{
+        order:1;
+    }
+
+    .form-panel{
+        grid-template-columns:1fr;
+    }
+    /* Collapse the 2-column grid into a single-column layout */
+    .box-details form {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 10px 0;
+    }
+
+    /* Reset all spanned elements so they behave properly in a single column */
+    .full-width{
+        grid-column:auto;
+    }
+
+    
+
+    /* Optimize allergy tag pill distribution for easier mobile tapping */
+    .allergyTagsCheckBox {
+        gap: 8px;
+    }
+
+    .checkBoxTags span {
+        padding: 10px 16px; /* Slightly taller vertical area for touch optimization */
+        font-size: 0.85rem;
+        text-align: center;
+        flex: 1 1 calc(50% - 8px); /* Forces tags to neatly form a stable 2-column grid on mobile */
+    }
+
+    /* Keep individual slot rows aligned cleanly on narrower windows */
+    .slot-row {
+        gap: 10px;
+    }
+
+    .form-submit{
+        grid-column:auto;
+    }
+
+    /* Scale submit button down slightly so it sits balanced in the workspace view */
+    .submitButton {
+        padding: 14px;
+        font-size: 1rem;
+    }
+}

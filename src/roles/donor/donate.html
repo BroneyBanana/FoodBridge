@@ -67,8 +67,143 @@
     <main class="dashboard-content">
       <h1 class="page-heading">Donate Surplus Food</h1>
       <p class="page-subheading">Create a new food listing, set allergy tags, and define convenient pickup slots.</p>
-      
-      <!-- Main content body left entirely blank for user coding -->
+        
+        <div class="box-details">
+          <form action="process.php" id="publish-donation-form">
+
+            <div class="upload-panel">
+              <img src="../../assets/images/photo.png" alt="This is a Photo icon">
+
+              <h3>Food Photo</h3>
+
+              <label class="image-upload">
+                <input type="file" name="foodImage" id="foodImage" accept="image/*" required>
+
+                <div class="upload-content">
+                  <div class="upload-icon">
+                    <img src="../../assets/images/add.png" alt="Add Icon">
+                  </div>
+
+                  <h4>Upload Image</h4>
+
+                  <p>Drag and drop a clear photo of the food item</p>
+                </div>
+              </label>
+
+              <div class="upload-guidelines">
+                <h5>Photo Guidelines</h5>
+
+                <ul>
+                  <li>Ensure good lighting</li>
+                  <li>Show actual portion size</li>
+                  <li>Packaging should be visible</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="publish-donations-box">
+
+              <div class="box-header">
+                <h1>Food Details</h1>
+
+                <div class="close-button">
+                  <a href="dashboard.html">&times;</a>
+                </div>
+              </div>
+
+              <div class="form-panel">
+              <div class = "form-group full-width">
+                <label for="foodName">Food Name</label>
+                <input type="text" id = "foodName" name = "foodName" placeholder="e.g. Nasi Lemak" required>
+              </div>
+              <div class = "form-group">
+                <label for="category">Category</label>
+                <select name="category" id="category" required>
+                  <option value="">Select Category</option>
+                  <option value="cookedMeal">Cooked Meal</option>
+                  <option value="rawProduce">Raw Produce</option>
+                  <option value="bakery">Bakery</option>
+                  <option value="beverages">Beverages</option>
+                  <option value="cannedGoods">Canned Goods</option>
+                  <option value="others">Others</option>
+                </select>
+              </div>
+              <div class = "form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" name = "quantity" id = "quantity" required>
+              </div>
+              <div class = "form-group">
+                <label for="unit">Unit</label>
+                <select name="unit" id="unit" required>
+                  <option value="">Select Unit</option>
+                  <option value="portions">portions</option>
+                  <option value="kg">kg</option>
+                  <option value="pieces">pieces</option>
+                </select>
+              </div>
+              <div class = "form-group">
+                <label for="expiryDate">Expiry Date & Time</label>
+                <input type="datetime-local" name="expiryDate" id="expiryDate" required>
+              </div>
+              <div class = "form-group full-width">
+                <label for="allergyTags">Allergy Tags</label>
+                <div class = "allergyTagsCheckBox">
+                  <label class = "checkBoxTags">
+                    <input type="checkbox" name="allergies" id="nuts" value = "nuts">
+                    <span>Nuts</span>
+                  </label>
+                  <label class = "checkBoxTags">
+                    <input type="checkbox" name="allergies" id="dairy" value = "dairy">
+                    <span>Dairy</span>
+                  </label>
+                  <label class = "checkBoxTags">
+                    <input type="checkbox" name="allergies" id="gluten" value = "gluten">
+                    <span>Gluten</span>
+                  </label>
+                  <label class = "checkBoxTags">
+                    <input type="checkbox" name="allergies" id="shellfish" value = "shellfish">
+                    <span>Shellfish</span>
+                  </label>
+                  <label class = "checkBoxTags">
+                    <input type="checkbox" name="allergies" id="eggs" value = "eggs">
+                    <span>Eggs</span>
+                  </label>
+                  <label class = "checkBoxTags">
+                    <input type="checkbox" name="allergies" id="soy" value = "soy">
+                    <span>Soy</span>
+                  </label>
+                  <label class = "checkBoxTags">
+                    <input type="checkbox" name="allergies" id="vegan-safe" value = "vegan-safe">
+                    <span>Vegan Safe</span>
+                  </label>
+                  <label class = "checkBoxTags">
+                    <input type="checkbox" name="allergies" id="none" value = "none">
+                    <span>None</span>
+                  </label>
+                </div>
+              </div>
+              <div class = "form-group full-width">
+                <label for="pickupAddress">Pickup Address</label>
+                <input type="text" id = "pickupAddress" name = "pickupAddress" placeholder="Your address..." required>
+              </div>
+                
+              <div class = "form-group full-width">
+                <div class = "slots-header">
+                  <label for="pickupSlots">Pickup Slots (Max 3)</label>
+                  <button type = "button" id = "addSlotButton" class = "addSlotButton">+ Add Time Slot</button>
+                </div>
+                  
+                <p id = "noSlotsText" class = "noSlotsText">No slots added. Receivers need a time to book.</p>
+                  
+                <div id = "slots" class = "slots"></div>
+              </div>
+              
+            </div> 
+            <div class = "form-submit">
+              <button type = "submit" class = "submitButton">Add Food for Donation</button>
+            </div>
+          </form>
+        </div>
       <div class="content-body"></div>
     </main>
   </div>
