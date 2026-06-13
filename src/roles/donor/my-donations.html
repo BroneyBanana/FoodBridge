@@ -68,10 +68,175 @@
       <h1 class="page-heading">My Donations</h1>
       <p class="page-subheading">Manage active food listings, simulate QR codes scan, and view pickup histories.</p>
       
-      <!-- Main content body left entirely blank for user coding -->
+      <div class = "my-donations-content">
+        <div class = "donation-filter">
+          <button class = "filter-button active">All</button>
+          <button class = "filter-button">Active</button>
+          <button class = "filter-button">Completed</button>
+          <button class = "filter-button">Expired</button>
+        </div>
+
+        <div class = "my-donations">
+          <div class = "donations-card" data-status = "active">
+            <div class = "card-image">
+              <img src="../../assets/images/food3.jpeg" alt="This is a food image.">
+              <span class = "card-status">Active</span>
+            </div>
+            <div class = "card-content">
+              <div class = "card-header">
+                <h2 class = "card-title">Food Name</h2>
+              </div>
+              <div class = "allergy-tags">
+                <span class = "tags">Gluten</span>
+                <span class = "tags">Nuts</span>
+              </div>
+              
+              <p class = "card-descript">15pieces • Food Type</p>
+              
+              <p class = "expiry-date"><strong>Expires: </strong>6/5/26, 11:27 AM</p>
+              <button class = "show-qr">Show QR Code for Pickup</button>
+              <button class = "tutorial-packup">How to pack</button>
+            </div>
+          </div>
+          <div class = "donations-card" data-status = "completed">
+            <div class = "card-image">
+              <img src="../../assets/images/food3.jpeg" alt="This is a food image.">
+              <span class = "card-status">Completed</span>
+            </div>
+            <div class = "card-content">
+              <div class = "card-header">
+                <h2 class = "card-title">Food Name</h2>
+              </div>
+              <div class = "allergy-tags">
+                <span class = "tags">Gluten</span>
+                <span class = "tags">Nuts</span>
+              </div>
+              
+              <p class = "card-descript">15pieces • Food Type</p>
+              
+              <p class = "expiry-date"><strong>Expires: </strong>6/5/26, 11:27 AM</p>
+              <button class = "show-qr">Show QR Code for Pickup</button>
+              <button class = "tutorial-packup">How to pack</button>
+            </div>
+          </div>
+          <div class = "donations-card" data-status = "expired">
+            <div class = "card-image">
+              <img src="../../assets/images/food3.jpeg" alt="This is a food image.">
+              <span class = "card-status">Expired</span>
+            </div>
+            <div class = "card-content">
+              <div class = "card-header">
+                <h2 class = "card-title">Food Name</h2>
+              </div>
+              <div class = "allergy-tags">
+                <span class = "tags">Gluten</span>
+                <span class = "tags">Nuts</span>
+              </div>
+              
+              <p class = "card-descript">15pieces • Food Type</p>
+              
+              <p class = "expiry-date"><strong>Expires: </strong>6/5/26, 11:27 AM</p>
+              <button class = "show-qr">Show QR Code for Pickup</button>
+              <button class = "tutorial-packup">How to pack</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class = "tutorial" id = "tutorial">
+        <div class = "tutorial-card">
+          <div class="tutorial-image">
+            <div class="image-step-slide active" data-step="0">
+              <img src="../../assets/images/tutorial1.jpg" alt="This is a tutorial 1 image.">
+              <div class="tutorial-image-step">01</div>
+            </div>
+            <div class="image-step-slide" data-step="1">
+              <img src="../../assets/images/tutorial2.jpg" alt="This is a tutorial 2 image.">
+              <div class="tutorial-image-step">02</div>
+            </div>
+            <div class="image-step-slide" data-step="2">
+              <img src="../../assets/images/tutorial3.jpg" alt="This is a tutorial 3 image.">
+              <div class="tutorial-image-step">03</div>
+            </div>
+            <div class="image-step-slide" data-step="3">
+              <img src="../../assets/images/tutorial4.jpg" alt="This is a tutorial 4 image.">
+              <div class="tutorial-image-step">04</div>
+            </div>
+          </div>
+          
+          <div class = "tutorial-text">
+            <div class="text-step-slide active" data-step="0">
+              <span class="tutorial-step">Step 1 of 4</span>
+              <h2 class="tutorial-title">Hygiene & Safety Check</h2>
+              <p class="tutorial-description">Ensure all surfaces, hands, and utensils are thoroughly sanitized. Food safety is our absolute highest priority. Separate raw and cooked foods completely to prevent cross-contamination. Only pack food that is completely safe for immediate human consumption.</p>
+              <div class="tutorial-navigation">
+                <button type="button" class="previous-button disabled" aria-label="Previous step">&lsaquo;</button>
+                <button type="button" class="next-button" id="next-button">Next Step <span class="arrow-button">&rarr;</span></button>
+              </div>
+            </div>
+
+            <div class="text-step-slide" data-step="1">
+              <span class="tutorial-step">Step 2 of 4</span>
+              <h2 class="tutorial-title">Weighing & Portioning</h2>
+              <p class="tutorial-description">Carefully divide large batches into single or family-sized portions. This makes it much easier for receivers to collect. Use food-grade, leak-proof containers. If possible, weigh the packages so the receiver knows exactly what they are getting.</p>
+              <div class="tutorial-navigation">
+                <button type="button" class="previous-button" aria-label="Previous step">&lsaquo;</button>
+                <button type="button" class="next-button" id="next-button">Next Step <span class="arrow-button">&rarr;</span></button>
+              </div>
+            </div>
+
+            <div class="text-step-slide" data-step="2">
+              <span class="tutorial-step">Step 3 of 4</span>
+              <h2 class="tutorial-title">Sealing & Packaging</h2>
+              <p class="tutorial-description">Secure lids tightly to prevent any spills during transport. If you are packing hot food, ensure the container is heat-safe and allow steam to vent slightly if necessary before sealing. Clean the outside of the container.</p>
+              <div class="tutorial-navigation">
+                <button type="button" class="previous-button" aria-label="Previous step">&lsaquo;</button>
+                <button type="button" class="next-button" id="next-button">Next Step <span class="arrow-button">&rarr;</span></button>
+              </div>
+            </div>
+
+            <div class="text-step-slide" data-step="3">
+              <span class="tutorial-step">Step 4 of 4</span>
+              <h2 class="tutorial-title">QR Labelling & Handoff</h2>
+              <p class="tutorial-description">Click 'Show QR Code' on your dashboard. Print or clearly write the tracking code on a label and affix it securely to the top of the container. When the receiver arrives, let them scan the code to complete the secure handoff.</p>
+              <div class="tutorial-navigation">
+                <button type="button" class="previous-button" aria-label="Previous step">&lsaquo;</button>
+                <button type="button" class="next-button" id="next-button">I am Ready <span class="arrow-button">&rarr;</span></button>
+              </div>
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+
       <div class="content-body"></div>
     </main>
   </div>
+
+  <div id="show-qr-modal" class="show-qr-modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Show QR Code">
+    <div class="show-qr-card">
+      <div class="show-qr-header">
+        <h2 class="show-qr-title">Donation Ready</h2>
+        <p class="show-qr-desc">Show this code to the receiver upon collection.</p>
+      </div>
+      
+      <div class="show-qr-wrap">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=FoodBridge-Pickup-Auth&color=000000&bgcolor=ffffff" alt="Your Donation QR Code" id="display-qr-img">
+      </div>
+
+      <p class="qr-success-msg" style="display: block; margin-top: 10px;">ID: #12345</p>
+
+      <div class="qr-modal-actions">
+        <button class="qr-btn-close" id="show-qr-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../assets/js/header.js"></script>
+  <script src="my-donations.js"></script>
+</body>
+</html>
 
   <!-- Page Specific Logic -->
   <script src="../../assets/js/header.js"></script>

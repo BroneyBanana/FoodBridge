@@ -66,10 +66,22 @@
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
       <h1 class="page-heading">Platform Reports</h1>
-      <p class="page-subheading">Analyze platform impact, waste reduction charts, and resolve user-submitted issue reports.</p>
-      
-      <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      <p class="page-subheading">Review current receiver reports and choose the correct trust-score penalty for the donor.</p>
+
+      <section class="admin-report-panel" aria-labelledby="reportsTitle">
+        <div class="section-header">
+          <div>
+            <h2 id="reportsTitle">User Reports</h2>
+            <p>Handled reports are removed from this list so admins only see current reports.</p>
+          </div>
+        </div>
+
+        <div class="admin-report-list" id="adminReportList"></div>
+        <div class="empty-state hidden" id="emptyReports">
+          <h3>No current reports</h3>
+          <p>All reports have been handled.</p>
+        </div>
+      </section>
     </main>
   </div>
 

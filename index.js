@@ -16,3 +16,26 @@ const landingHamburger = document.getElementById('landingHamburger');
       iconClose.style.display = 'none';
     }
   });
+
+document.querySelector('a[href="index.html#community-impact"]').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.querySelector('#community-impact').scrollIntoView({
+    behavior: 'smooth'
+  });
+});
+
+// Smooth scroll for View Impact button
+document.querySelector('a[href="#community-impact"]').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.querySelector('#community-impact').scrollIntoView({
+    behavior: 'smooth'
+  });
+});
+
+// Smooth scroll for How It Works navbar link
+document.querySelector('a[href="index.html#how-it-works"]').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.querySelector('#how-it-works').scrollIntoView({
+    behavior: 'smooth'
+  });
+});

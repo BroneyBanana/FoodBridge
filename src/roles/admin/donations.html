@@ -68,7 +68,98 @@
       <h1 class="page-heading">Donations Log</h1>
       <p class="page-subheading">Track and manage active, completed, and flagged food donations across the platform.</p>
       
-      <!-- Main content body left entirely blank for user coding -->
+      <div class = "dashboard-container">
+        <section class = "stats-section">
+          <div class = "stats-card">
+            <div class = "stats-icon">
+              <img src="../../assets/images/people.png" alt="This is Total Users Icon.">
+            </div>
+            <div class = "stats-info">
+              <p>Total Users</p>
+              <h2>15</h2>
+            </div>
+          </div>
+
+          <div class = "stats-card">
+            <div class = "stats-icon">
+              <img src="../../assets/images/charity.png" alt="This is Donations Icon.">
+            </div>
+            <div class = "stats-info">
+              <p>Donations</p>
+              <h2>8</h2>
+            </div>
+          </div>
+
+          <div class = "stats-card">
+            <div class = "stats-icon">
+              <img src="../../assets/images/check.png" alt="This is Successful Pickup Icon.">
+            </div>
+            <div class = "stats-info">
+              <p>Success Pickups</p>
+              <h2>1</h2>
+            </div>
+          </div>
+
+          <div class = "stats-card">
+            <div class = "stats-icon">
+              <img src="../../assets/images/vegetarian.png" alt="This is Food Saved Icon.">
+            </div>
+            <div class = "stats-info">
+              <p>Food Saved (kg)</p>
+              <h2>1000</h2>
+            </div>
+          </div>
+        </section>
+
+        <section class = "donation-section">
+          <div class = "filter-buttons">
+            <button class = "active-button"><b>All</b></button>
+            <button><b>Active</b></button>
+            <button><b>Expired</b></button>
+            <button><b>Completed</b></button>
+          </div>
+          <table class = "donation-table">
+            <tr>
+              <th>FOOD</th>
+              <th>DONOR</th>
+              <th>STATUS</th>
+            </tr>
+            <tr>
+              <td>
+                <b>Food</b><br>
+                Food Type
+              </td>
+              <td>Doner of the food</td>
+              <td><span class = "status-badge active">ACTIVE</span></td>
+            </tr>
+            <tr>
+              <td>
+                <b>Food</b><br>
+                Food Type
+              </td>
+              <td>Doner of the food</td>
+              <td><span class = "status-badge completed">COMPLETED</span></td>
+            </tr>
+            <tr>
+              <td>
+                <b>Food</b><br>
+                Food Type
+              </td>
+              <td>Doner of the food</td>
+              <td><span class = "status-badge expired">EXPIRED</span></td>
+            </tr>
+            <tr>
+              <td>
+                <b>Food</b><br>
+                Food Type
+              </td>
+              <td>Doner of the food</td>
+              <td><span class = "status-badge active">ACTIVE</span></td>
+            </tr>
+          </table>
+        </section>
+        
+        </div>
       <div class="content-body"></div>
     </main>
   </div>
