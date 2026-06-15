@@ -69,7 +69,69 @@
       <p class="page-subheading">Configure automatic score deductions, verification thresholds, and platform moderation rules.</p>
       
       <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      <div class="content-body"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trust Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+
+    <!-- Trust Rules -->
+    <div class="trust-box">
+
+        <div class="title">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h2>Automated Trust Rules</h2>
+        </div>
+
+        <p>Set the threshold score for automatic account suspension.</p>
+
+        <div class="slider-wrapper">
+
+            <div class="value-box" id="sliderValue">30</div>
+
+            <input
+                type="range"
+                min="0"
+                max="100"
+                value="30"
+                id="slider"
+            />
+
+            <div class="range-labels">
+                <span>0</span>
+                <span>100</span>
+            </div>
+
+        </div>
+
+        <button class="save-btn">
+            Save Threshold
+        </button>
+
+    </div>
+
+    <!-- Users At Risk -->
+    <div class="risk-section">
+        <h2>
+            Users At Risk
+            <span id="riskCount">(0)</span>
+        </h2>
+
+        <div class="risk-list" id="riskList"></div>
+    </div>
+
+</div>
+
+</body>
+</html></div>
     </main>
   </div>
 

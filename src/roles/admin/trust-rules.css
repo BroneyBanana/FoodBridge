@@ -1,1 +1,320 @@
 /* Trust Rules Specific Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: #f4f3ef;
+    padding: 30px;
+}
+
+.container {
+    max-width: 1800px;
+    margin: auto;
+}
+
+/* TOP CARDS */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.card h4 {
+    color: #5e6b84;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.card h2 {
+    color: #0f172a;
+}
+
+.icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+}
+
+.blue {
+    background: #eef4ff;
+    color: #3b82f6;
+}
+
+.green {
+    background: #eafaf0;
+    color: #22c55e;
+}
+
+.mint {
+    background: #eafaf4;
+    color: #10b981;
+}
+
+.purple {
+    background: #f4ebff;
+    color: #a855f7;
+}
+
+.red {
+    background: #fdecec;
+    color: #ef4444;
+}
+
+/* TRUST BOX */
+
+.trust-box {
+    margin-top: 30px;
+    background: white;
+    border-radius: 18px;
+    padding: 40px;
+    max-width: 960px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.title i {
+    color: #ef4444;
+    font-size: 24px;
+}
+
+.title h2 {
+    color: #10213b;
+}
+
+.trust-box p {
+    margin-top: 15px;
+    color: #64748b;
+    font-size: 20px;
+}
+
+.slider-wrapper {
+    margin-top: 60px;
+}
+
+.value-box {
+    width: 54px;
+    height: 38px;
+    background: #ef4444;
+    color: white;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 28%;
+    font-weight: bold;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.value-box::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #ef4444;
+}
+
+input[type="range"] {
+    width: 100%;
+    appearance: none;
+    height: 8px;
+    border-radius: 10px;
+    background: #dfe4ea;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ef4444;
+    cursor: pointer;
+}
+
+.range-labels {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+/* BUTTON */
+
+.save-btn {
+    margin-top: 50px;
+    background: #0f172a;
+    color: white;
+    border: none;
+    padding: 18px 32px;
+    font-size: 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* USERS AT RISK */
+
+.risk-section {
+    margin-top: 40px;
+}
+
+.risk-section h2 {
+    color: #10213b;
+}
+
+.risk-section span {
+    color: #ef4444;
+}
+
+.risk-section p {
+    margin-top: 25px;
+    color: #64748b;
+    font-style: italic;
+    font-size: 22px;
+}
+
+.risk-list {
+    margin-top: 22px;
+    display: grid;
+    gap: 14px;
+    max-width: 960px;
+}
+
+.risk-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-left: 5px solid #ef4444;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+
+.risk-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.risk-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #b91c1c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.risk-user h3 {
+    color: #10213b;
+    font-size: 18px;
+}
+
+.risk-user p {
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 14px;
+    font-style: normal;
+}
+
+.risk-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    color: #64748b;
+    font-size: 15px;
+    text-align: right;
+}
+
+.score {
+    min-width: 42px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 800;
+    text-align: center;
+}
+
+.score.danger {
+    background: #ef4444;
+}
+
+.score.warning {
+    background: #f59e0b;
+}
+
+.status-chip {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .trust-box {
+        max-width: 100%;
+    }
+
+    .risk-card,
+    .risk-meta {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .risk-meta {
+        text-align: left;
+    }
+}
