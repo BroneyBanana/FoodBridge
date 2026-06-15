@@ -3,57 +3,25 @@ const users = [
         initials: "RT",
         name: "Rafi Tan",
         role: "Receiver",
-        score: 12,
-        reason: "Unverified profile and no-shows",
-        status: "Suspend Soon"
+        score: 12
     },
     {
         initials: "AM",
         name: "Amanda Miles",
         role: "Receiver",
-        score: 18,
-        reason: "3 missed pickups",
-        status: "Review"
+        score: 18
     },
     {
         initials: "JL",
         name: "Jason Lee",
         role: "Receiver",
-        score: 24,
-        reason: "Late cancellation reports",
-        status: "Warning Sent"
+        score: 24
     },
     {
         initials: "NS",
         name: "Nora Singh",
         role: "Donor",
-        score: 27,
-        reason: "Repeated food quality flags",
-        status: "Monitor"
-    },
-    {
-        initials: "CW",
-        name: "Chloe Wong",
-        role: "Receiver",
-        score: 35,
-        reason: "Incomplete pickup confirmations",
-        status: "Monitor"
-    },
-    {
-        initials: "DK",
-        name: "Daniel Koh",
-        role: "Donor",
-        score: 42,
-        reason: "Multiple late donation updates",
-        status: "Warning Sent"
-    },
-    {
-        initials: "FH",
-        name: "Farah Hassan",
-        role: "Receiver",
-        score: 58,
-        reason: "Occasional cancellation reports",
-        status: "Stable"
+        score: 27
     }
 ];
 
@@ -61,6 +29,7 @@ const slider = document.getElementById("slider");
 const sliderValue = document.getElementById("sliderValue");
 const riskCount = document.getElementById("riskCount");
 const riskList = document.getElementById("riskList");
+const atRiskRatingLimit = 30;
 
 function getScoreClass(score) {
     return score <= 20 ? "danger" : "warning";
@@ -68,13 +37,13 @@ function getScoreClass(score) {
 
 function renderUsersAtRisk() {
     const threshold = Number(slider.value);
-    const usersAtRisk = users.filter((user) => user.score <= threshold);
+    const usersAtRisk = users.filter((user) => user.score < atRiskRatingLimit);
 
     sliderValue.innerText = threshold;
     riskCount.innerText = `(${usersAtRisk.length})`;
 
     if (usersAtRisk.length === 0) {
-        riskList.innerHTML = '<p class="empty-risk">No users currently at or below this threshold.</p>';
+        riskList.innerHTML = '<p class="empty-risk">No users currently below this threshold.</p>';
         return;
     }
 
@@ -89,8 +58,6 @@ function renderUsersAtRisk() {
             </div>
             <div class="risk-meta">
                 <span class="score ${getScoreClass(user.score)}">${user.score}</span>
-                <span>${user.reason}</span>
-                <span class="status-chip">${user.status}</span>
             </div>
         </div>
     `).join("");
