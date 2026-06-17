@@ -39,6 +39,7 @@
         <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
         <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
         <a href="trust-score.html" class="dashboard-nav-item active">Trust Score</a>
+        <a href="review.html" class="dashboard-nav-item">Review</a>
       </nav>
     </div>
 
@@ -81,6 +82,98 @@
       <p class="page-subheading">View details about your rating level, score deductions, and history of donations.</p>
 
       <div class="content-body">
+        <section class="trust-score-panel" aria-label="Trust score summary">
+          <h2>Trust Score</h2>
+
+          <div class="score-ring" aria-label="Trust score 92 out of 100">
+            <div class="score-ring-inner">
+              <strong>92</strong>
+              <span>Score</span>
+            </div>
+          </div>
+
+          <div class="score-breakdown">
+            <div class="score-row">
+              <span class="score-label">On-Time Pickup Rate</span>
+              <div class="score-track">
+                <div class="score-fill lime" style="width: 95%;"></div>
+              </div>
+              <strong>95%</strong>
+            </div>
+
+            <div class="score-row">
+              <span class="score-label">Reviews Submitted</span>
+              <div class="score-track">
+                <div class="score-fill forest" style="width: 60%;"></div>
+              </div>
+              <strong>60%</strong>
+            </div>
+
+            <div class="score-row">
+              <span class="score-label">Violations (Missed/Late)</span>
+              <div class="score-track">
+                <div class="score-fill alert" style="width: 5%;"></div>
+              </div>
+              <strong>5%</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="trust-history-panel" aria-label="Trust score history">
+          <div class="history-header">
+            <div>
+              <span class="history-eyebrow">Score Activity</span>
+              <h2>Trust Score History</h2>
+            </div>
+            <span class="history-total">Current score: 92</span>
+          </div>
+
+          <div class="history-list">
+            <article class="history-item positive">
+              <div class="history-marker">+</div>
+              <div class="history-copy">
+                <div class="history-title-row">
+                  <h3>Successful donation completed</h3>
+                  <strong>+5 marks</strong>
+                </div>
+                <span>Today, 10:42 AM</span>
+              </div>
+            </article>
+
+            <article class="history-item negative">
+              <div class="history-marker">-</div>
+              <div class="history-copy">
+                <div class="history-title-row">
+                  <h3>Late collection handoff (delayed by 25 minutes)</h3>
+                  <strong>-3 marks</strong>
+                </div>
+                <span>Yesterday, 4:15 PM</span>
+              </div>
+            </article>
+
+            <article class="history-item positive">
+              <div class="history-marker">+</div>
+              <div class="history-copy">
+                <div class="history-title-row">
+                  <h3>High quality food review</h3>
+                  <strong>+4 marks</strong>
+                </div>
+                <span>14 Jun 2026</span>
+              </div>
+            </article>
+
+            <article class="history-item negative">
+              <div class="history-marker">-</div>
+              <div class="history-copy">
+                <div class="history-title-row">
+                  <h3>Report resolved by admin (inaccurate quantity)</h3>
+                  <strong>-6 marks</strong>
+                </div>
+                <span>10 Jun 2026</span>
+              </div>
+            </article>
+          </div>
+        </section>
       </div>
     </main>
   </div>

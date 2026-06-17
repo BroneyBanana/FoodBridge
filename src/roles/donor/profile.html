@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Donor Profile - FoodBridge</title>
-  
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap" rel="stylesheet">
-  
+
   <!-- Global Styles -->
   <link rel="stylesheet" href="../../assets/css/global.css">
   <link rel="stylesheet" href="../../assets/css/header.css">
-  
+
   <!-- Page Specific Styles -->
   <link rel="stylesheet" href="profile.css">
 </head>
@@ -25,7 +25,7 @@
         <img src="../../assets/images/logo.png" alt="Logo" />
       </div>
     </a>
-    
+
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
         <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
@@ -34,9 +34,11 @@
         <a href="leaderboard.html" class="dashboard-nav-item">Leaderboard</a>
         <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
         <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
+        <a href="trust-score.html" class="dashboard-nav-item">Trust Score</a>
+        <a href="review.html" class="dashboard-nav-item">Review</a>
       </nav>
     </div>
-    
+
     <div class="dashboard-actions">
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.html">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -47,7 +49,7 @@
       </a>
 
       <a href="profile.html" class="profile-avatar">DO</a>
-      
+
       <a href="../../auth/login.html" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
       </a>
@@ -67,102 +69,8 @@
     <main class="dashboard-content">
       <h1 class="page-heading">Donor Profile</h1>
       <p class="page-subheading">Update your organization info, address location, contact details, and dietary warnings settings.</p>
-      
-      <div class="content-body">
-        <section class="reviews-shell" aria-label="Donor reviews">
-          <div class="reviews-summary">
-            <div class="summary-copy">
-              <span class="eyebrow">Community Feedback</span>
-              <h2>Reviews from food receivers</h2>
-              <p>See how recipients rated your recent donations, pickup experience, food quality, and overall reliability.</p>
-            </div>
 
-            <div class="rating-card" aria-label="Average rating 4.8 out of 5">
-              <strong>4.8</strong>
-              <div class="stars" aria-hidden="true">★★★★★</div>
-              <span>128 total reviews</span>
-            </div>
-          </div>
-
-          <div class="review-stats" aria-label="Review statistics">
-            <div class="stat-tile">
-              <strong>96%</strong>
-              <span>Positive feedback</span>
-            </div>
-            <div class="stat-tile">
-              <strong>42</strong>
-              <span>Reviews this month</span>
-            </div>
-          </div>
-
-          <div class="reviews-toolbar">
-            <h2>All Reviews</h2>
-            <span>Newest first</span>
-          </div>
-
-          <div class="reviews-grid">
-            <article class="review-card">
-              <div class="review-body">
-                <div class="review-header">
-                  <img class="reviewer-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80" alt="Maya Chen">
-                  <div>
-                    <h3>Maya Chen</h3>
-                    <span>Receiver • 2 hours ago</span>
-                  </div>
-                </div>
-                <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
-                <p>The meals were packed neatly and still fresh when I arrived. Pickup was fast, and the staff explained the allergens clearly.</p>
-                <img class="review-photo" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80" alt="Packed salad and healthy lunch bowls">
-              </div>
-            </article>
-
-            <article class="review-card">
-              <div class="review-body">
-                <div class="review-header">
-                  <img class="reviewer-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=80" alt="Aaron Lim">
-                  <div>
-                    <h3>Aaron Lim</h3>
-                    <span>Receiver • Yesterday</span>
-                  </div>
-                </div>
-                <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
-                <p>Very generous portions. The collection window was accurate, and the food helped our family cover dinner for the night.</p>
-                <img class="review-photo" src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=900&q=80" alt="Prepared rice and vegetable meals">
-              </div>
-            </article>
-
-            <article class="review-card">
-              <div class="review-body">
-                <div class="review-header">
-                  <img class="reviewer-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=160&q=80" alt="Siti Rahman">
-                  <div>
-                    <h3>Siti Rahman</h3>
-                    <span>Community Partner • 3 days ago</span>
-                  </div>
-                </div>
-                <div class="stars" aria-label="4 out of 5 stars">★★★★☆</div>
-                <p>Great breakfast items and friendly handoff. One box needed a clearer expiry sticker, but everything else was excellent.</p>
-                <img class="review-photo" src="https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=900&q=80" alt="Breakfast toast and fruit donation">
-              </div>
-            </article>
-
-            <article class="review-card">
-              <div class="review-body">
-                <div class="review-header">
-                  <img class="reviewer-avatar" src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=160&q=80" alt="Priya Nair">
-                  <div>
-                    <h3>Priya Nair</h3>
-                    <span>Receiver • 1 week ago</span>
-                  </div>
-                </div>
-                <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
-                <p>The donation was exactly as listed, warm, and organized by dietary needs. It made distribution at our shelter much smoother.</p>
-                <img class="review-photo" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80" alt="Cooked meal spread with vegetables">
-              </div>
-            </article>
-          </div>
-        </section>
-      </div>
+      <div class="content-body"></div>
     </main>
   </div>
 

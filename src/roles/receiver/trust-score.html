@@ -67,8 +67,100 @@
       <h1 class="page-heading">Trust Score</h1>
       <p class="page-subheading">View details about your rating level, score deductions, and history of collections.</p>
       
-      <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      <div class="content-body">
+        <section class="trust-score-panel" aria-label="Trust score summary">
+          <h2>Trust Score</h2>
+
+          <div class="score-ring" aria-label="Trust score 92 out of 100">
+            <div class="score-ring-inner">
+              <strong>92</strong>
+              <span>Score</span>
+            </div>
+          </div>
+
+          <div class="score-breakdown">
+            <div class="score-row">
+              <span class="score-label">On-Time Pickup Rate</span>
+              <div class="score-track">
+                <div class="score-fill lime" style="width: 95%;"></div>
+              </div>
+              <strong>95%</strong>
+            </div>
+
+            <div class="score-row">
+              <span class="score-label">Reviews Submitted</span>
+              <div class="score-track">
+                <div class="score-fill forest" style="width: 60%;"></div>
+              </div>
+              <strong>60%</strong>
+            </div>
+
+            <div class="score-row">
+              <span class="score-label">Violations (Missed/Late)</span>
+              <div class="score-track">
+                <div class="score-fill alert" style="width: 5%;"></div>
+              </div>
+              <strong>5%</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="trust-history-panel" aria-label="Trust score history">
+          <div class="history-header">
+            <div>
+              <span class="history-eyebrow">Score Activity</span>
+              <h2>Trust Score History</h2>
+            </div>
+            <span class="history-total">Current score: 92</span>
+          </div>
+
+          <div class="history-list">
+            <article class="history-item positive">
+              <div class="history-marker">+</div>
+              <div class="history-copy">
+                <div class="history-title-row">
+                  <h3>On-time pickup completed</h3>
+                  <strong>+5 marks</strong>
+                </div>
+                <span>Today, 9:30 AM</span>
+              </div>
+            </article>
+
+            <article class="history-item negative">
+              <div class="history-marker">-</div>
+              <div class="history-copy">
+                <div class="history-title-row">
+                  <h3>Missed pickup warning (donor reported no-show)</h3>
+                  <strong>-5 marks</strong>
+                </div>
+                <span>Yesterday, 6:20 PM</span>
+              </div>
+            </article>
+
+            <article class="history-item positive">
+              <div class="history-marker">+</div>
+              <div class="history-copy">
+                <div class="history-title-row">
+                  <h3>Helpful review submitted</h3>
+                  <strong>+3 marks</strong>
+                </div>
+                <span>15 Jun 2026</span>
+              </div>
+            </article>
+
+            <article class="history-item negative">
+              <div class="history-marker">-</div>
+              <div class="history-copy">
+                <div class="history-title-row">
+                  <h3>Late cancellation (booking was cancelled less than 30 minutes)</h3>
+                  <strong>-2 marks</strong>
+                </div>
+                <span>11 Jun 2026</span>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
     </main>
   </div>
 
