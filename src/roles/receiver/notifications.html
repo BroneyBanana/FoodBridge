@@ -67,8 +67,44 @@
       <h1 class="page-heading">Notifications</h1>
       <p class="page-subheading">Stay updated on your claimed bookings, active rescue windows, and trust ratings alerts.</p>
       
-      <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      <div class="content-body">
+        <section class="trust-score-panel" aria-label="Trust score summary">
+          <h2>Trust Score</h2>
+
+          <div class="score-ring" aria-label="Trust score 92 out of 100">
+            <div class="score-ring-inner">
+              <strong>92</strong>
+              <span>Score</span>
+            </div>
+          </div>
+
+          <div class="score-breakdown">
+            <div class="score-row">
+              <span class="score-label">On-Time Pickup Rate</span>
+              <div class="score-track">
+                <div class="score-fill lime" style="width: 95%;"></div>
+              </div>
+              <strong>95%</strong>
+            </div>
+
+            <div class="score-row">
+              <span class="score-label">Reviews Submitted</span>
+              <div class="score-track">
+                <div class="score-fill forest" style="width: 60%;"></div>
+              </div>
+              <strong>60%</strong>
+            </div>
+
+            <div class="score-row">
+              <span class="score-label">Violations (Missed/Late)</span>
+              <div class="score-track">
+                <div class="score-fill alert" style="width: 5%;"></div>
+              </div>
+              <strong>5%</strong>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
   </div>
 
