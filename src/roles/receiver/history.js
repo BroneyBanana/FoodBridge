@@ -93,8 +93,6 @@ function renderHistory() {
       </article>
     `;
   }).join('');
-
-  document.getElementById('reviewedCount').textContent = Object.keys(reviews).length;
 }
 
 function openReview(historyId) {

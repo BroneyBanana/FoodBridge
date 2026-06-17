@@ -35,7 +35,11 @@
 
 .history-panel {
   border-radius: 18px;
-  padding: 24px;
+  padding: 0;
+}
+
+.page-subheading {
+  margin-bottom: 3%;
 }
 
 .section-header {
@@ -56,36 +60,31 @@
 
 .history-list {
   display: grid;
-  gap: 14px;
+  gap: 0;
 }
 
 .history-card {
-  display: grid;
-  grid-template-columns: 112px minmax(0, 1fr) auto;
-  gap: 18px;
+  display: flex;
   align-items: center;
-  border-radius: 14px;
-  padding: 14px;
-}
-
-.history-card img {
-  width: 112px;
-  height: 92px;
-  object-fit: cover;
-  border-radius: 10px;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 2px solid #2e7d4f;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin: 0 5% 0.75rem;
 }
 
 .history-info h3 {
-  font-family: var(--font-sans);
+  margin: 0;
   font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 4px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
 .history-meta,
 .history-date {
-  color: var(--color-text-muted);
-  font-size: 0.88rem;
+  color: #666;
+  font-size: 0.85rem;
 }
 
 .history-date {
@@ -100,28 +99,38 @@
 }
 
 .status-pill {
-  border-radius: var(--border-radius-btn);
-  font-size: 0.76rem;
-  font-weight: 800;
-  padding: 5px 10px;
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1.2;
+  padding: 0.3rem 0.85rem;
+  text-align: center;
+  white-space: nowrap;
+  width: fit-content;
 }
 
 .status-pill.completed,
-.status-pill.reviewed {
-  background: #e7f7ec;
+.status-pill.reviewed,
+.status-pill.collected {
+  background: #d4f5e2;
   color: #1a6b3a;
 }
 
 .card-actions {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .text-action-btn {
-  min-width: 92px;
-  min-height: 40px;
-  border-radius: var(--border-radius-btn);
+  min-width: 108px;
+  border-radius: 999px;
   border: 1px solid var(--color-border);
   background: var(--color-parchment);
   color: var(--color-forest);
@@ -131,9 +140,10 @@
   cursor: pointer;
   transition: var(--transition-smooth);
   font: inherit;
-  font-size: 0.86rem;
-  font-weight: 800;
-  padding: 9px 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 0.3rem 0.85rem;
 }
 
 .text-action-btn:hover {
@@ -357,20 +367,31 @@
   }
 
   .history-panel {
-    padding: 16px;
+    padding: 0;
   }
 
   .history-card {
-    grid-template-columns: 84px minmax(0, 1fr);
-  }
-
-  .history-card img {
-    width: 84px;
-    height: 84px;
+    align-items: flex-start;
+    flex-direction: column;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .card-actions {
-    grid-column: 1 / -1;
+    margin-left: 0;
+    width: 100%;
     justify-content: flex-end;
+  }
+}
+
+@media (max-width: 520px) {
+  .card-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .text-action-btn,
+  .status-pill {
+    width: 100%;
   }
 }
