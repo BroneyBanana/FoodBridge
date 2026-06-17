@@ -65,23 +65,20 @@
   <!-- Main Content Area -->
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
-      <h1 class="page-heading">Platform Reports</h1>
-      <p class="page-subheading">Review current receiver reports and choose the correct trust-score penalty for the donor.</p>
+      <h1 class="page-heading">Reports</h1>
+      <p class="page-subheading">Review all incoming reports. Mark as legitimate to see a suggested deduction — then confirm with a reason note. Dismiss if unfounded.</p>
 
-      <section class="admin-report-panel" aria-labelledby="reportsTitle">
-        <div class="section-header">
-          <div>
-            <h2 id="reportsTitle">User Reports</h2>
-            <p>Handled reports are removed from this list so admins only see current reports.</p>
-          </div>
+      <div class="content-body">
+        <div class="metrics">
+          <div class="metric"><div class="mlabel">Pending</div><div class="mval a" id="cnt-pending">4</div></div>
+          <div class="metric"><div class="mlabel">Resolved</div><div class="mval g" id="cnt-resolved">17</div></div>
+          <div class="metric"><div class="mlabel">Dismissed</div><div class="mval" id="cnt-dismissed">4</div></div>
         </div>
 
-        <div class="admin-report-list" id="adminReportList"></div>
-        <div class="empty-state hidden" id="emptyReports">
-          <h3>No current reports</h3>
-          <p>All reports have been handled.</p>
-        </div>
-      </section>
+
+
+        <div id="reports-list"></div>
+      </div>
     </main>
   </div>
 

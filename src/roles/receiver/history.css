@@ -7,7 +7,6 @@
 }
 
 .summary-card,
-.history-panel,
 .history-card,
 .modal-card {
   background: var(--color-white);
@@ -224,6 +223,7 @@
 }
 
 .form-fields textarea,
+.form-fields select,
 .upload-box {
   width: 100%;
   border: 1px solid var(--color-border);
@@ -295,9 +295,9 @@
   background: var(--color-parchment);
 }
 
-.rating-options input:checked ~ label,
+.rating-options input:checked~label,
 .rating-options label:hover,
-.rating-options label:hover ~ label {
+.rating-options label:hover~label {
   background: var(--color-lime);
   border-color: var(--color-lime);
 }
