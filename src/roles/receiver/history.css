@@ -194,9 +194,9 @@
 }
 
 .modal-card {
-  width: min(520px, 100%);
+  width: min(480px, 100%);
   border-radius: 18px;
-  padding: 24px;
+  padding: 22px;
 }
 
 .modal-header {
@@ -204,7 +204,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .modal-kicker {
@@ -217,12 +217,12 @@
 }
 
 .modal-header h2 {
-  font-size: 1.7rem;
+  font-size: 1.45rem;
 }
 
 .form-fields {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .form-fields label {
@@ -239,7 +239,7 @@
   border: 1px solid var(--color-border);
   border-radius: 12px;
   font: inherit;
-  padding: 12px;
+  padding: 10px 12px;
   background: var(--color-parchment);
   color: var(--color-forest);
 }
@@ -278,6 +278,7 @@
 }
 
 .form-fields textarea {
+  min-height: 104px;
   resize: vertical;
 }
 
@@ -294,8 +295,8 @@
 }
 
 .rating-options label {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 1px solid var(--color-border);
   display: flex;
@@ -350,11 +351,11 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .modal-actions .btn {
-  padding: 11px 18px;
+  padding: 10px 17px;
 }
 
 @media (max-width: 760px) {
