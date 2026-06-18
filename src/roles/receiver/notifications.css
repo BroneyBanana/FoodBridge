@@ -1,3 +1,69 @@
 .content-body {
   min-height: 620px;
 }
+
+.receiver-notifications {
+  max-width: 1040px;
+  padding-top: 40px;
+  padding-bottom: 72px;
+  margin: 0 auto;
+}
+
+.receiver-notifications {
+  margin-bottom: 40px;
+}
+
+.receiver-notifications .page-heading {
+  font-family: var(--font-display);
+  color: var(--color-forest);
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.receiver-notifications .page-subheading {
+  color: var(--color-text-muted);
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  font-family: var(--font-sans);
+}
+
+/* Empty State Notification Card Styles */
+.empty-notifications-card {
+  background: var(--color-white);
+  border-radius: 28px;
+  padding: 24px 32px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(28, 43, 30, 0.01);
+  border: 1.5px solid rgba(28, 43, 30, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: var(--transition-smooth);
+  max-width: 760px;
+  margin: 0 auto;
+  margin-top: 32px;
+}
+
+.empty-notifications-card p {
+  font-family: var(--font-sans);
+  color: var(--color-text-muted);
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+  .receiver-notifications {
+    padding-top: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .empty-notifications-card {
+    border-radius: 24px;
+    padding: 40px 16px;
+  }
+}

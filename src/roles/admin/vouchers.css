@@ -1,0 +1,312 @@
+/* Dashboard Context Content Containers */
+.admin-vouchers {
+  max-width: 1200px;
+  padding: 40px 24px 72px 24px;
+  margin: 0 auto;
+}
+
+.page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  gap: 20px;
+}
+
+.admin-vouchers .page-heading {
+  font-family: var(--font-display), "Syne", serif;
+  color: var(--color-forest, #1c2b1e);
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin: 0 0 12px 0;
+}
+
+.admin-vouchers .page-subheading {
+  color: var(--color-text-muted, #666666);
+  font-size: 1.05rem;
+  font-family: var(--font-sans), sans-serif;
+  margin: 0;
+}
+
+/* Primary Action Buttons */
+.primary-action-btn {
+  background-color: #bbf246; /* Matching matching brand lime-green accent token */
+  color: #1c2b1e;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 100px;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(187, 242, 70, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(187, 242, 70, 0.4);
+}
+
+/* Vouchers Dynamic Responsive Grid */
+.vouchers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+/* Individual Voucher Management Cards */
+.admin-voucher-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 28px;
+  border: 1.5px solid rgba(28, 43, 30, 0.06);
+  box-shadow: 0 4px 20px rgba(28, 43, 30, 0.015);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  min-height: 240px;
+}
+
+.voucher-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.brand-initial-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #f1f6e9;
+  color: #4a662f;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+/* Ticket Dashed Graphic Side Markings */
+.ticket-node-icon {
+  color: rgba(28, 43, 30, 0.2);
+}
+
+.voucher-details-block h3 {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-text-muted, #757575);
+  margin: 0 0 6px 0;
+}
+
+.voucher-details-block p {
+  font-family: var(--font-display), "Syne", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1c2b1e;
+  margin: 0 0 16px 0;
+  line-height: 1.25;
+}
+
+.voucher-validity-date {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9e9e9e;
+  font-weight: 700;
+}
+
+/* Management Action Panel Row */
+.voucher-management-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  border-top: 1px dashed rgba(28, 43, 30, 0.08);
+  padding-top: 20px;
+}
+
+.mgmt-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mgmt-btn.edit {
+  background-color: #f4f6f0;
+  color: #1c2b1e;
+  border: 1px solid rgba(28, 43, 30, 0.04);
+}
+
+.mgmt-btn.edit:hover {
+  background-color: #eaece4;
+}
+
+.mgmt-btn.delete {
+  background-color: #fff0f1;
+  color: #ff4757;
+  border: 1px solid rgba(255, 71, 87, 0.05);
+}
+
+.mgmt-btn.delete:hover {
+  background-color: #ffe1e3;
+}
+
+/* Form Action Modal Implementations */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(28, 43, 30, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 460px;
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(20px);
+  transition: transform 0.25s ease;
+}
+
+.modal-overlay.active .modal-card {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-family: var(--font-display), "Syne", serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1c2b1e;
+  margin: 0;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #9e9e9e;
+  line-height: 1;
+}
+
+/* Micro Elements Inside Form Groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1c2b1e;
+}
+
+.form-group input {
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(28, 43, 30, 0.1);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.95rem;
+  color: #1c2b1e;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #4a662f;
+}
+
+.modal-actions-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.secondary-btn {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #757575;
+  cursor: pointer;
+  border-radius: 100px;
+}
+
+.secondary-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.save-submit-btn {
+  background-color: #1c2b1e;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-radius: 100px;
+  transition: opacity 0.2s ease;
+}
+
+.save-submit-btn:hover {
+  opacity: 0.9;
+}
+
+/* Mobile Screens Optimization Breakpoint */
+@media (max-width: 768px) {
+  .page-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .primary-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

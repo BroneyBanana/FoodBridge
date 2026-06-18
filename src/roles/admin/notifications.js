@@ -11,7 +11,7 @@ function checkAndRenderNotifications() {
       </div>
     `;
   } else {
-    targetArea.innerHTML = "";
+    targetArea.innerHTML = ""; 
   }
 }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notifications - Receiver - FoodBridge</title>
+  <title>Vouchers - Admin - FoodBridge</title>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="../../assets/css/header.css">
   
   <!-- Page Specific Styles -->
-  <link rel="stylesheet" href="notifications.css">
+  <link rel="stylesheet" href="vouchers.css">
 </head>
 <body>
   <div class="noise-bg"></div>
@@ -63,18 +63,57 @@
   </header>
 
   <!-- Main Content Area -->
-  <div class="dashboard-wrapper">
-    <main class="dashboard-content">
-      <h1 class="page-heading">Notifications</h1>
-      <p class="page-subheading">Stay updated on your claimed bookings, active rescue windows, and trust ratings alerts.</p>
+<div class="dashboard-wrapper">
+    <main class="dashboard-content admin-vouchers">
+      <div class="page-header-row">
+        <div>
+          <h1 class="page-heading">Rewards & Vouchers</h1>
+          <p class="page-subheading">Configure, modify, and issue platform distribution vouchers.</p>
+        </div>
+        <button class="primary-action-btn" id="openCreateModalBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Create Voucher
+        </button>
+      </div>
       
-      <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      <div class="vouchers-grid" id="vouchersGridTarget"></div>
     </main>
+  </div>
+
+  <div class="modal-overlay" id="voucherFormModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalFormTitle">Create New Voucher</h2>
+        <button class="close-modal-btn" id="closeModalBtn" aria-label="Close dialog">&times;</button>
+      </div>
+      <form id="voucherForm">
+        <input type="hidden" id="voucherIdField">
+        
+        <div class="form-group">
+          <label for="partnerField">Partner / Brand Name</label>
+          <input type="text" id="partnerField" placeholder="e.g., GrabFood, Jaya Grocer" required>
+        </div>
+
+        <div class="form-group">
+          <label for="rewardField">Voucher Reward Title</label>
+          <input type="text" id="rewardField" placeholder="e.g., RM10 Off Delivery, 5% Off Bill" required>
+        </div>
+
+        <div class="form-group">
+          <label for="dateField">Expiration Validity Date</label>
+          <input type="date" id="dateField" required>
+        </div>
+
+        <div class="modal-actions-footer">
+          <button type="button" class="secondary-btn" id="cancelFormBtn">Cancel</button>
+          <button type="submit" class="save-submit-btn">Save Changes</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- Page Specific Logic -->
   <script src="../../assets/js/header.js"></script>
-  <script src="notifications.js"></script>
+  <script src="vouchers.js"></script>
 </body>
 </html>
