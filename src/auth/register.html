@@ -4,69 +4,166 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register - FoodBridge</title>
-  
-  <!-- Google Fonts -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap" rel="stylesheet">
-  
-  <!-- Global Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="../assets/css/global.css">
-  
-  <!-- Page Specific Styles -->
-  <link rel="stylesheet" href="../assets/css/header.css">
-  <link rel="stylesheet" href="../../index.css">
   <link rel="stylesheet" href="register.css">
 </head>
 <body>
   <div class="noise-bg"></div>
 
-  <nav class="global-navbar">
-    <a href="../../index.html" class="navbar-brand">
-      <div class="navbar-logo">
-        <img src="../assets/images/logo.png" alt="Logo" />
+  <main class="register-page">
+    <header class="register-topbar">
+      <a class="brand-pill" href="../../index.html" aria-label="FoodBridge home">
+        <span class="brand-mark">F</span>
+        <span>FoodBridge</span>
+      </a>
+
+      <div class="step-dots" aria-label="Registration progress">
+        <span class="step-dot active" data-dot="0"></span>
+        <span class="step-dot" data-dot="1"></span>
+        <span class="step-dot" data-dot="2"></span>
       </div>
-    </a>
-    
-    <button class="landing-hamburger" id="landingHamburger" aria-label="Toggle menu">
-      <svg class="icon-menu" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
+
+      <a class="signin-link" href="login.html">Sign in instead</a>
+    </header>
+
+    <button class="back-link" type="button" id="backButton">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m15 18-6-6 6-6"></path>
       </svg>
-      <svg class="icon-close" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
+      Back
     </button>
-    
-    <div class="nav-menu-wrapper" id="navMenuWrapper">
-      <div class="navbar-links">
-        <a href="../../index.html" class="navbar-link">Home</a>
-        <a href="../../index.html#how-it-works" class="navbar-link">How It Works</a>
-        <a href="../../index.html#community-impact" class="navbar-link">Community Impact</a>
-      </div>
-      
-      <div class="navbar-actions">
-        <a href="login.html" class="btn btn-outline" style="padding: 10px 15px; font-size: 0.85rem; width: 100%;">Log In</a>
-        <a href="register.html" class="btn btn-primary" style="padding: 10px 24px; font-size: 0.85rem; width: 100%;">Get Started</a>
-      </div>
-    </div>
-  </nav>
 
-  <!-- Register Content Layout -->
-  <div class="main-wrapper">
-    <main class="dashboard-content" style="max-width: 600px; margin: 0 auto; text-align: center;">
-      <h1 class="page-heading">Create Account</h1>
-      <p class="page-subheading">Join FoodBridge and start sharing or receiving surplus food.</p>
-      
-      <!-- Main content body left entirely blank for user registration forms -->
-      <div class="content-body"></div>
-    </main>
-  </div>
+    <form class="register-flow" id="registerForm">
+      <section class="register-step active intro-step" data-step="0" aria-labelledby="introTitle">
+        <div class="hero-logo" aria-hidden="true">
+          <span>F</span>
+        </div>
+        <h1 id="introTitle">Every meal deserves a second chance.</h1>
+        <p>FoodBridge connects surplus food from local donors to communities in need. Let's set up your account.</p>
 
-  <!-- Page Specific Logic -->
-  <script src="../../index.js"></script>
+        <button class="primary-action" type="button" data-next>Get Started -></button>
+        <a class="quiet-link" href="login.html">Sign in to existing account</a>
+      </section>
+
+      <section class="register-step role-step" data-step="1" aria-labelledby="roleTitle">
+        <div class="step-heading">
+          <h1 id="roleTitle">How will you use FoodBridge?</h1>
+          <p>This customises your dashboard, tools, and experience on the platform.</p>
+        </div>
+
+        <div class="role-grid">
+          <label class="role-card">
+            <input type="radio" name="accountRole" value="donor">
+            <span class="check-badge">✓</span>
+            <span class="role-icon">+</span>
+            <strong>Donate Food</strong>
+            <span>Share surplus meals, ingredients, or bakery stock from your household or business.</span>
+            <span class="tag-row">
+              <span>Restaurant</span>
+              <span>Household</span>
+              <span>Canteen</span>
+            </span>
+            <span class="role-list">
+              <span>List in 60 seconds</span>
+              <span>Earn vouchers and badges</span>
+              <span>Get tax-exemption certs</span>
+            </span>
+          </label>
+
+          <label class="role-card">
+            <input type="radio" name="accountRole" value="receiver" checked>
+            <span class="check-badge">✓</span>
+            <span class="role-icon">□</span>
+            <strong>Find Food</strong>
+            <span>Discover food options nearby and book pickup slots that work for you.</span>
+            <span class="tag-row">
+              <span>Individual</span>
+              <span>NGO</span>
+              <span>Community</span>
+            </span>
+            <span class="role-list">
+              <span>Browse map and listings</span>
+              <span>Book pickups by slot</span>
+              <span>Allergy-safe filter</span>
+            </span>
+          </label>
+        </div>
+
+      </section>
+
+      <section class="register-step profile-step" data-step="2" aria-labelledby="profileTitle">
+        <div class="profile-preview" aria-hidden="true">
+          <div class="avatar-preview">FB</div>
+          <strong id="previewName">Your Name</strong>
+          <span class="role-pill" id="previewRole">Receiver</span>
+          <div class="trust-card">
+            <span>100</span>
+            <p>Trust Score<br><strong>100/100</strong></p>
+          </div>
+          <small>This is how others see you</small>
+        </div>
+
+        <div class="form-card">
+          <h1 id="profileTitle">Create your profile</h1>
+          <div class="photo-row">
+            <div class="upload-circle">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 16V8"></path>
+                <path d="m8 12 4-4 4 4"></path>
+                <path d="M20 16.5A4.5 4.5 0 0 1 15.5 21h-7A4.5 4.5 0 0 1 4 16.5"></path>
+              </svg>
+            </div>
+            <div>
+              <button class="small-button" type="button">Add Photo</button>
+              <span>Optional</span>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Full name</span>
+            <input id="fullName" type="text" name="fullName" placeholder="Your full name" autocomplete="name" required>
+          </label>
+
+          <label class="field">
+            <span>Email address</span>
+            <input type="email" name="email" placeholder="you@email.com" autocomplete="email" required>
+          </label>
+
+          <label class="field">
+            <span>Location</span>
+            <input type="text" name="profileLocation" placeholder="e.g. Subang Jaya, Selangor" autocomplete="street-address" required>
+          </label>
+
+          <div class="field-grid">
+            <label class="field password-wrap">
+              <span>Password</span>
+              <input id="password" type="password" name="password" placeholder="Min 8 chars" autocomplete="new-password" minlength="8" required>
+              <button class="eye-button" type="button" id="togglePassword" aria-label="Show password">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </label>
+
+            <label class="field">
+              <span>Confirm</span>
+              <input id="confirmPassword" type="password" name="confirmPassword" placeholder="Re-type" autocomplete="new-password" minlength="8" required>
+            </label>
+          </div>
+
+          <button class="primary-action" type="submit">Continue -></button>
+        </div>
+      </section>
+
+    </form>
+  </main>
+
   <script src="register.js"></script>
 </body>
 </html>
