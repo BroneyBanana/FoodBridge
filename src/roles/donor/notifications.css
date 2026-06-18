@@ -1,0 +1,126 @@
+.notifications-page {
+  max-width: 1040px;
+  padding-top: 40px;
+  padding-bottom: 72px;
+  margin: 0 auto;
+}
+
+.notifications-hero {
+  margin-bottom: 40px;
+}
+
+.notifications-hero .page-heading {
+  font-family: var(--font-display);
+  color: var(--color-forest);
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.notifications-hero .page-subheading {
+  color: var(--color-text-muted);
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  font-family: var(--font-sans);
+}
+
+/* Notifications Container */
+.notifications-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Individual Notification Card Base */
+.notification-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  background: var(--color-white);
+  border: 1.5px solid rgba(28, 43, 30, 0.05);
+  border-radius: 28px;
+  padding: 24px 32px;
+  box-shadow: 0 4px 15px rgba(28, 43, 30, 0.01);
+  transition: var(--transition-smooth);
+}
+
+/* Active Highlight Styles (For Action Required / Completed alerts) */
+.notification-card.highlighted {
+  background: #EAF7D3; /* Soft tinted background match */
+  border-color: rgba(200, 240, 74, 0.4);
+}
+
+/* Badge Icon Styles */
+.notif-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #F4F6FA;
+  color: #4A60E2;
+}
+
+/* Dynamic color definitions based on notification types */
+.notification-card[data-type="action"] .notif-icon-badge {
+  background: #FFF0F2;
+  color: #FF4757;
+}
+
+.notification-card[data-type="completed"] .notif-icon-badge {
+  background: transparent;
+  color: var(--color-forest);
+}
+
+.notification-card[data-type="voucher"] .notif-icon-badge,
+.notification-card[data-type="update"] .notif-icon-badge {
+  background: #EBF3FF;
+  color: #3B82F6;
+}
+
+/* Text Content Structuring */
+.notif-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notif-title {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-forest);
+}
+
+.notif-message {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+/* Timestamp Block */
+.notif-timestamp {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(28, 43, 30, 0.4);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* Responsiveness Configurations */
+@media (max-width: 768px) {
+  .notification-card {
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .notif-timestamp {
+    grid-column: 2;
+    text-align: left;
+    margin-top: 4px;
+  }
+}

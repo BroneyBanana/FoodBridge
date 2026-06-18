@@ -1,1 +1,198 @@
-/* Certificates Specific Styles */
+.certificates-page {
+  max-width: 1040px; /* Reduced from 1240px to pull cards closer together */
+  padding-top: 40px;
+  padding-bottom: 72px;
+  margin: 0 auto;
+}
+
+.certificates-hero {
+  margin-bottom: 32px;
+}
+
+.certificates-hero .page-heading {
+  font-family: var(--font-display);
+  color: var(--color-forest);
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.certificates-hero .page-subheading {
+  color: var(--color-text-muted);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  font-family: var(--font-sans);
+}
+
+/* Grid Layout for Cards */
+.certificates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+
+/* Individual Certificate Cards */
+.certificate-card {
+  background: var(--color-white);
+  border-radius: 28px;
+  padding: 32px 24px; 
+  box-shadow: 0 10px 30px rgba(28, 43, 30, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Vibrant Accent Stripe at Top of Cards */
+.certificate-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--color-lime), #4c7c54);
+}
+
+/* Badge Icon Container */
+.cert-badge-wrapper {
+  width: 64px;
+  height: 64px;
+  background: #FFFBF2;
+  border: 1.5px solid rgba(232, 67, 26, 0.15);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+  color: #E8431A;
+}
+
+.certificate-card h2 {
+  font-family: var(--font-display);
+  color: var(--color-forest);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 1.8vw, 1.8rem);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.cert-recipient {
+  font-family: var(--font-sans);
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+/* Metrics Row (Period & Donations Block) */
+.cert-metrics-row {
+  width: 100%;
+  background: #F9F8F5;
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.metric-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-group.text-right {
+  text-align: right;
+}
+
+.metric-label {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(28, 43, 30, 0.4);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-forest);
+}
+
+.metric-value.highlight {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+/* Ratings Component Section */
+.cert-satisfaction {
+  margin-bottom: 28px;
+}
+
+.satisfaction-label {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(28, 43, 30, 0.5);
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.star-rating {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.star {
+  font-size: 1.2rem;
+  color: #E2E1DD;
+}
+
+.star.filled {
+  color: #FFC107;
+}
+
+.score-text {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(28, 43, 30, 0.7);
+}
+
+/* Download Button styling */
+.btn-download {
+  width: 100%;
+  padding: 14px;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-forest);
+  background: transparent;
+  border: 1.5px solid var(--color-forest);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-download:hover {
+  background: var(--color-forest);
+  color: var(--color-white);
+}
+
+/* Responsiveness Adaptations */
+@media (max-width: 768px) {
+  .certificates-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

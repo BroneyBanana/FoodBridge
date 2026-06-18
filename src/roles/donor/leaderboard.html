@@ -63,13 +63,65 @@
   </header>
 
   <!-- Main Content Area -->
-  <div class="dashboard-wrapper">
-    <main class="dashboard-content">
-      <h1 class="page-heading">Donor Leaderboard</h1>
-      <p class="page-subheading">See who's leading in community food rescue and check your relative rank.</p>
+<div class="dashboard-wrapper">
+    <main class="dashboard-content leaderboard-page">
       
-      <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      <section class="leaderboard-hero">
+        <h1 class="page-heading">Global Ranks</h1>
+        <p class="page-subheading">The most generous contributors in our network.</p>
+      </section>
+
+      <section class="podium-section" aria-label="Top donor leaderboard">
+        
+        <article class="podium-player second-place">
+          <div class="award-icon silver" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+          </div>
+          <div class="donor-avatar">GG</div>
+          <h2>Green</h2>
+          <div class="podium-card podium-silver">
+            <div class="points-wrapper">
+              <strong>1780</strong>
+              <span>Points</span>
+            </div>
+            <em>2</em>
+          </div>
+        </article>
+
+        <article class="podium-player first-place">
+          <div class="award-icon trophy" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a7 7 0 0 0-7 7c0 2.52 2 4.47 4.47 5.34h5.06C17 13.47 19 11.52 19 9a7 7 0 0 0-7-7z"/></svg>
+          </div>
+          <div class="donor-avatar main-avatar">FB</div>
+          <span class="you-badge">You</span>
+          <h2>Fresh</h2>
+          <div class="podium-card podium-gold">
+            <div class="points-wrapper">
+              <strong>2900</strong>
+              <span>Points</span>
+            </div>
+            <em>1</em>
+          </div>
+        </article>
+
+        <article class="podium-player third-place">
+          <div class="award-icon bronze" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+          </div>
+          <div class="donor-avatar">MN</div>
+          <h2>Mama</h2>
+          <div class="podium-card podium-bronze">
+            <div class="points-wrapper">
+              <strong>1520</strong>
+              <span>Points</span>
+            </div>
+            <em>3</em>
+          </div>
+        </article>
+      </section>
+
+      <section class="rank-list" aria-label="Other donor ranks" id="rankList"></section>
+
     </main>
   </div>
 
