@@ -1,1 +1,373 @@
 /* User Management Specific Styles */
+
+.table-container {
+  background: var(--color-white);
+  border-radius: var(--border-radius-card);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  margin-top: 24px;
+}
+
+.table-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filter-group {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-btn {
+  padding: 8px 20px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.filter-btn:hover {
+  border-color: var(--color-forest);
+  color: var(--color-forest);
+}
+
+.filter-btn.active {
+  background: var(--color-forest);
+  color: var(--color-white);
+  border-color: var(--color-forest);
+}
+
+.search-box {
+  position: relative;
+  width: 300px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 16px 10px 44px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-forest);
+  transition: var(--transition-smooth);
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--color-forest);
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.users-table th {
+  padding: 16px 32px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8E98A8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.users-table td {
+  padding: 20px 32px;
+  border-bottom: 1px solid rgba(28, 43, 30, 0.05);
+  vertical-align: middle;
+}
+
+.users-table tr:last-child td {
+  border-bottom: none;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--color-forest);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-donor {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-active {
+  border: 1px solid #86efac;
+  color: #16a34a;
+  background: transparent;
+}
+
+.trust-score {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.score-high {
+  color: #10b981;
+}
+
+.score-medium {
+  color: #f59e0b;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action {
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition-smooth);
+}
+
+.btn-action.warn {
+  background: #fef3c7;
+  color: #b45309;
+}
+.btn-action.warn:hover {
+  background: #fde68a;
+}
+
+.btn-action.ban {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.btn-action.ban:hover {
+  background: #fecaca;
+}
+
+@media (max-width: 768px) {
+  .table-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+  .search-box {
+    width: 100%;
+  }
+  .users-table th, .users-table td {
+    padding: 16px;
+  }
+}
+
+/* Modal Styles */
+.modal-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(28, 43, 30, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition-smooth);
+}
+
+.modal-wrap.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  background: var(--color-white);
+  border-radius: var(--border-radius-card);
+  padding: 32px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow-premium);
+  transform: translateY(20px);
+  transition: var(--transition-smooth);
+}
+
+.modal-wrap.show .modal {
+  transform: translateY(0);
+}
+
+.mtitle {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--color-forest);
+  margin-bottom: 8px;
+}
+
+.msub {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.score-adj {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.sadj-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  font-size: 20px;
+  color: var(--color-forest);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.sadj-btn:hover {
+  background: var(--color-forest);
+  color: var(--color-white);
+}
+
+.sadj-score {
+  font-family: var(--font-display);
+  font-size: 40px;
+  color: var(--color-forest);
+  min-width: 80px;
+  text-align: center;
+}
+
+.fgroup {
+  margin-bottom: 20px;
+}
+
+.flabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-forest);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.fgroup textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  resize: vertical;
+  background: transparent;
+}
+
+.fgroup textarea:focus {
+  outline: none;
+  border-color: var(--color-forest);
+}
+
+.mfoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.mfoot button {
+  padding: 10px 24px;
+}
+
+/* Status Badges */
+.badge-warn {
+  border: 1px solid #fde047;
+  color: #ca8a04;
+  background: #fefce8;
+}
+
+.badge-ban {
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.score-low {
+  color: #dc2626;
+}
+
+.btn-action.ok {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.btn-action.ok:hover {
+  background: #dcfce7;
+}
+
+.btn-action.restore {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.btn-action.restore:hover {
+  background: #dbeafe;
+}

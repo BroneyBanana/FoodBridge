@@ -4,70 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Log In - FoodBridge</title>
-  
-  <!-- Google Fonts -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap" rel="stylesheet">
-  
-  <!-- Global Styles -->
+
   <link rel="stylesheet" href="../assets/css/global.css">
-  <link rel="stylesheet" href="../assets/css/header.css">
-  <link rel="stylesheet" href="../../index.css">
-  
-  <!-- Page Specific Styles -->
   <link rel="stylesheet" href="login.css">
 </head>
 <body>
   <div class="noise-bg"></div>
 
-  <nav class="global-navbar">
-    <a href="../../index.html" class="navbar-brand">
-      <div class="navbar-logo">
-        <img src="../assets/images/logo.png" alt="Logo" />
-      </div>
+  <main class="login-page">
+    <a class="back-button" href="../../index.html" aria-label="Back to home">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M19 12H5"></path>
+        <path d="m12 19-7-7 7-7"></path>
+      </svg>
     </a>
-    
-    <button class="landing-hamburger" id="landingHamburger" aria-label="Toggle menu">
-      <svg class="icon-menu" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-      <svg class="icon-close" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    
-    <div class="nav-menu-wrapper" id="navMenuWrapper">
-      <div class="navbar-links">
-        <a href="../../index.html" class="navbar-link">Home</a>
-        <a href="../../index.html#how-it-works" class="navbar-link">How It Works</a>
-        <a href="../../index.html#community-impact" class="navbar-link">Community Impact</a>
+
+    <section class="login-visual" aria-label="FoodBridge community">
+      <img src="../assets/images/impact3.jpg" alt="FoodBridge volunteers packing donated food">
+      <div class="visual-shade"></div>
+      <div class="brand-lockup">
+        <img src="../assets/images/logo.png" alt="" aria-hidden="true">
+        <span>FoodBridge</span>
       </div>
-      
-      <div class="navbar-actions">
-        <a href="login.html" class="btn btn-outline" style="padding: 10px 15px; font-size: 0.85rem; width: 100%;">Log In</a>
-        <a href="register.html" class="btn btn-primary" style="padding: 10px 15px; font-size: 0.85rem; width: 100%;">Get Started</a>
+      <h1>Share what you can.<br>Take what you need.</h1>
+    </section>
+
+    <section class="login-panel" aria-labelledby="login-title">
+      <div class="admin-access">
+        <a href="../roles/admin/dashboard.html">Admin Access</a>
+        <span>Demo: donor@food.com</span>
       </div>
-    </div>
-  </nav>
 
+      <div class="login-card">
+        <div class="login-header">
+          <p class="eyebrow">FoodBridge Login</p>
+          <h2 id="login-title">Welcome Back</h2>
+          <p>Sign in to continue your food rescue journey.</p>
+        </div>
 
-  <!-- Login Content Layout -->
-  <div class="main-wrapper">
-    <main class="dashboard-content" style="max-width: 600px; margin: 0 auto; text-align: center;">
-      <h1 class="page-heading">Welcome Back</h1>
-      <p class="page-subheading">Sign in to continue your food rescue journey.</p>
-      
-      <!-- Main content body left entirely blank for user login forms -->
-      <div class="content-body"></div>
-    </main>
-  </div>
+        <div class="role-tabs" role="tablist" aria-label="Choose account type">
+          <button class="role-tab active" type="button" role="tab" aria-selected="true" data-role="donor">Donor</button>
+          <button class="role-tab" type="button" role="tab" aria-selected="false" data-role="receiver">Receiver</button>
+        </div>
 
-  <!-- Page Specific Logic -->
-  <script src="../../index.js"></script>
+        <form class="login-form" action="#" method="post" id="loginForm">
+          <input type="hidden" name="role" id="accountRole" value="donor">
+
+          <label class="form-field" for="email">
+            <span>Email</span>
+            <input id="email" name="email" type="email" value="donor@food.com" autocomplete="email" required>
+          </label>
+
+          <label class="form-field password-field" for="password">
+            <span>Password</span>
+            <div class="password-control">
+              <input id="password" name="password" type="password" value="food1234" autocomplete="current-password" required>
+              <button class="icon-button" type="button" id="togglePassword" aria-label="Show password">
+                <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-closed" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m3 3 18 18"></path>
+                  <path d="M10.6 10.6A2 2 0 0 0 12 14a2 2 0 0 0 1.4-.6"></path>
+                  <path d="M9.9 4.2A9.8 9.8 0 0 1 12 4c6.5 0 10 8 10 8a17.8 17.8 0 0 1-3.1 4.3"></path>
+                  <path d="M6.6 6.6C3.6 8.6 2 12 2 12s3.5 8 10 8a9.7 9.7 0 0 0 4.1-.9"></path>
+                </svg>
+              </button>
+            </div>
+          </label>
+
+          <div class="form-row">
+            <label class="remember-me">
+              <input type="checkbox" name="remember">
+              <span>Remember me</span>
+            </label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button class="sign-in-button" type="submit">Sign In</button>
+        </form>
+
+        <p class="signup-copy">Don't have an account? <a href="register.html">Sign Up</a></p>
+      </div>
+    </section>
+  </main>
+
   <script src="login.js"></script>
 </body>
 </html>

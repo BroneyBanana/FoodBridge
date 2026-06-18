@@ -8,7 +8,7 @@ const completedHistory = [
     donor: 'Mama Nasi Lemak',
     date: '12 June 2026',
     image: '../../assets/images/food1.jpg',
-    status: 'Completed'
+    status: 'Collected'
   },
   {
     id: 'HIS-1002',
@@ -16,7 +16,7 @@ const completedHistory = [
     donor: 'Green Kitchen',
     date: '10 June 2026',
     image: '../../assets/images/vegetarian.png',
-    status: 'Completed'
+    status: 'Collected'
   },
   {
     id: 'HIS-1003',
@@ -24,7 +24,7 @@ const completedHistory = [
     donor: 'Sunrise Bakery',
     date: '8 June 2026',
     image: '../../assets/images/food2.jpg',
-    status: 'Completed'
+    status: 'Collected'
   },
   {
     id: 'HIS-1004',
@@ -32,7 +32,7 @@ const completedHistory = [
     donor: 'Community Cafe',
     date: '3 June 2026',
     image: '../../assets/images/food3.jpeg',
-    status: 'Completed'
+    status: 'Collected'
   }
 ];
 
@@ -81,25 +81,18 @@ function renderHistory() {
 
     return `
       <article class="history-card">
-        <img src="${item.image}" alt="${item.food}">
         <div class="history-info">
           <h3>${item.food}</h3>
-          <p class="history-meta">${item.donor}</p>
-          <p class="history-date">${item.date}</p>
-          <div class="status-row">
-            <span class="status-pill completed">${item.status}</span>
-            ${hasReview ? '<span class="status-pill reviewed">Reviewed</span>' : ''}
-          </div>
+          <p class="history-meta">${item.donor} &bull; ${item.date}</p>
         </div>
         <div class="card-actions">
           <button class="text-action-btn review" type="button" data-review-id="${item.id}">${hasReview ? 'View Review' : 'Do Review'}</button>
           <button class="text-action-btn report" type="button" data-report-id="${item.id}">Report</button>
+          <span class="status-pill collected">Collected</span>
         </div>
       </article>
     `;
   }).join('');
-
-  document.getElementById('reviewedCount').textContent = Object.keys(reviews).length;
 }
 
 function openReview(historyId) {
@@ -195,6 +188,7 @@ reportForm.addEventListener('submit', event => {
 
   const formData = new FormData(reportForm);
   reports[activeHistoryId] = {
+    issueType: formData.get('issueType'),
     problem: formData.get('problem'),
     images: formData.getAll('images').filter(file => file.name).map(file => file.name)
   };
