@@ -9,7 +9,7 @@ erDiagram
         INT trust_score
         INT reward_points
         ENUM status
-        DATETIME email_verified_at
+        DATETIME created_at
     }
 
     OTP_VERIFICATIONS {

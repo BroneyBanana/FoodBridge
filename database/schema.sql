@@ -10,7 +10,7 @@ USE foodbridge;
 -- trust_score  = behavioural score (0-100), starts at 100.
 -- reward_points = points donors accumulate to redeem vouchers.
 -- status       = lifecycle state of the account.
--- email_verified_at = NULL until the user verifies their email via OTP.
+-- created_at   = when the account was registered.
 -- ============================================================
 CREATE TABLE users (
   user_id        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -22,9 +22,7 @@ CREATE TABLE users (
   trust_score    INT UNSIGNED NOT NULL DEFAULT 100,
   reward_points  INT UNSIGNED NOT NULL DEFAULT 0,
   status         ENUM('pending_verification', 'active', 'warned', 'suspended', 'banned') NOT NULL DEFAULT 'pending_verification',
-  email_verified_at DATETIME NULL,
   created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CHECK (trust_score <= 100)
 );
 

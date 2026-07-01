@@ -15,7 +15,7 @@ INSERT IGNORE INTO platform_settings (maintenance_mode) VALUES ('off');
 -- ============================================================
 INSERT INTO users
   (user_id, role, full_name, email, password_hash, location,
-   trust_score, reward_points, status, email_verified_at)
+   trust_score, reward_points, status, created_at)
 VALUES
   -- Admin
   (1, 'admin',    'Daniel Ong',            'admin@foodbridge.com',         '$2y$10$mockAdminHash0000000000000000000000000000000000000000', 'Asia Pacific University, Kuala Lumpur', 100,   0, 'active', '2026-06-01 09:00:00'),
