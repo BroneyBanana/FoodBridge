@@ -67,9 +67,8 @@ erDiagram
     TRUST_SCORE_LOG {
         INT trust_score_log_id PK
         INT user_id FK
-        ENUM description
+        VARCHAR description
         INT points_change
-        VARCHAR reason
     }
 
     VOUCHERS {

@@ -162,7 +162,6 @@ CREATE TABLE trust_score_log (
   user_id            INT UNSIGNED NOT NULL,
   description        VARCHAR(255) NOT NULL,
   points_change      INT NOT NULL,
-  reason             VARCHAR(255) NOT NULL,
   created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_trust_score_log_user
     FOREIGN KEY (user_id) REFERENCES users(user_id)
