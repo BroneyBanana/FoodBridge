@@ -152,14 +152,15 @@ CREATE TABLE notifications (
 -- ============================================================
 -- TRUST_SCORE_LOG
 -- Audit trail of every trust score change for a user.
--- description = the event type that triggered the change.
+-- description = dynamic, human-readable label shown directly in the UI
+--               (e.g. "Donation collected successfully", "Missed pickup warning").
+--               The description itself is the reason — no separate field needed.
 -- points_change = positive means gained, negative means lost.
--- reason = human-readable explanation stored for admin review.
 -- ============================================================
 CREATE TABLE trust_score_log (
   trust_score_log_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   user_id            INT UNSIGNED NOT NULL,
-  description        ENUM('successful_donation', 'high_quality_review', 'helpful_review', 'late_cancellation', 'missed_pickup', 'unsafe_food_report', 'admin_adjustment') NOT NULL,
+  description        VARCHAR(255) NOT NULL,
   points_change      INT NOT NULL,
   reason             VARCHAR(255) NOT NULL,
   created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
