@@ -2,20 +2,15 @@ USE foodbridge;
 
 -- ============================================================
 -- 1. PLATFORM_SETTINGS
--- Single-row table. 'off' = platform is live, 'on' = maintenance.
 -- ============================================================
 INSERT IGNORE INTO platform_settings (maintenance_mode) VALUES ('off');
 
 -- ============================================================
 -- 2. USERS
--- role    : donor | receiver | admin
--- status  : pending_verification → active → warned → suspended → banned
--- trust_score starts at 100 and changes based on behaviour (max 100).
--- reward_points are earned by donors and spent on vouchers.
 -- ============================================================
 INSERT INTO users
   (user_id, role, full_name, email, password_hash, location,
-   trust_score, reward_points, status, created_at)
+   trust_score, total_food_donated, status, created_at)
 VALUES
   -- Admin
   (1, 'admin',    'Daniel Ong',            'admin@foodbridge.com',         '$2y$10$mockAdminHash0000000000000000000000000000000000000000', 'Asia Pacific University, Kuala Lumpur', 100,   0, 'active', '2026-06-01 09:00:00'),
@@ -29,121 +24,78 @@ VALUES
 
 -- ============================================================
 -- 3. OTP_VERIFICATIONS
--- purpose : registration | password_reset | email_change
--- status  : pending = not yet used | used = verified | expired = timed out
 -- ============================================================
 INSERT INTO otp_verifications
   (otp_id, email, otp_hash, purpose, expires_at, status)
 VALUES
-  -- Donor registered and verified successfully
   (1, 'donor@food.com',          '$2y$10$mockHashedOtp111111ForVerified000000000000000', 'registration',   '2026-06-02 10:25:00', 'used'),
-  -- Receiver registered and verified successfully
   (2, 'receiver@food.com',       '$2y$10$mockHashedOtp222222ForVerified000000000000000', 'registration',   '2026-06-03 11:10:00', 'used'),
-  -- New user requested registration OTP but has not verified yet
   (3, 'new.user@example.com',    '$2y$10$mockHashedOtp333333Pending0000000000000000000', 'registration',   '2026-07-01 16:10:00', 'pending'),
-  -- Donor requested a password reset (OTP is pending use)
   (4, 'donor@food.com',          '$2y$10$mockHashedOtp444444ResetPending00000000000000', 'password_reset', '2026-07-01 21:30:00', 'pending'),
-  -- An OTP that was never used and has since expired
   (5, 'old.request@example.com', '$2y$10$mockHashedOtp555555Expired000000000000000000', 'registration',   '2026-06-15 12:00:00', 'expired');
 
 -- ============================================================
 -- 4. DONATIONS
--- category : cookedMeal | rawProduce | bakery | beverages | cannedGoods | others
--- unit     : portions | kg | pieces
--- status   : active → completed | expired | cancelled
--- qr_token_hash is generated when a booking is confirmed; scanned at pickup.
 -- ============================================================
 INSERT INTO donations
   (donation_id, donor_id, food_name, category, quantity, unit, image_url,
    pickup_address, expiry_at, status, qr_token_hash, created_at)
 VALUES
-  -- Completed: collected by Daniel Receiver
-  (1, 2, 'Bread and Pastries',   'bakery',     40, 'pieces',   '../../assets/images/food2.jpg',      'Sunrise Bakery, SS15 Subang Jaya', '2026-06-12 20:00:00', 'completed', '$2y$10$mockQrHashDon1000000000000000000000000000000000', '2026-06-12 08:00:00'),
-  -- Active: still open for booking
-  (2, 2, 'Nasi Lemak Packs',     'cookedMeal', 25, 'portions', '../../assets/images/food1.jpg',      'Sunrise Bakery, SS15 Subang Jaya', '2026-07-01 21:00:00', 'active',    '$2y$10$mockQrHashDon2000000000000000000000000000000000', '2026-07-01 09:00:00'),
-  -- Active: Aisha Community Home has a pending booking for this
-  (3, 3, 'Vegetarian Rice Box',  'cookedMeal', 18, 'portions', '../../assets/images/vegetarian.png', 'Green Kitchen, Bukit Jalil',       '2026-07-01 19:30:00', 'active',    '$2y$10$mockQrHashDon3000000000000000000000000000000000', '2026-07-01 08:30:00'),
-  -- Expired: pickup slot was missed by receiver, donation window has closed
-  (4, 3, 'Mixed Lunch Packs',    'cookedMeal', 12, 'portions', '../../assets/images/food3.jpeg',     'Green Kitchen, Bukit Jalil',       '2026-06-25 15:00:00', 'expired',   '$2y$10$mockQrHashDon4000000000000000000000000000000000', '2026-06-25 09:00:00');
+  (1, 2, 'Bread and Pastries',   'bakery',     40, 'pieces',   'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-06-12 20:00:00', 'completed', '$2y$10$mockQrHashDon1000000000000000000000000000000000', '2026-06-12 08:00:00'),
+  (2, 2, 'Nasi Lemak Packs',     'cookedMeal', 25, 'portions', 'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-07-01 21:00:00', 'active',    '$2y$10$mockQrHashDon2000000000000000000000000000000000', '2026-07-01 09:00:00'),
+  (3, 3, 'Vegetarian Rice Box',  'cookedMeal', 18, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-07-01 19:30:00', 'active',    '$2y$10$mockQrHashDon3000000000000000000000000000000000', '2026-07-01 08:30:00'),
+  (4, 3, 'Mixed Lunch Packs',    'cookedMeal', 12, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-06-25 15:00:00', 'expired',   '$2y$10$mockQrHashDon4000000000000000000000000000000000', '2026-06-25 09:00:00');
 
 -- ============================================================
 -- 5. DONATION_ALLERGY_TAGS
--- Composite PK (donation_id, allergy_name) prevents duplicates.
--- allergy_name : Nuts | Dairy | Gluten | Shellfish | Eggs | Soy | Vegan Safe | None
 -- ============================================================
 INSERT INTO donation_allergy_tags (donation_id, allergy_name) VALUES
-  (1, 'Gluten'),
-  (1, 'Eggs'),
-  (2, 'Nuts'),
-  (2, 'Eggs'),
-  (3, 'Vegan Safe'),
-  (4, 'None');
+  (1, 'gluten'),
+  (1, 'eggs'),
+  (2, 'nuts'),
+  (2, 'eggs'),
+  (3, 'vegan-safe'),
+  (4, 'none');
 
 -- ============================================================
 -- 6. PICKUP_SLOTS
--- status : available = open for booking | reserved = slot already taken
--- Each donation can offer multiple time windows to suit receivers.
 -- ============================================================
 INSERT INTO pickup_slots
-  (pickup_slot_id, donation_id, slot_start_at, slot_end_at, status)
+  (pickup_slot_id, donation_id, timeslot)
 VALUES
-  -- Donation 1 (completed): slot was reserved then collected
-  (1, 1, '2026-06-12 18:00:00', '2026-06-12 18:30:00', 'reserved'),
-  -- Donation 2 (active): three open time windows still available
-  (2, 2, '2026-07-01 17:00:00', '2026-07-01 17:30:00', 'available'),
-  (3, 2, '2026-07-01 18:00:00', '2026-07-01 18:30:00', 'available'),
-  (4, 2, '2026-07-01 19:00:00', '2026-07-01 19:30:00', 'available'),
-  -- Donation 3 (active): Aisha reserved this slot
-  (5, 3, '2026-07-01 17:30:00', '2026-07-01 18:00:00', 'reserved'),
-  -- Donation 4 (expired): slot was reserved but receiver missed it
-  (6, 4, '2026-06-25 14:00:00', '2026-06-25 14:30:00', 'reserved');
+  (1, 1, '2026-06-12 18:00:00'),
+  (2, 2, '2026-07-01 17:00:00'),
+  (3, 2, '2026-07-01 18:00:00'),
+  (4, 2, '2026-07-01 19:00:00'),
+  (5, 3, '2026-07-01 17:30:00'),
+  (6, 4, '2026-06-25 14:00:00');
 
 -- ============================================================
 -- 7. BOOKINGS
--- status : reserved  = waiting for pickup
---          collected = receiver arrived and QR was scanned
---          missed    = receiver did not show up in time
---          cancelled = receiver cancelled before the pickup window
--- qr_verified_at is filled only when the donor scans the QR at collection.
 -- ============================================================
 INSERT INTO bookings
-  (booking_id, donation_id, pickup_slot_id, receiver_id, status,
+  (booking_id, donation_id, pickup_slot_id, receiver_id, quantity, status,
    booked_at, cancelled_at, collected_at, qr_verified_at)
 VALUES
-  -- Booking 1: Daniel Receiver collected Bread and Pastries (QR scanned)
-  (1, 1, 1, 4, 'collected', '2026-06-12 12:10:00', NULL,                  '2026-06-12 18:12:00', '2026-06-12 18:12:00'),
-  -- Booking 2: Aisha reserved Vegetarian Rice Box, pending pickup
-  (2, 3, 5, 5, 'reserved',  '2026-07-01 10:05:00', NULL,                  NULL,                  NULL),
-  -- Booking 3: Daniel Receiver missed Mixed Lunch Packs
-  (3, 4, 6, 4, 'missed',    '2026-06-25 10:15:00', NULL,                  NULL,                  NULL);
+  (1, 1, 1, 4, 1, 'collected', '2026-06-12 12:10:00', NULL,                  '2026-06-12 18:12:00', '2026-06-12 18:12:00'),
+  (2, 3, 5, 5, 1, 'reserved',  '2026-07-01 10:05:00', NULL,                  NULL,                  NULL),
+  (3, 4, 6, 4, 1, 'missed',    '2026-06-25 10:15:00', NULL,                  NULL,                  NULL);
 
 -- ============================================================
 -- 8. NOTIFICATIONS
--- Delivered to individual users for events like expiry warnings,
--- collection confirmations, trust score changes, and announcements.
 -- ============================================================
 INSERT INTO notifications
   (user_id, title, description, created_at)
 VALUES
-  (2, 'Action Required: Food expiring soon',   'Your listed Nasi Lemak Packs will expire in 6 hours.',                          '2026-07-01 15:00:00'),
-  (2, 'Donation Completed',                    'Daniel Receiver successfully collected your Bread and Pastries.',               '2026-06-12 18:12:00'),
-  (2, 'New Voucher Unlocked',                  'You reached Trust Score 100. A new GrabFood voucher is waiting for you.',      '2026-06-30 16:00:00'),
-  (2, 'Community Update',                      'FoodBridge rescued over 1,500 kg of food this week thanks to donors like you.','2026-06-28 09:00:00'),
+  (2, 'Action Required: Food expiring soon',   'Your listed Assorted Breads & Pastries will expire in 3 hours.', '2026-07-01 15:00:00'),
+  (2, 'Donation Completed',                    'Fresh Bakery KL successfully collected your 20kg vegetables.',   '2026-06-12 18:12:00'),
+  (2, 'New Voucher Unlocked',                  'You reached Trust Score 98! A new GrabFood voucher is waiting for you.', '2026-06-30 16:00:00'),
+  (2, 'Community Update',                      'We rescued over 1,500kg of food this week thanks to heroes like you!', '2026-06-28 09:00:00'),
   (5, 'Pickup Slot Reserved',                  'Your Vegetarian Rice Box pickup is reserved for 5:30 PM.',                     '2026-07-01 10:05:00'),
   (4, 'Trust Score Deducted',                  '10 points were deducted because a pickup slot was missed.',                    '2026-06-25 15:05:00');
 
 -- ============================================================
 -- 9. TRUST_SCORE_LOG
--- description = dynamic, human-readable label displayed in the UI.
---               The description itself is the reason — no separate field needed.
--- points_change = signed integer (positive = gained, negative = lost).
---
--- Score breakdown:
---   Sunrise Bakery (2):       100 + 5 + 3 = 108 → capped at 100
---   Green Kitchen (3):        100 - 8 (admin)                     = 92
---   Daniel Receiver (4):      100 + 2 - 5 - 10 - 2 (admin)       = 85
---   Aisha Community Home (5): 100 - 4 (admin)                     = 96
---   Care Shelter KL (6):      100 - 10 - 10 - 10 - 5             = 65
 -- ============================================================
 INSERT INTO trust_score_log
   (trust_score_log_id, user_id, description, points_change)
@@ -163,83 +115,64 @@ VALUES
 
 -- ============================================================
 -- 10. VOUCHERS
--- Created by admin; donors redeem them using reward_points.
--- points_required = the cost in reward points.
--- valid_until = expiry date of the voucher offer.
 -- ============================================================
 INSERT INTO vouchers
-  (voucher_id, partner_name, reward_title, voucher_code, points_required, valid_until)
+  (voucher_id, brand_name, reward_title, voucher_code, required_donations, expiration_date)
 VALUES
-  (1, 'GrabFood',   'RM10 Off Delivery', 'GRAB10FOOD', 250, '2026-12-31'),
-  (2, 'Jaya Grocer','5% Off Bill',       'JAYAGR5OFF', 300, '2026-10-31'),
-  (3, 'Tealive',    'Free Upsize',       'TEALIVEUP',  150, '2026-08-31'),
-  (4, 'Foodpanda',  'RM5 Off',           'PANDA5RM',   200, '2026-11-30');
+  (1, 'GrabFood',   'RM10 Off Delivery', 'GRAB10FOOD', 250, '2026-12-31 23:59:59'),
+  (2, 'Jaya Grocer','5% Off Bill',       'JAYAGR5OFF', 300, '2026-10-31 23:59:59'),
+  (3, 'Tealive',    'Free Upsize',       'TEALIVEUP',  150, '2026-08-31 23:59:59'),
+  (4, 'Foodpanda',  'RM5 Off',           'PANDA5RM',   200, '2026-11-30 23:59:59');
 
 -- ============================================================
 -- 11. VOUCHER_REDEMPTIONS
--- Records when a donor redeemed a voucher using reward_points.
--- redeemed_at = exact timestamp the donor submitted the redemption.
 -- ============================================================
 INSERT INTO voucher_redemptions
-  (redemption_id, voucher_id, donor_id, redeemed_at)
+  (redemption_id, voucher_id, donor_id, status)
 VALUES
-  (1, 3, 2, '2026-06-20 13:30:00'),
-  (2, 1, 2, '2026-06-30 16:00:00');
+  (1, 3, 2, 'redeemed'),
+  (2, 1, 2, 'unlocked');
 
 -- ============================================================
 -- 12. CERTIFICATES
--- Digital recognition issued to donors.
--- certificate_type : carbon_offset | csr | donation_impact
--- meals_saved = estimated meals from the donor's completed donations.
--- file_url = path to the generated certificate PDF.
 -- ============================================================
 INSERT INTO certificates
-  (certificate_id, donor_id, certificate_type, title, meals_saved, file_url, issued_at)
+  (certificate_id, donor_id, certificate_name, issued_by, period_start, period_end, food_donated_count, receiver_satisfaction_rate, file_url)
 VALUES
-  (1, 2, 'carbon_offset',   'June Carbon Offset Certificate', 220, 'certificates/sunrise-june-carbon.pdf', '2026-06-30 18:00:00'),
-  (2, 2, 'csr',             'CSR Food Rescue Certificate',    220, 'certificates/sunrise-june-csr.pdf',    '2026-06-30 18:05:00'),
-  (3, 3, 'donation_impact', 'Q2 Donation Impact Certificate',  95, 'certificates/greenkitchen-q2.pdf',     '2026-06-30 18:10:00');
+  (1, 2, 'June Carbon Offset Certificate', 'FoodBridge Admin', '2026-06-01 00:00:00', '2026-06-30 23:59:59', 220, 'Excellent', 'uploads/profile/ape.jpg'),
+  (2, 2, 'CSR Food Rescue Certificate',    'FoodBridge Admin', '2026-06-01 00:00:00', '2026-06-30 23:59:59', 220, 'Excellent', 'uploads/profile/ape.jpg'),
+  (3, 3, 'Q2 Donation Impact Certificate', 'FoodBridge Admin', '2026-04-01 00:00:00', '2026-06-30 23:59:59', 95, 'Good', 'uploads/profile/ape.jpg');
 
 -- ============================================================
 -- 13. REVIEWS
--- Written by the receiver after a successful (collected) booking.
--- One review per booking (UNIQUE constraint on booking_id).
--- rating : 1 (poor) to 5 (excellent).
 -- ============================================================
 INSERT INTO reviews
-  (review_id, booking_id, receiver_id, rating, comment, created_at)
+  (review_id, booking_id, rating, comment, review_image_url, created_at)
 VALUES
-  (1, 1, 4, 5, 'Food was packed well and collection was smooth. Highly recommend this donor.', '2026-06-12 19:00:00');
+  (1, 1, 5, 'Food was packed well and collection was smooth. Highly recommend this donor.', 'uploads/reviews/ape.jpg', '2026-06-12 19:00:00');
 
 -- ============================================================
 -- 14. REPORTS
--- Filed by any user about an incident related to a donation or booking.
--- reporter_id = who submitted the report.
--- reported_user_id = the user being accused (NULL if reporting a donation only).
--- status : active → resolved | dismissed
 -- ============================================================
 INSERT INTO reports
-  (report_id, booking_id, donation_id, reporter_id, reported_user_id,
-   issue_type, evidence_image_url, status, created_at)
+  (report_id, booking_id, issue_type, comment, evidence_image_url, status, created_at)
 VALUES
-  -- Donor reported Daniel Receiver for missing the pickup slot (resolved)
-  (1, 3, 4, 3, 4, 'missed_pickup',  NULL,                             'resolved', '2026-06-25 15:00:00'),
-  -- Daniel Receiver reported Green Kitchen for suspected stale food (active/reviewing)
-  (2, NULL, 4, 4, 3, 'food_quality', 'reports/stale-pack-photo-1.jpg', 'active',   '2026-06-26 12:20:00');
+  (1, 3, 'missed_pickup', 'The receiver never showed up to pick up the donation.', NULL, 'resolved', '2026-06-25 15:00:00'),
+  (2, 1, 'food_quality',  'The food smelled stale when opened later.', 'uploads/reports/ape.jpg', 'active', '2026-06-26 12:20:00');
 
 -- ============================================================
 -- DEMO QUERIES (uncomment to run)
 -- ============================================================
 -- 1. View all users with their current trust score and status:
--- SELECT user_id, role, full_name, trust_score, reward_points, status FROM users ORDER BY role;
+-- SELECT user_id, role, full_name, trust_score, total_food_donated, status FROM users ORDER BY role;
 
 -- 2. View a receiver's full trust score history as displayed in the UI:
 -- SELECT description, points_change, created_at
 -- FROM trust_score_log WHERE user_id = 4 ORDER BY created_at DESC;
 
 -- 3. View active donations and their available pickup slots:
--- SELECT d.food_name, d.status AS donation_status, s.slot_start_at, s.slot_end_at, s.status AS slot_status
--- FROM donations d JOIN pickup_slots s ON s.donation_id = d.donation_id ORDER BY d.donation_id, s.slot_start_at;
+-- SELECT d.food_name, d.status AS donation_status, s.timeslot
+-- FROM donations d JOIN pickup_slots s ON s.donation_id = d.donation_id ORDER BY d.donation_id, s.timeslot;
 
 -- 4. View bookings with QR scan state:
 -- SELECT b.booking_id, d.food_name, u.full_name AS receiver,
@@ -248,20 +181,17 @@ VALUES
 
 -- 5. View allergy tags per donation:
 -- SELECT d.food_name, GROUP_CONCAT(t.allergy_name ORDER BY t.allergy_name SEPARATOR ', ') AS tags
--- FROM donations d JOIN donation_allergy_tags t ON t.donation_id = d.donation_id GROUP BY d.donation_id;
+-- FROM donations d JOIN donation_allergy_tags t ON t.donation_id = t.donation_id GROUP BY d.donation_id;
 
 -- 6. View voucher redemption history per donor:
--- SELECT u.full_name, v.reward_title, v.partner_name, r.redeemed_at
+-- SELECT u.full_name, v.reward_title, v.brand_name, r.status
 -- FROM voucher_redemptions r JOIN users u ON u.user_id = r.donor_id JOIN vouchers v ON v.voucher_id = r.voucher_id;
 
 -- 7. View certificates issued per donor:
--- SELECT u.full_name, c.certificate_type, c.title, c.meals_saved, c.issued_at
--- FROM certificates c JOIN users u ON u.user_id = c.donor_id ORDER BY c.issued_at;
+-- SELECT u.full_name, c.certificate_name, c.issued_by, c.food_donated_count, c.receiver_satisfaction_rate
+-- FROM certificates c JOIN users u ON u.user_id = c.donor_id ORDER BY c.period_start;
 
 -- 8. View all active reports:
--- SELECT r.report_id, u_reporter.full_name AS reporter, u_reported.full_name AS accused,
---        r.issue_type, r.status
+-- SELECT r.report_id, r.issue_type, r.status
 -- FROM reports r
--- JOIN users u_reporter ON u_reporter.user_id = r.reporter_id
--- LEFT JOIN users u_reported ON u_reported.user_id = r.reported_user_id
 -- WHERE r.status = 'active';

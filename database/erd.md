@@ -7,7 +7,7 @@ erDiagram
         VARCHAR password_hash
         VARCHAR location
         INT trust_score
-        INT reward_points
+        INT total_food_donated
         ENUM status
         DATETIME created_at
     }
@@ -37,15 +37,13 @@ erDiagram
 
     DONATION_ALLERGY_TAGS {
         INT donation_id PK, FK
-        ENUM allergy_name PK
+        ENUM allergy_name FK
     }
 
     PICKUP_SLOTS {
         INT pickup_slot_id PK
         INT donation_id FK
-        DATETIME slot_start_at
-        DATETIME slot_end_at
-        ENUM status
+        DATETIME timeslot
     }
 
     BOOKINGS {
@@ -53,6 +51,7 @@ erDiagram
         INT donation_id FK
         INT pickup_slot_id FK
         INT receiver_id FK
+        DECIMAL quantity
         ENUM status
     }
 
@@ -73,46 +72,49 @@ erDiagram
 
     VOUCHERS {
         INT voucher_id PK
-        VARCHAR partner_name
+        VARCHAR brand_name
         VARCHAR reward_title
         VARCHAR voucher_code
-        INT points_required
-        DATE valid_until
+        INT required_donations
+        DATETIME expiration_date 
     }
 
     VOUCHER_REDEMPTIONS {
         INT redemption_id PK
         INT voucher_id FK
         INT donor_id FK
-        DATETIME redeemed_at
+        ENUM status "locked, unlocked, redeemed"
     }
 
     CERTIFICATES {
         INT certificate_id PK
         INT donor_id FK
-        ENUM certificate_type
-        VARCHAR title
-        INT meals_saved
+        VARCHAR certificate_name
+        VARCHAR issued_by
+        DATETIME period_start
+        DATETIME period_end
+        INT food_donated_count
+        ENUM receiver_satisfaction_rate
         VARCHAR file_url
     }
 
     REVIEWS {
         INT review_id PK
         INT booking_id FK
-        INT receiver_id FK
         INT rating
         TEXT comment
+        VARCHAR review_image_url
+        DATETIME created_at
     }
 
     REPORTS {
         INT report_id PK
         INT booking_id FK
-        INT donation_id FK
-        INT reporter_id FK
-        INT reported_user_id FK
         VARCHAR issue_type
+        TEXT comment
         VARCHAR evidence_image_url
         ENUM status
+        DATETIME created_at
     }
 
     PLATFORM_SETTINGS {
@@ -131,7 +133,6 @@ erDiagram
     USERS ||--o{ VOUCHER_REDEMPTIONS : redeems
     USERS ||--o{ CERTIFICATES : earns
     BOOKINGS ||--o| REVIEWS : reviewed_after
-    USERS ||--o{ REVIEWS : receiver_writes
     BOOKINGS ||--o{ REPORTS : reported_from
-    DONATIONS ||--o{ REPORTS : reported_from
-    USERS ||--o{ REPORTS : submits
+
+
