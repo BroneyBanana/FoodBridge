@@ -68,6 +68,7 @@ erDiagram
         INT user_id FK
         VARCHAR description
         INT points_change
+        DATETIME created_at
     }
 
     VOUCHERS {
@@ -76,7 +77,7 @@ erDiagram
         VARCHAR reward_title
         VARCHAR voucher_code
         INT required_donations
-        DATETIME expiration_date 
+        DATETIME expiration_date
     }
 
     VOUCHER_REDEMPTIONS {
@@ -134,5 +135,4 @@ erDiagram
     USERS ||--o{ CERTIFICATES : earns
     BOOKINGS ||--o| REVIEWS : reviewed_after
     BOOKINGS ||--o{ REPORTS : reported_from
-
 

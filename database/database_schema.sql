@@ -31,7 +31,6 @@ CREATE TABLE otp_verifications (
   purpose    ENUM('registration', 'password_reset', 'email_change') NOT NULL DEFAULT 'registration',
   expires_at DATETIME NOT NULL,
   status     ENUM('pending', 'used', 'expired') NOT NULL DEFAULT 'pending',
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_otp_email_purpose (email, purpose),
   INDEX idx_otp_expiry (expires_at)
 );
@@ -51,8 +50,6 @@ CREATE TABLE donations (
   expiry_at      DATETIME NOT NULL,
   status         ENUM('active', 'completed', 'expired', 'cancelled') NOT NULL DEFAULT 'active',
   qr_token_hash  VARCHAR(255) NULL,
-  created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_donation_donor
     FOREIGN KEY (donor_id) REFERENCES users(user_id)
     ON DELETE RESTRICT,
@@ -65,7 +62,7 @@ CREATE TABLE donations (
 -- ============================================================
 CREATE TABLE donation_allergy_tags (
   donation_id  INT UNSIGNED NOT NULL,
-  allergy_name ENUM('nuts', 'dairy', 'gluten', 'shellfish', 'eggs', 'soy', 'vegan-safe', 'none'),
+  allergy_name ENUM('nuts', 'dairy', 'gluten', 'shellfish', 'eggs', 'soy', 'vegan-safe', 'none') NOT NULL,
   PRIMARY KEY (donation_id, allergy_name),
   CONSTRAINT fk_donation_allergy_donation
     FOREIGN KEY (donation_id) REFERENCES donations(donation_id)
@@ -94,10 +91,6 @@ CREATE TABLE bookings (
   receiver_id    INT UNSIGNED NOT NULL,
   quantity       DECIMAL(10, 2) NOT NULL,
   status         ENUM('reserved', 'collected', 'cancelled', 'missed') NOT NULL DEFAULT 'reserved',
-  booked_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  cancelled_at   DATETIME NULL,
-  collected_at   DATETIME NULL,
-  qr_verified_at DATETIME NULL,
   CONSTRAINT fk_booking_donation
     FOREIGN KEY (donation_id) REFERENCES donations(donation_id)
     ON DELETE RESTRICT,
@@ -149,8 +142,7 @@ CREATE TABLE vouchers (
   reward_title       VARCHAR(160) NOT NULL,
   voucher_code       VARCHAR(80) NOT NULL UNIQUE,
   required_donations INT UNSIGNED NOT NULL DEFAULT 0,
-  expiration_date    DATETIME NOT NULL,
-  created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  expiration_date    DATETIME NOT NULL
 );
 
 -- ============================================================
@@ -208,7 +200,7 @@ CREATE TABLE reviews (
 -- ============================================================
 CREATE TABLE reports (
   report_id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  booking_id         INT UNSIGNED NULL,
+  booking_id         INT UNSIGNED NOT NULL,
   issue_type         VARCHAR(80) NOT NULL,
   comment            TEXT NULL,
   evidence_image_url VARCHAR(500) NULL,
@@ -216,7 +208,7 @@ CREATE TABLE reports (
   created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_report_booking
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
-    ON DELETE SET NULL,
+    ON DELETE CASCADE,
   INDEX idx_report_status (status, created_at)
 );
 
@@ -226,5 +218,3 @@ CREATE TABLE reports (
 CREATE TABLE platform_settings (
   maintenance_mode ENUM('on', 'off') NOT NULL PRIMARY KEY
 );
-
-INSERT INTO platform_settings (maintenance_mode) VALUES ('off');

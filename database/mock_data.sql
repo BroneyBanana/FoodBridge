@@ -30,8 +30,8 @@ INSERT INTO otp_verifications
 VALUES
   (1, 'donor@food.com',          '$2y$10$mockHashedOtp111111ForVerified000000000000000', 'registration',   '2026-06-02 10:25:00', 'used'),
   (2, 'receiver@food.com',       '$2y$10$mockHashedOtp222222ForVerified000000000000000', 'registration',   '2026-06-03 11:10:00', 'used'),
-  (3, 'new.user@example.com',    '$2y$10$mockHashedOtp333333Pending0000000000000000000', 'registration',   '2026-07-01 16:10:00', 'pending'),
-  (4, 'donor@food.com',          '$2y$10$mockHashedOtp444444ResetPending00000000000000', 'password_reset', '2026-07-01 21:30:00', 'pending'),
+  (3, 'new.user@example.com',    '$2y$10$mockHashedOtp333333Pending0000000000000000000', 'registration',   '2026-07-07 16:10:00', 'pending'),
+  (4, 'donor@food.com',          '$2y$10$mockHashedOtp444444ResetPending00000000000000', 'password_reset', '2026-07-07 21:30:00', 'pending'),
   (5, 'old.request@example.com', '$2y$10$mockHashedOtp555555Expired000000000000000000', 'registration',   '2026-06-15 12:00:00', 'expired');
 
 -- ============================================================
@@ -39,12 +39,12 @@ VALUES
 -- ============================================================
 INSERT INTO donations
   (donation_id, donor_id, food_name, category, quantity, unit, image_url,
-   pickup_address, expiry_at, status, qr_token_hash, created_at)
+   pickup_address, expiry_at, status, qr_token_hash)
 VALUES
-  (1, 2, 'Bread and Pastries',   'bakery',     40, 'pieces',   'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-06-12 20:00:00', 'completed', '$2y$10$mockQrHashDon1000000000000000000000000000000000', '2026-06-12 08:00:00'),
-  (2, 2, 'Nasi Lemak Packs',     'cookedMeal', 25, 'portions', 'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-07-01 21:00:00', 'active',    '$2y$10$mockQrHashDon2000000000000000000000000000000000', '2026-07-01 09:00:00'),
-  (3, 3, 'Vegetarian Rice Box',  'cookedMeal', 18, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-07-01 19:30:00', 'active',    '$2y$10$mockQrHashDon3000000000000000000000000000000000', '2026-07-01 08:30:00'),
-  (4, 3, 'Mixed Lunch Packs',    'cookedMeal', 12, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-06-25 15:00:00', 'expired',   '$2y$10$mockQrHashDon4000000000000000000000000000000000', '2026-06-25 09:00:00');
+  (1, 2, 'Bread and Pastries',   'bakery',     40, 'pieces',   'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-06-12 20:00:00', 'completed', '$2y$10$mockQrHashDon1000000000000000000000000000000000'),
+  (2, 2, 'Nasi Lemak Packs',     'cookedMeal', 25, 'portions', 'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-07-07 21:00:00', 'active',    '$2y$10$mockQrHashDon2000000000000000000000000000000000'),
+  (3, 3, 'Vegetarian Rice Box',  'cookedMeal', 18, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-07-07 19:30:00', 'active',    '$2y$10$mockQrHashDon3000000000000000000000000000000000'),
+  (4, 3, 'Mixed Lunch Packs',    'cookedMeal', 12, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-06-25 15:00:00', 'expired',   '$2y$10$mockQrHashDon4000000000000000000000000000000000');
 
 -- ============================================================
 -- 5. DONATION_ALLERGY_TAGS
@@ -64,22 +64,21 @@ INSERT INTO pickup_slots
   (pickup_slot_id, donation_id, timeslot)
 VALUES
   (1, 1, '2026-06-12 18:00:00'),
-  (2, 2, '2026-07-01 17:00:00'),
-  (3, 2, '2026-07-01 18:00:00'),
-  (4, 2, '2026-07-01 19:00:00'),
-  (5, 3, '2026-07-01 17:30:00'),
+  (2, 2, '2026-07-07 17:00:00'),
+  (3, 2, '2026-07-07 18:00:00'),
+  (4, 2, '2026-07-07 19:00:00'),
+  (5, 3, '2026-07-07 17:30:00'),
   (6, 4, '2026-06-25 14:00:00');
 
 -- ============================================================
 -- 7. BOOKINGS
 -- ============================================================
 INSERT INTO bookings
-  (booking_id, donation_id, pickup_slot_id, receiver_id, quantity, status,
-   booked_at, cancelled_at, collected_at, qr_verified_at)
+  (booking_id, donation_id, pickup_slot_id, receiver_id, quantity, status)
 VALUES
-  (1, 1, 1, 4, 1, 'collected', '2026-06-12 12:10:00', NULL,                  '2026-06-12 18:12:00', '2026-06-12 18:12:00'),
-  (2, 3, 5, 5, 1, 'reserved',  '2026-07-01 10:05:00', NULL,                  NULL,                  NULL),
-  (3, 4, 6, 4, 1, 'missed',    '2026-06-25 10:15:00', NULL,                  NULL,                  NULL);
+  (1, 1, 1, 4, 1, 'collected'),
+  (2, 3, 5, 5, 1, 'reserved'),
+  (3, 4, 6, 4, 1, 'missed');
 
 -- ============================================================
 -- 8. NOTIFICATIONS
@@ -87,31 +86,31 @@ VALUES
 INSERT INTO notifications
   (user_id, title, description, created_at)
 VALUES
-  (2, 'Action Required: Food expiring soon',   'Your listed Assorted Breads & Pastries will expire in 3 hours.', '2026-07-01 15:00:00'),
+  (2, 'Action Required: Food expiring soon',   'Your listed Nasi Lemak Packs will expire in 3 hours.', '2026-07-07 18:00:00'),
   (2, 'Donation Completed',                    'Fresh Bakery KL successfully collected your 20kg vegetables.',   '2026-06-12 18:12:00'),
   (2, 'New Voucher Unlocked',                  'You reached Trust Score 98! A new GrabFood voucher is waiting for you.', '2026-06-30 16:00:00'),
   (2, 'Community Update',                      'We rescued over 1,500kg of food this week thanks to heroes like you!', '2026-06-28 09:00:00'),
-  (5, 'Pickup Slot Reserved',                  'Your Vegetarian Rice Box pickup is reserved for 5:30 PM.',                     '2026-07-01 10:05:00'),
+  (5, 'Pickup Slot Reserved',                  'Your Vegetarian Rice Box pickup is reserved for 5:30 PM.',                     '2026-07-07 10:05:00'),
   (4, 'Trust Score Deducted',                  '10 points were deducted because a pickup slot was missed.',                    '2026-06-25 15:05:00');
 
 -- ============================================================
 -- 9. TRUST_SCORE_LOG
 -- ============================================================
 INSERT INTO trust_score_log
-  (trust_score_log_id, user_id, description, points_change)
+  (trust_score_log_id, user_id, description, points_change, created_at)
 VALUES
-  (1,  2, 'Donation collected successfully',                        +5 ),
-  (2,  2, 'High-quality review received',                           +3 ),
-  (3,  4, 'Helpful review submitted',                               +2 ),
-  (4,  4, 'Late cancellation (booking cancelled less than 30 min)', -5 ),
-  (5,  4, 'Missed pickup warning (donor reported no-show)',         -10),
-  (6,  4, 'Admin adjustment',                                       -2 ),
-  (7,  3, 'Admin adjustment',                                       -8 ),
-  (8,  5, 'Admin adjustment',                                       -4 ),
-  (9,  6, 'Missed pickup warning (donor reported no-show)',         -10),
-  (10, 6, 'Missed pickup warning (donor reported no-show)',         -10),
-  (11, 6, 'Missed pickup warning (donor reported no-show)',         -10),
-  (12, 6, 'Late cancellation (booking cancelled less than 30 min)', -5 );
+  (1,  2, 'Donation collected successfully',                        +5,  '2026-06-12 18:12:00'),
+  (2,  2, 'High-quality review received',                           +3,  '2026-06-13 09:30:00'),
+  (3,  4, 'Helpful review submitted',                               +2,  '2026-06-12 19:00:00'),
+  (4,  4, 'Late cancellation (booking cancelled less than 30 min)', -5,  '2026-06-20 17:40:00'),
+  (5,  4, 'Missed pickup warning (donor reported no-show)',         -10, '2026-06-25 15:05:00'),
+  (6,  4, 'Admin adjustment',                                       -2,  '2026-06-26 10:00:00'),
+  (7,  3, 'Admin adjustment',                                       -8,  '2026-06-28 11:20:00'),
+  (8,  5, 'Admin adjustment',                                       -4,  '2026-06-29 14:10:00'),
+  (9,  6, 'Missed pickup warning (donor reported no-show)',         -10, '2026-06-20 12:15:00'),
+  (10, 6, 'Missed pickup warning (donor reported no-show)',         -10, '2026-06-22 13:25:00'),
+  (11, 6, 'Missed pickup warning (donor reported no-show)',         -10, '2026-06-24 16:45:00'),
+  (12, 6, 'Late cancellation (booking cancelled less than 30 min)', -5,  '2026-06-26 18:30:00');
 
 -- ============================================================
 -- 10. VOUCHERS
@@ -174,14 +173,14 @@ VALUES
 -- SELECT d.food_name, d.status AS donation_status, s.timeslot
 -- FROM donations d JOIN pickup_slots s ON s.donation_id = d.donation_id ORDER BY d.donation_id, s.timeslot;
 
--- 4. View bookings with QR scan state:
+-- 4. View bookings:
 -- SELECT b.booking_id, d.food_name, u.full_name AS receiver,
---        b.status, IF(b.qr_verified_at IS NULL, 'Not scanned', 'QR verified') AS qr_state
+--        b.quantity, b.status
 -- FROM bookings b JOIN donations d ON d.donation_id = b.donation_id JOIN users u ON u.user_id = b.receiver_id;
 
 -- 5. View allergy tags per donation:
 -- SELECT d.food_name, GROUP_CONCAT(t.allergy_name ORDER BY t.allergy_name SEPARATOR ', ') AS tags
--- FROM donations d JOIN donation_allergy_tags t ON t.donation_id = t.donation_id GROUP BY d.donation_id;
+-- FROM donations d JOIN donation_allergy_tags t ON d.donation_id = t.donation_id GROUP BY d.donation_id;
 
 -- 6. View voucher redemption history per donor:
 -- SELECT u.full_name, v.reward_title, v.brand_name, r.status
