@@ -138,9 +138,9 @@ VALUES
 INSERT INTO certificates
   (certificate_id, donor_id, certificate_name, issued_by, period_start, period_end, food_donated_count, receiver_satisfaction_rate, file_url)
 VALUES
-  (1, 2, 'June Carbon Offset Certificate', 'FoodBridge Admin', '2026-06-01 00:00:00', '2026-06-30 23:59:59', 220, 'Excellent', 'uploads/profile/ape.jpg'),
-  (2, 2, 'CSR Food Rescue Certificate',    'FoodBridge Admin', '2026-06-01 00:00:00', '2026-06-30 23:59:59', 220, 'Excellent', 'uploads/profile/ape.jpg'),
-  (3, 3, 'Q2 Donation Impact Certificate', 'FoodBridge Admin', '2026-04-01 00:00:00', '2026-06-30 23:59:59', 95, 'Good', 'uploads/profile/ape.jpg');
+  (1, 2, 'June Carbon Offset Certificate', 'FoodBridge Admin', '2026-06-01 00:00:00', '2026-06-30 23:59:59', 220, 'Excellent', 'uploads/certificates/ape.jpg'),
+  (2, 2, 'CSR Food Rescue Certificate',    'FoodBridge Admin', '2026-06-01 00:00:00', '2026-06-30 23:59:59', 220, 'Excellent', 'uploads/certificates/ape.jpg'),
+  (3, 3, 'Q2 Donation Impact Certificate', 'FoodBridge Admin', '2026-04-01 00:00:00', '2026-06-30 23:59:59', 95, 'Good', 'uploads/certificates/ape.jpg');
 
 -- ============================================================
 -- 13. REVIEWS
