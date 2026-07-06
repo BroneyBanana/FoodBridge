@@ -74,11 +74,11 @@ VALUES
 -- 7. BOOKINGS
 -- ============================================================
 INSERT INTO bookings
-  (booking_id, donation_id, pickup_slot_id, receiver_id, quantity, status)
+  (booking_id, donation_id, pickup_slot_id, receiver_id, booking_time, quantity, status)
 VALUES
-  (1, 1, 1, 4, 1, 'collected'),
-  (2, 3, 5, 5, 1, 'reserved'),
-  (3, 4, 6, 4, 1, 'missed');
+  (1, 1, 1, 4, '2026-06-11 10:00:00', 1, 'collected'),
+  (2, 3, 5, 5, '2026-07-06 09:30:00', 1, 'reserved'),
+  (3, 4, 6, 4, '2026-06-24 11:15:00', 1, 'missed');
 
 -- ============================================================
 -- 8. NOTIFICATIONS

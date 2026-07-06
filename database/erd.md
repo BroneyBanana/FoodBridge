@@ -1,3 +1,8 @@
+---
+config:
+  theme: base
+  layout: elk
+---
 erDiagram
     USERS {
         INT user_id PK
@@ -51,6 +56,7 @@ erDiagram
         INT donation_id FK
         INT pickup_slot_id FK
         INT receiver_id FK
+        DATETIME booking_time
         DECIMAL quantity
         ENUM status
     }
