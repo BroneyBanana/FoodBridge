@@ -13,10 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordInput = document.querySelector("#password");
   const confirmPasswordInput = document.querySelector("#confirmPassword");
   const togglePassword = document.querySelector("#togglePassword");
-  const submitButton = form.querySelector("button[type='submit']");
+  const profileSubmit = document.querySelector(".profile-step button[type='submit']");
+  const otpSubmit = document.querySelector(".otp-step button[type='submit']");
+  const otpInputs = [...document.querySelectorAll(".otp-input")];
+  const otpMessage = document.querySelector("#otpMessage");
+  const resendOtpButton = document.querySelector("#resendOtp");
   const formMessage = document.querySelector("#registerMessage");
 
   let currentStep = 0;
+  let generatedOtp = "";
 
   function selectedRole() {
     return document.querySelector("input[name='accountRole']:checked")?.value || "receiver";
@@ -43,11 +48,23 @@ document.addEventListener("DOMContentLoaded", () => {
     previewRole.textContent = role;
   }
 
-  function setMessage(message, type = "error") {
-    if (!formMessage) return;
+  function setMessage(message, type = "error", target = "register") {
+    const targetElement = target === "otp" ? otpMessage : formMessage;
+    if (!targetElement) return;
 
-    formMessage.textContent = message;
-    formMessage.classList.toggle("success", type === "success");
+    targetElement.textContent = message;
+    targetElement.classList.toggle("success", type === "success");
+  }
+
+  function generateOtp() {
+    generatedOtp = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join("");
+    console.log("OTP code:", generatedOtp);
+  }
+
+  function clearOtp() {
+    otpInputs.forEach((input) => {
+      input.value = "";
+    });
   }
 
   function goToStep(stepNumber) {
@@ -63,6 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const isValid = [...profileFields].every((field) => field.reportValidity());
 
         if (!isValid) return;
+
+        generateOtp();
+        setMessage("A verification code has been sent.", "success", "otp");
       }
 
       goToStep(currentStep + 1);
@@ -90,6 +110,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  otpInputs.forEach((input, index) => {
+    input.addEventListener("input", () => {
+      input.value = input.value.replace(/\D/g, "");
+      if (input.value && index < otpInputs.length - 1) {
+        otpInputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Backspace" && !input.value && index > 0) {
+        otpInputs[index - 1].focus();
+      }
+    });
+  });
+
+  resendOtpButton.addEventListener("click", () => {
+    generateOtp();
+    setMessage("A new code has been sent.", "success", "otp");
+    clearOtp();
+    otpInputs[0]?.focus();
+  });
+
   fullNameInput.addEventListener("input", updatePreview);
   locationInput.addEventListener("input", updatePreview);
 
@@ -114,42 +156,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    setMessage("");
+    setMessage("", "error", currentStep === 3 ? "otp" : "register");
 
-    const profileFields = steps[2].querySelectorAll("input[required]");
-    const isValid = [...profileFields].every((field) => field.reportValidity());
+    if (currentStep === 2) {
+      const profileFields = steps[2].querySelectorAll("input[required]");
+      const isValid = [...profileFields].every((field) => field.reportValidity());
 
-    if (!isValid) return;
+      if (!isValid) return;
 
-    submitButton.disabled = true;
-    submitButton.textContent = "Creating...";
+      generateOtp();
+      setMessage("A verification code has been sent.", "success", "otp");
+      goToStep(3);
+      return;
+    }
 
-    try {
-      const response = await fetch("register.php", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-        },
-        body: new FormData(form),
-      });
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        setMessage(data.message || "Unable to create your account. Please try again.");
+    if (currentStep === 3) {
+      const otpCode = otpInputs.map((input) => input.value).join("");
+      if (otpCode.length !== 6) {
+        setMessage("Please enter the full 6-digit code.", "error", "otp");
         return;
       }
 
-      const storageKey = data.user.role === "admin" ? "foodbridgeAdminProfile" : "foodbridgeProfile";
-      localStorage.setItem(storageKey, JSON.stringify(data.user));
-      window.location.href = data.redirect;
-    } catch (error) {
-      setMessage("Unable to reach the registration server. Please run this page through PHP.");
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = "Continue ->";
+      if (otpCode !== generatedOtp) {
+        setMessage("Incorrect code. Please try again.", "error", "otp");
+        return;
+      }
+
+      submitButton.disabled = true;
+      otpSubmit.disabled = true;
+      otpSubmit.textContent = "Verifying...";
+
+      try {
+        const response = await fetch("register.php", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: new FormData(form),
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          setMessage(data.message || "Unable to create your account. Please try again.", "error", "otp");
+          return;
+        }
+
+        const storageKey = data.user.role === "admin" ? "foodbridgeAdminProfile" : "foodbridgeProfile";
+        localStorage.setItem(storageKey, JSON.stringify(data.user));
+        window.location.href = data.redirect;
+      } catch (error) {
+        setMessage("Unable to reach the registration server. Please run this page through PHP.", "error", "otp");
+      } finally {
+        submitButton.disabled = false;
+        otpSubmit.disabled = false;
+        otpSubmit.textContent = "Verify code";
+      }
     }
   });
 
   updateProgress();
   updatePreview();
+  generateOtp();
 });

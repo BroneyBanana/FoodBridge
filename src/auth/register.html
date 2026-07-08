@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../assets/css/global.css">
   <link rel="stylesheet" href="register.css">
@@ -26,6 +26,7 @@
         <span class="step-dot active" data-dot="0"></span>
         <span class="step-dot" data-dot="1"></span>
         <span class="step-dot" data-dot="2"></span>
+        <span class="step-dot" data-dot="3"></span>
       </div>
 
       <a class="signin-link" href="login.php">Sign in instead</a>
@@ -157,7 +158,31 @@
             </label>
           </div>
 
+          <p class="form-message" id="registerMessage"></p>
           <button class="primary-action" type="submit">Continue -></button>
+        </div>
+      </section>
+
+      <section class="register-step otp-step" data-step="3" aria-labelledby="otpTitle">
+        <div class="otp-card">
+          <h1 id="otpTitle">Verify your account</h1>
+          <p>We’ve sent a 6-digit code to your email address. Enter it below to continue.</p>
+
+          <div class="otp-inputs" aria-label="OTP code">
+            <input class="otp-input" type="text" inputmode="numeric" pattern="\d*" maxlength="1" aria-label="OTP digit 1" required>
+            <input class="otp-input" type="text" inputmode="numeric" pattern="\d*" maxlength="1" aria-label="OTP digit 2" required>
+            <input class="otp-input" type="text" inputmode="numeric" pattern="\d*" maxlength="1" aria-label="OTP digit 3" required>
+            <input class="otp-input" type="text" inputmode="numeric" pattern="\d*" maxlength="1" aria-label="OTP digit 4" required>
+            <input class="otp-input" type="text" inputmode="numeric" pattern="\d*" maxlength="1" aria-label="OTP digit 5" required>
+            <input class="otp-input" type="text" inputmode="numeric" pattern="\d*" maxlength="1" aria-label="OTP digit 6" required>
+          </div>
+
+          <p class="form-message" id="otpMessage"></p>
+
+          <div class="otp-actions">
+            <button class="primary-action compact" type="submit">Verify code</button>
+            <button class="small-button" type="button" id="resendOtp">Resend code</button>
+          </div>
         </div>
       </section>
 
