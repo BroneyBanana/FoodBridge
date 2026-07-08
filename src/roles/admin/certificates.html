@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="../../assets/css/header.css">
 
     <!-- Page Specific Styles -->
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="certificates.css">
 </head>
 
 <body>
@@ -78,17 +78,75 @@
 
     <!-- Main Content Area -->
     <div class="dashboard-wrapper">
-        <main class="dashboard-content">
-            <h1 class="page-heading">Certificates</h1>
-            <p class="page-subheading">Manage and create certificates for donors</p>
+        <main class="dashboard-content certificates-page">
 
-            <div class="content-body"></div>
+            <section class="certificates-hero">
+                <div class="hero-header-flex">
+                    <div>
+                        <h1 class="page-heading">Certificates of Impact</h1>
+                        <p class="page-subheading">Manage, create, and revoke corporate social responsibility (CSR)
+                            certificates for donors.</p>
+                    </div>
+                    <button class="btn-create-trigger" id="openModalBtn" type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Create Certificate
+                    </button>
+                </div>
+            </section>
+
+            <section class="certificates-grid" id="certificatesContainer" aria-label="Available Certificates"></section>
+
         </main>
+    </div>
+
+    <div class="modal-overlay" id="certModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Create New Certificate</h2>
+                <button class="modal-close-btn" id="closeModalBtn" type="button">&times;</button>
+            </div>
+            <form id="createCertificateForm">
+                <div class="form-group">
+                    <label for="certDonorSelect">Select Recipient Donor</label>
+                    <select id="certDonorSelect" required>
+                        <option value="" disabled selected>-- Choose a Registered Donor --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="certTitle">Certificate Title</label>
+                    <input type="text" id="certTitle" placeholder="e.g., Food Hero Q1 2026" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="certPeriod">Timeline Period</label>
+                    <input type="text" id="certPeriod" placeholder="e.g., Jan 2026 – Mar 2026" required />
+                </div>
+
+                <div class="form-row-split">
+                    <div class="form-group">
+                        <label for="certDonations">Donation Count</label>
+                        <input type="number" id="certDonations" placeholder="0" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="certRating">Satisfaction Score</label>
+                        <input type="number" id="certRating" placeholder="0.0" readonly />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit-action">Generate & Create</button>
+            </form>
+        </div>
     </div>
 
     <!-- Page Specific Logic -->
     <script src="../../assets/js/header.js"></script>
-    <script src="dashboard.js"></script>
+    <script src="certificates.js"></script>
+
 </body>
 
 </html>
