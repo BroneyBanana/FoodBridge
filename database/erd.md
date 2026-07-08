@@ -9,6 +9,7 @@ erDiagram
         ENUM role
         VARCHAR full_name
         VARCHAR email
+        VARCHAR profile_url
         VARCHAR password_hash
         VARCHAR location
         INT trust_score

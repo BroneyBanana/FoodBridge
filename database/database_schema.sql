@@ -9,6 +9,7 @@ CREATE TABLE users (
   role                ENUM('donor', 'receiver', 'admin') NOT NULL,
   full_name           VARCHAR(120) NOT NULL,
   email               VARCHAR(190) NOT NULL UNIQUE,
+  profile_url         VARCHAR(500) NULL,
   password_hash       VARCHAR(255) NOT NULL,
   location            VARCHAR(255) NULL,
   trust_score         INT NOT NULL DEFAULT 100,

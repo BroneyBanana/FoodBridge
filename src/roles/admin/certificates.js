@@ -100,11 +100,11 @@ function setupModalEvents() {
   const openBtn = document.getElementById("openModalBtn");
   const closeBtn = document.getElementById("closeModalBtn");
 
-  if(openBtn && modal && closeBtn) {
+  if (openBtn && modal && closeBtn) {
     openBtn.addEventListener("click", () => modal.classList.add("active"));
     closeBtn.addEventListener("click", () => modal.classList.remove("active"));
     modal.addEventListener("click", (e) => {
-      if(e.target === modal) modal.classList.remove("active");
+      if (e.target === modal) modal.classList.remove("active");
     });
   }
 }
@@ -131,7 +131,7 @@ function handleFormSubmit(event) {
 
   certificatesData.unshift(newCertificate);
   renderCertificates();
-  
+
   document.getElementById("certModal").classList.remove("active");
   event.target.reset();
 }
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
   populateDonorDropdown();
   renderCertificates();
   setupModalEvents();
-  
+
   const creationForm = document.getElementById("createCertificateForm");
   if (creationForm) {
     creationForm.addEventListener("submit", handleFormSubmit);
