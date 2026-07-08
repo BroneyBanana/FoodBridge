@@ -623,6 +623,22 @@ body {
   cursor: pointer;
 }
 
+.form-message {
+  min-height: 20px;
+  margin: -4px 0 14px;
+  color: #b42318;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.form-message:empty {
+  display: none;
+}
+
+.form-message.success {
+  color: #287350;
+}
+
 .success-step {
   max-width: 760px;
   margin: 0 auto;

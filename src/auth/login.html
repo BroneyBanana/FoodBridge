@@ -35,8 +35,8 @@
 
     <section class="login-panel" aria-labelledby="login-title">
       <div class="admin-access">
-        <a href="../roles/admin/dashboard.html">Admin Access</a>
-        <span>Demo: donor@food.com</span>
+        <a href="#admin" id="adminAccess">Admin Access</a>
+        <span>Use your database account</span>
       </div>
 
       <div class="login-card">
@@ -49,6 +49,7 @@
         <div class="role-tabs" role="tablist" aria-label="Choose account type">
           <button class="role-tab active" type="button" role="tab" aria-selected="true" data-role="donor">Donor</button>
           <button class="role-tab" type="button" role="tab" aria-selected="false" data-role="receiver">Receiver</button>
+          <button class="role-tab" type="button" role="tab" aria-selected="false" data-role="admin">Admin</button>
         </div>
 
         <form class="login-form" action="#" method="post" id="loginForm">
@@ -56,13 +57,13 @@
 
           <label class="form-field" for="email">
             <span>Email</span>
-            <input id="email" name="email" type="email" value="donor@food.com" autocomplete="email" required>
+            <input id="email" name="email" type="email" autocomplete="email" required>
           </label>
 
           <label class="form-field password-field" for="password">
             <span>Password</span>
             <div class="password-control">
-              <input id="password" name="password" type="password" value="food1234" autocomplete="current-password" required>
+              <input id="password" name="password" type="password" autocomplete="current-password" required>
               <button class="icon-button" type="button" id="togglePassword" aria-label="Show password">
                 <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
@@ -89,7 +90,7 @@
           <button class="sign-in-button" type="submit">Sign In</button>
         </form>
 
-        <p class="signup-copy">Don't have an account? <a href="register.html">Sign Up</a></p>
+        <p class="signup-copy">Don't have an account? <a href="register.php">Sign Up</a></p>
       </div>
     </section>
   </main>

@@ -1,7 +1,5 @@
 body {
-  background:
-    radial-gradient(circle at 16% 18%, rgba(200, 240, 74, 0.16), transparent 28%),
-    linear-gradient(135deg, #f5f2ec 0%, #eeebe4 100%);
+  background: var(--color-parchment);
 }
 
 .login-page {
@@ -49,11 +47,12 @@ body {
 
 .login-visual {
   min-height: min(830px, calc(100vh - 160px));
-  border-radius: 0 44px 0 44px;
+  border-radius: 0 60px 0 60px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 28px 80px rgba(28, 43, 30, 0.15);
+  box-shadow: 0 28px 80px rgba(28, 43, 30, 0.12);
   isolation: isolate;
+  background: var(--color-parchment);
 }
 
 .login-visual::before,
@@ -61,21 +60,23 @@ body {
   content: "";
   position: absolute;
   z-index: 3;
-  width: 170px;
-  height: 130px;
-  background: #f5f2ec;
+  background: var(--color-parchment);
 }
 
 .login-visual::before {
   top: 0;
   left: 0;
-  border-bottom-right-radius: 80px;
+  width: 210px;
+  height: 210px;
+  border-bottom-right-radius: 180px;
 }
 
 .login-visual::after {
   right: 0;
   bottom: 0;
-  border-top-left-radius: 90px;
+  width: 140px;
+  height: 140px;
+  border-top-left-radius: 140px;
 }
 
 .login-visual img {
@@ -354,6 +355,23 @@ body {
   text-underline-offset: 3px;
 }
 
+.form-message {
+  min-height: 22px;
+  margin: -8px 0 0;
+  color: #b33d2f;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.form-message:empty {
+  display: none;
+}
+
+.form-message.success {
+  color: #4f7557;
+}
+
 .sign-in-button {
   width: 100%;
   min-height: 70px;
@@ -372,6 +390,12 @@ body {
 .sign-in-button:hover {
   background: var(--color-forest);
   transform: translateY(-2px);
+}
+
+.sign-in-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
 }
 
 .signup-copy {

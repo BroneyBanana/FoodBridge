@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordInput = document.querySelector("#password");
   const confirmPasswordInput = document.querySelector("#confirmPassword");
   const togglePassword = document.querySelector("#togglePassword");
+  const submitButton = form.querySelector("button[type='submit']");
+  const formMessage = document.querySelector("#registerMessage");
 
   let currentStep = 0;
 
@@ -39,6 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     previewName.textContent = name;
     previewRole.textContent = role;
+  }
+
+  function setMessage(message, type = "error") {
+    if (!formMessage) return;
+
+    formMessage.textContent = message;
+    formMessage.classList.toggle("success", type === "success");
   }
 
   function goToStep(stepNumber) {
@@ -103,22 +112,42 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmPasswordInput.setCustomValidity(message);
   });
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    setMessage("");
+
     const profileFields = steps[2].querySelectorAll("input[required]");
     const isValid = [...profileFields].every((field) => field.reportValidity());
 
     if (!isValid) return;
 
-    const profile = {
-      name: fullNameInput.value.trim(),
-      email: form.elements.email.value.trim(),
-      location: locationInput.value.trim(),
-      role: selectedRole(),
-    };
+    submitButton.disabled = true;
+    submitButton.textContent = "Creating...";
 
-    localStorage.setItem("foodbridgeProfile", JSON.stringify(profile));
-    window.location.href = `../roles/${profile.role}/profile.html`;
+    try {
+      const response = await fetch("register.php", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: new FormData(form),
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setMessage(data.message || "Unable to create your account. Please try again.");
+        return;
+      }
+
+      const storageKey = data.user.role === "admin" ? "foodbridgeAdminProfile" : "foodbridgeProfile";
+      localStorage.setItem(storageKey, JSON.stringify(data.user));
+      window.location.href = data.redirect;
+    } catch (error) {
+      setMessage("Unable to reach the registration server. Please run this page through PHP.");
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Continue ->";
+    }
   });
 
   updateProgress();
