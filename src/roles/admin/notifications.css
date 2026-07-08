@@ -1,12 +1,11 @@
 .admin-notifications {
-  max-width: 1040px;
-  padding-top: 40px;
-  padding-bottom: 72px;
-  margin: 0 auto;
-  margin-bottom: 40px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  gap: 20px;
 }
 
-.admin-notifications .page-heading {
+/* .admin-notifications .page-heading {
   font-family: var(--font-display);
   color: var(--color-forest);
   font-size: 2.5rem;
@@ -19,7 +18,7 @@
   color: var(--color-text-muted);
   font-size: clamp(0.95rem, 1.2vw, 1.1rem);
   font-family: var(--font-sans);
-}
+} */
 
 .empty-notifications-card {
   background: var(--color-white);

@@ -1,10 +1,10 @@
-// State Store: Seed array containing data configurations matching original screenshots
+// State Store: Seed array updated with requiredDonation constraints
 let platformVouchers = [
-  { id: "v1", partner: "GrabFood", reward: "RM10 Off Delivery", expiry: "2026-12-31" },
-  { id: "v2", partner: "Jaya Grocer", reward: "5% Off Bill", expiry: "2026-10-31" },
-  { id: "v3", partner: "Tealive", reward: "Free Upsize", expiry: "2026-08-31" },
-  { id: "v4", partner: "Foodpanda", reward: "RM5 Off", expiry: "2026-11-30" },
-  { id: "v5", partner: "Bask Bear", reward: "10% Off Coffee", expiry: "2026-09-30" }
+  { id: "v1", partner: "GrabFood", reward: "RM10 Off Delivery", expiry: "2026-12-31", requiredDonation: 5 },
+  { id: "v2", partner: "Jaya Grocer", reward: "5% Off Bill", expiry: "2026-10-31", requiredDonation: 2 },
+  { id: "v3", partner: "Tealive", reward: "Free Upsize", expiry: "2026-08-31", requiredDonation: 0 }, // 0 means unlocked by default
+  { id: "v4", partner: "Foodpanda", reward: "RM5 Off", expiry: "2026-11-30", requiredDonation: 10 },
+  { id: "v5", partner: "Bask Bear", reward: "10% Off Coffee", expiry: "2026-09-30", requiredDonation: 1 }
 ];
 
 // Context Elements Pointers
@@ -13,11 +13,12 @@ const voucherModal = document.getElementById("voucherFormModal");
 const voucherForm = document.getElementById("voucherForm");
 const modalTitle = document.getElementById("modalFormTitle");
 
-// Form Fields Pointers
+// Form Fields Pointers (Added donationField)
 const idField = document.getElementById("voucherIdField");
 const partnerField = document.getElementById("partnerField");
 const rewardField = document.getElementById("rewardField");
 const dateField = document.getElementById("dateField");
+const donationField = document.getElementById("donationField"); // <-- NEW
 
 // Action Event Buttons Pointers
 const openCreateModalBtn = document.getElementById("openCreateModalBtn");
@@ -42,13 +43,14 @@ function renderVouchersWorkspace() {
 
   gridContainer.style.display = "grid";
   gridContainer.innerHTML = platformVouchers.map(v => {
-    // Slice clean two letter string blocks for branding badges
     const avatarInitials = v.partner ? v.partner.substring(0, 2).toUpperCase() : "VC";
     
-    // Format presentation string values safely
     const formattedDate = new Date(v.expiry).toLocaleDateString('en-GB', {
       day: '2-digit', month: '2-digit', year: 'numeric'
     });
+
+    // Safeguard missing requiredDonation targets safely
+    const donationTarget = v.requiredDonation || 0;
 
     return `
       <article class="admin-voucher-card" data-id="${v.id}">
@@ -65,6 +67,16 @@ function renderVouchersWorkspace() {
           <h3>${v.partner}</h3>
           <p>${v.reward}</p>
           <div class="voucher-validity-date">Valid Until ${formattedDate}</div>
+          
+          <div class="voucher-lock-threshold" style="margin-top: 10px; font-size: 0.85rem; display: flex; align-items: center; gap: 4px; color: ${donationTarget > 0 ? '#e65c00' : '#2e7d32'}; font-weight: 600;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              ${donationTarget > 0 
+                ? '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>' 
+                : '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path>'
+              }
+            </svg>
+            <span>${donationTarget > 0 ? `Requires ${donationTarget} Pax Donation` : 'Unlocked for All'}</span>
+          </div>
         </div>
 
         <div class="voucher-management-actions">
@@ -116,6 +128,7 @@ window.initiateEditFlow = function(id) {
   partnerField.value = targetVoucher.partner;
   rewardField.value = targetVoucher.reward;
   dateField.value = targetVoucher.expiry;
+  donationField.value = targetVoucher.requiredDonation || 0; // <-- NEW: Hydrates the edit field
 
   toggleFormModal(true);
 };
@@ -141,14 +154,13 @@ voucherForm.addEventListener("submit", (e) => {
     id: currentId || "v_" + Date.now(),
     partner: partnerField.value.trim(),
     reward: rewardField.value.trim(),
-    expiry: dateField.value
+    expiry: dateField.value,
+    requiredDonation: parseInt(donationField.value, 10) || 0 // <-- NEW: Saves target value as an integer
   };
 
   if (currentId) {
-    // Execution branch A: Update data values inline
     platformVouchers = platformVouchers.map(v => v.id === currentId ? dataPayload : v);
   } else {
-    // Execution branch B: Add newly compiled structures to the list
     platformVouchers.unshift(dataPayload);
   }
 
