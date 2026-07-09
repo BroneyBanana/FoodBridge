@@ -1,3 +1,0 @@
-<?php
-define('TOMTOM_API_KEY', 'gs85aMga5cMBIDXUMyWr0dqEvDlZdDXV');
-?>

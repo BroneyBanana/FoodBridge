@@ -188,9 +188,10 @@ body {
 }
 
 .page-heading{
-    font-size: 5.5rem;
+    font-size: clamp(2.5rem, 8vw, 5.5rem); 
     text-align: center;
     margin: 0 clamp(20px, 12%, 15%);
+    line-height: 1.1; 
 }
 
 .page-subheading{
