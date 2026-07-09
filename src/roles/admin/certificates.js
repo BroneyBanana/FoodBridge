@@ -1,94 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
+// Registered Donor Database Mock Records
+const donorsDatabase = [
+  { id: "d1", name: "Fresh Bakery KL", totalDonations: 45, averageRating: 4.8 },
+  { id: "d2", name: "Green Grocers", totalDonations: 30, averageRating: 4.5 },
+  { id: "d3", name: "Mama Nasi Lemak", totalDonations: 52, averageRating: 4.9 },
+  { id: "d4", name: "Cafe 1920", totalDonations: 20, averageRating: 4.2 }
+];
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - FoodBridge</title>
+// Active global certificates array stream
+const certificatesData = [
+  {
+    id: 1,
+    title: "Food Hero Q1 2026",
+    recipient: "Fresh Bakery KL",
+    period: "Jan 2026 – Mar 2026",
+    donations: 45,
+    rating: 4.8
+  },
+  {
+    id: 2,
+    title: "Community Champion Q4 2025",
+    recipient: "Green Grocers",
+    period: "Oct 2025 – Dec 2025",
+    donations: 30,
+    rating: 4.5
+  }
+];
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap"
-        rel="stylesheet">
+function generateStarsHTML(rating) {
+  let starsHTML = "";
+  const fullStars = Math.round(rating);
+  for (let i = 1; i <= 5; i++) {
+    starsHTML += i <= fullStars ? '<span class="star filled">★</span>' : '<span class="star">★</span>';
+  }
+  return starsHTML;
+}
 
-    <!-- Global Styles -->
-    <link rel="stylesheet" href="../../assets/css/global.css">
-    <link rel="stylesheet" href="../../assets/css/header.css">
+function populateDonorDropdown() {
+  const selectMenu = document.getElementById("certDonorSelect");
+  if (!selectMenu) return;
 
-    <!-- Page Specific Styles -->
-    <link rel="stylesheet" href="dashboard.css">
-</head>
+  donorsDatabase.forEach(donor => {
+    const option = document.createElement("option");
+    option.value = donor.id;
+    option.textContent = donor.name;
+    selectMenu.appendChild(option);
+  });
 
-<body>
-    <div class="noise-bg"></div>
-    <header class="dashboard-header">
-        <a href="dashboard.html" class="navbar-brand">
-            <div class="navbar-logo">
-                <img src="../../assets/images/logo.png" alt="Logo" />
-            </div>
-        </a>
+  selectMenu.addEventListener("change", (e) => {
+    const chosenDonor = donorsDatabase.find(d => d.id === e.target.value);
+    if (chosenDonor) {
+      document.getElementById("certDonations").value = chosenDonor.totalDonations;
+      document.getElementById("certRating").value = chosenDonor.averageRating.toFixed(1);
+    }
+  });
+}
 
-        <div class="nav-overlay" id="navOverlay">
-            <nav class="dashboard-nav">
-                <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
-                <a href="users.html" class="dashboard-nav-item">Users</a>
-                <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
-                <a href="donations.html" class="dashboard-nav-item">Donations</a>
-                <a href="trust-rules.html" class="dashboard-nav-item">Trust Rules</a>
-                <a href="reports.html" class="dashboard-nav-item">Reports</a>
-                <a href="certificates.html" class="dashboard-nav-item active">Certificates</a>
-            </nav>
+function renderCertificates() {
+  const container = document.getElementById("certificatesContainer");
+  if (!container) return;
+
+  container.innerHTML = certificatesData.map(cert => `
+    <article class="certificate-card">
+      <div class="cert-badge-wrapper" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="8" r="6"/>
+          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+        </svg>
+      </div>
+
+      <h2>${cert.title}</h2>
+      <p class="cert-recipient">${cert.recipient}</p>
+
+      <div class="cert-metrics-row">
+        <div class="metric-group">
+          <span class="metric-label">Period</span>
+          <span class="metric-value">${cert.period}</span>
         </div>
-
-        <div class="dashboard-actions">
-            <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
-                href="notifications.html">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-                </svg>
-                <span
-                    style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
-            </a>
-
-            <a href="profile.html" class="profile-avatar">DO</a>
-
-            <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
-            </a>
-
-            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
+        <div class="metric-group text-right">
+          <span class="metric-label">Donations</span>
+          <span class="metric-value highlight">${cert.donations}</span>
         </div>
-    </header>
+      </div>
 
-    <!-- Main Content Area -->
-    <div class="dashboard-wrapper">
-        <main class="dashboard-content">
-            <h1 class="page-heading">Certificates</h1>
-            <p class="page-subheading">Manage and create certificates for donors</p>
+      <div class="cert-satisfaction">
+        <div class="satisfaction-label">Receiver Satisfaction</div>
+        <div class="star-rating" aria-label="Rating: ${cert.rating} out of 5 stars">
+          ${generateStarsHTML(cert.rating)}
+        </div>
+        <div class="score-text">${cert.rating.toFixed(1)} / 5.0</div>
+      </div>
 
-            <div class="content-body"></div>
-        </main>
-    </div>
+      <button class="btn-revoke" type="button" onclick="revokeCertificate(${cert.id})">Revoke Certificate</button>
+    </article>
+  `).join("");
+}
 
-    <!-- Page Specific Logic -->
-    <script src="../../assets/js/header.js"></script>
-    <script src="dashboard.js"></script>
-</body>
+function setupModalEvents() {
+  const modal = document.getElementById("certModal");
+  const openBtn = document.getElementById("openModalBtn");
+  const closeBtn = document.getElementById("closeModalBtn");
 
-</html>
+  if (openBtn && modal && closeBtn) {
+    openBtn.addEventListener("click", () => modal.classList.add("active"));
+    closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("active");
+    });
+  }
+}
+
+function handleFormSubmit(event) {
+  event.preventDefault();
+  const selectMenu = document.getElementById("certDonorSelect");
+  const titleInput = document.getElementById("certTitle");
+  const periodInput = document.getElementById("certPeriod");
+  const donationsInput = document.getElementById("certDonations");
+  const ratingInput = document.getElementById("certRating");
+
+  const chosenDonor = donorsDatabase.find(d => d.id === selectMenu.value);
+  if (!chosenDonor) return;
+
+  const newCertificate = {
+    id: Date.now(),
+    title: titleInput.value,
+    recipient: chosenDonor.name,
+    period: periodInput.value,
+    donations: parseInt(donationsInput.value, 10),
+    rating: parseFloat(ratingInput.value)
+  };
+
+  certificatesData.unshift(newCertificate);
+  renderCertificates();
+
+  document.getElementById("certModal").classList.remove("active");
+  event.target.reset();
+}
+
+function revokeCertificate(id) {
+  if (confirm("Are you sure you want to revoke this certificate?")) {
+    const targetIdx = certificatesData.findIndex(item => item.id === id);
+    if (targetIdx > -1) {
+      certificatesData.splice(targetIdx, 1);
+      renderCertificates();
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  populateDonorDropdown();
+  renderCertificates();
+  setupModalEvents();
+
+  const creationForm = document.getElementById("createCertificateForm");
+  if (creationForm) {
+    creationForm.addEventListener("submit", handleFormSubmit);
+  }
+});
