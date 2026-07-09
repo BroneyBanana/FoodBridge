@@ -66,11 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $stmt = mysqli_prepare(
-            $dbConn,
-            'SELECT user_id, role, full_name, email, password_hash, location, trust_score, total_food_donated, status, 
-             FROM users
-             WHERE email = ?
-             LIMIT 1'
+          $dbConn,
+          'SELECT user_id, role, full_name, email, password_hash, location, trust_score, total_food_donated, status
+           FROM users
+           WHERE email = ?
+           LIMIT 1'
         );
 
         if (!$stmt) {
