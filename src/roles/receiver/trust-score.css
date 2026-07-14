@@ -28,7 +28,7 @@
   place-items: center;
   background:
     radial-gradient(circle at center, #f4f1e9 0 56%, transparent 57%),
-    conic-gradient(from 14deg, #c9ff36 0 331deg, transparent 331deg 342deg, #c9ff36 342deg 360deg);
+    conic-gradient(from 14deg, #c9ff36 0 calc(var(--score, 0) * 3.6deg), #dfe4df calc(var(--score, 0) * 3.6deg) 360deg);
   box-shadow: 0 24px 70px rgba(33, 50, 42, 0.11);
   position: relative;
 }
