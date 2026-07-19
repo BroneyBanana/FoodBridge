@@ -74,3 +74,116 @@ async function getDistance(destLat, destLng) {
     return (data.routes?.[0]?.summary?.lengthInMeters / 1000).toFixed(1) || null;
   } catch (e) { return null; }
 }
+
+
+// ---------------- Category filter (list view) ---------------- //
+document.querySelectorAll('.categoryBtn').forEach(function (button) {
+  button.addEventListener('click', function () {
+
+    document.querySelectorAll('.categoryBtn').forEach(function (btn) {
+      btn.classList.remove('active');
+    });
+    button.classList.add('active');
+
+    const selectedCategory = button.dataset.filter;
+
+    document.querySelectorAll('.donationCard').forEach(function (card) {
+      if (selectedCategory === 'all' || card.dataset.category === selectedCategory) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+  });
+});
+
+
+// ---------------- Pickup Time booking modal ---------------- //
+let currentDonationId = null;
+
+document.querySelectorAll('.BookDonation').forEach(function (button) {
+  button.addEventListener('click', function () {
+
+    currentDonationId = button.dataset.donationId;
+    console.log('Clicked button, donationId is:', currentDonationId); // TEMP diagnostic — remove once confirmed working
+
+    const maxQty = button.dataset.quantity;
+    const unit = button.dataset.unit;
+
+    document.getElementById('maxQuantity').textContent = maxQty;
+    document.getElementById('unitLabel').textContent = unit;
+    document.getElementById('quantityInput').max = maxQty;
+    document.getElementById('pickupModalError').textContent = '';
+
+    fetch(`get_slots.php?donation_id=${currentDonationId}`)
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('Could not load slots');
+        }
+        return response.json();
+      })
+      .then(function (slots) {
+        const select = document.getElementById('slotSelect');
+        select.innerHTML = '';
+
+        if (slots.length === 0) {
+          select.innerHTML = '<option value="">No slots available</option>';
+        } else {
+          slots.forEach(function (slot) {
+            const option = document.createElement('option');
+            option.value = slot.pickup_slot_id;
+            option.textContent = slot.timeslot;
+            select.appendChild(option);
+          });
+        }
+
+        document.getElementById('pickupModal').style.display = 'flex';
+      })
+      .catch(function () {
+        document.getElementById('pickupModalError').textContent = 'Failed to load pickup slots.';
+        document.getElementById('pickupModal').style.display = 'flex';
+      });
+
+  });
+});
+
+document.getElementById('closePickupModal').addEventListener('click', function () {
+  document.getElementById('pickupModal').style.display = 'none';
+});
+
+document.getElementById('confirmBookingBtn').addEventListener('click', function () {
+  const pickupSlotId = document.getElementById('slotSelect').value;
+  const quantity = document.getElementById('quantityInput').value;
+  const errorBox = document.getElementById('pickupModalError');
+
+  if (!pickupSlotId || !quantity || quantity <= 0) {
+    errorBox.textContent = 'Please select a slot and enter a valid quantity.';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('donation_id', currentDonationId);
+  formData.append('pickup_slot_id', pickupSlotId);
+  formData.append('quantity', quantity);
+
+  fetch('book_slot.php', {
+    method: 'POST',
+    body: formData
+  })
+    .then(function (response) {
+      return response.json().then(function (data) {
+        return { ok: response.ok, data: data };
+      });
+    })
+    .then(function (result) {
+      if (result.ok && result.data.success) {
+        location.reload();
+      } else {
+        errorBox.textContent = result.data.error || 'Booking failed.';
+      }
+    })
+    .catch(function () {
+      errorBox.textContent = 'Something went wrong. Please try again.';
+    });
+});
