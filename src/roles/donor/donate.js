@@ -36,10 +36,10 @@ addSlotButton.addEventListener('click', function () {
 
 // 3. Form Validation
 form.addEventListener('submit', function (event) {
-
+    event.preventDefault();
     // Allergy validation
     const checkedAllergies = document.querySelectorAll(
-        'input[name="allergies"]:checked'
+        'input[name="allergies[]"]:checked'
     );
 
     if (checkedAllergies.length === 0) {
@@ -94,4 +94,21 @@ form.addEventListener('submit', function (event) {
             return;
         }
     }
+    form.submit();
 });
+
+// 4. AUTOMATICALLY CLOSE SUCCESS MESSAGE AFTER 5 SECONDS
+const success = document.getElementById('success');
+const closeBtn = document.getElementById('closeBtn');
+
+if (success) {
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      success.remove();
+    });
+  }
+
+  setTimeout(() => {
+    success.remove();
+  }, 4000);
+}
