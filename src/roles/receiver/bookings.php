@@ -1,3 +1,66 @@
+<?php
+session_start();
+require_once '../../../database/db.php';
+
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
+    header('Location: ../../auth/login.php');
+    exit();
+}
+
+$receiver_id = $_SESSION['user']['id'];
+
+// ------ QUERY 1 : UPCOMING BOOKINGS ------
+$sql_upcoming = "SELECT bookings.booking_id, bookings.quantity, bookings.status,
+                         donations.food_name, donations.image_url, donations.pickup_address,
+                         users.full_name AS donor_name,
+                         pickup_slots.timeslot
+                  FROM bookings
+                  JOIN donations ON bookings.donation_id = donations.donation_id
+                  JOIN users ON donations.donor_id = users.user_id
+                  JOIN pickup_slots ON bookings.pickup_slot_id = pickup_slots.pickup_slot_id
+                  WHERE bookings.receiver_id = ?
+                    AND bookings.status = 'reserved'
+                  ORDER BY pickup_slots.timeslot ASC";
+
+$stmt_upcoming = mysqli_prepare($dbConn, $sql_upcoming);
+mysqli_stmt_bind_param($stmt_upcoming, 'i', $receiver_id);
+mysqli_stmt_execute($stmt_upcoming);
+$result_upcoming = mysqli_stmt_get_result($stmt_upcoming);
+  
+$upcoming_bookings = [];
+while ($row = mysqli_fetch_assoc($result_upcoming)) {
+    $upcoming_bookings[] = $row;
+}
+
+
+// ------ QUERY 2 : PAST BOOKINGS ------
+$sql_past = "SELECT bookings.booking_id, bookings.quantity, bookings.status,
+                    donations.food_name,
+                    users.full_name AS donor_name,
+                    pickup_slots.timeslot
+             FROM bookings
+             JOIN donations ON bookings.donation_id = donations.donation_id
+             JOIN users ON donations.donor_id = users.user_id
+             JOIN pickup_slots ON bookings.pickup_slot_id = pickup_slots.pickup_slot_id
+             WHERE bookings.receiver_id = ?
+               AND bookings.status IN ('collected', 'missed')
+             ORDER BY pickup_slots.timeslot DESC
+             LIMIT 5";
+
+$stmt_past = mysqli_prepare($dbConn, $sql_past);
+mysqli_stmt_bind_param($stmt_past, 'i', $receiver_id);
+mysqli_stmt_execute($stmt_past);
+$result_past = mysqli_stmt_get_result($stmt_past);
+
+$past_bookings = [];
+while ($row = mysqli_fetch_assoc($result_past)) {
+    $past_bookings[] = $row;
+}
+
+?>
+  
+  
+  
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -71,35 +134,38 @@
 
             <div class="MainCont">
               <div class="bookingCardCont">
+                <?php if (empty($upcoming_bookings)): ?>
 
-                <div class="bookingCard">
-                  <div class="bookingCardIMG"><img src="../../assets/images/food1.jpg" alt="" srcset=""></div>
-                    <div class="bookingCardDetails">
-                      <h3 class="bookingCardFoodTitle">Nasi Lemak Biasa</h3>
-                      <p class="bookingCardFoodDonor">Mama Nasi Lemak</p>
-                      <span class="bookingCardTime">Today, 12:00 – 13:00</span>
-                      <div class="bookingCardActions">
-                        <button class="scanQR">Scan QR</button>
-                        <button class="Directions">Directions</button>
-                        <button class="Cancel">Cancel</button>
+                  <p style="color: #777; text-align: center; padding: 20px;">
+                    You have no upcoming bookings.
+                  </p>
+
+                <?php else: ?>
+
+                  <?php foreach ($upcoming_bookings as $booking): ?>
+
+                    <div class="bookingCard">
+                      <div class="bookingCardIMG">
+                        <img src="../../<?php echo htmlspecialchars($booking['image_url']); ?>" alt="">
+                      </div>
+                      <div class="bookingCardDetails">
+                        <h3 class="bookingCardFoodTitle"><?php echo htmlspecialchars($booking['food_name']); ?></h3>
+                        <p class="bookingCardFoodDonor"><?php echo htmlspecialchars($booking['donor_name']); ?></p>
+                        <span class="bookingCardTime"><?php echo date('D, j M, g:i A', strtotime($booking['timeslot'])); ?></span>
+                        <div class="bookingCardActions">
+                          <button class="scanQR" data-booking-id="<?php echo (int) $booking['booking_id']; ?>">Scan QR</button>
+                          <button class="Directions"
+                                  data-booking-id="<?php echo (int) $booking['booking_id']; ?>"
+                                  data-address="<?php echo htmlspecialchars($booking['pickup_address']); ?>">Directions</button>
+                          <button class="Cancel"
+                                  data-booking-id="<?php echo (int) $booking['booking_id']; ?>"
+                                  data-food-name="<?php echo htmlspecialchars($booking['food_name']); ?>">Cancel</button>
+                        </div>
                       </div>
                     </div>
-                </div>
 
-                <div class="bookingCard">
-                  <div class="bookingCardIMG"><img src="../../assets/images/food1.jpg" alt="" srcset=""></div>
-                    <div class="bookingCardDetails">
-                      <h3 class="bookingCardFoodTitle">Jeh Herne</h3>
-                      <p class="bookingCardFoodDonor">IS SO GAY</p>
-                      <span class="bookingCardTime">everyday, 24/7</span>
-                      <div class="bookingCardActions">
-                        <button class="scanQR">Scan QR</button>
-                        <button class="Directions">Directions</button>
-                        <button class="Cancel">Cancel</button>
-                      </div>
-                    </div>
-                </div>
-
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </div>
             </div>
 
@@ -107,21 +173,31 @@
               <h1 class="past-heading">Past Bookings</h1>
                 <p class="past-subheading">Review your past food collection bookings.</p>
 
-              <div class="passBookingCard missed">
-                <div class="passBookingDetail">
-                  <h3 class="bookingCardFoodTitle">Nasi Lemak Biasa</h3>
-                  <p class="bookingCardFoodDonor">Mamak • Yesterday</p>
-                </div>
-                <span class="statusBadge missed">Missed</span>
-              </div>
+              <?php if (empty($past_bookings)): ?>
 
-              <div class="passBookingCard collected">
-                <div class="passBookingDetail">
-                  <h3 class="bookingCardFoodTitle">Nasi Lemak Biasa</h3>
-                  <p class="bookingCardFoodDonor">Mamak • Yesterday</p>
-                </div>
-                <span class="statusBadge collected">Collected</span>
-              </div>
+                <p style="color: #777; text-align: center; padding: 20px;">
+                  No past bookings yet.
+                </p>
+
+              <?php else: ?>
+
+                <?php foreach ($past_bookings as $booking): ?>
+
+                  <div class="passBookingCard <?php echo htmlspecialchars($booking['status']); ?>">
+                    <div class="passBookingDetail">
+                      <h3 class="bookingCardFoodTitle"><?php echo htmlspecialchars($booking['food_name']); ?></h3>
+                      <p class="bookingCardFoodDonor">
+                        <?php echo htmlspecialchars($booking['donor_name']); ?> •
+                        <?php echo date('j M', strtotime($booking['timeslot'])); ?>
+                      </p>
+                    </div>
+                    <span class="statusBadge <?php echo htmlspecialchars($booking['status']); ?>">
+                      <?php echo ucfirst($booking['status']); ?>
+                    </span>
+                  </div>
+
+                <?php endforeach; ?>
+              <?php endif; ?>
 
               <div class="viewHistory">
                     <a href="history.html" class="historyButton">View Collection History →</a>
