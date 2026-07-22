@@ -1,3 +1,11 @@
+<?php
+  session_start();
+
+  if(!isset($_SESSION['user'])){
+    header("Location: ../../auth/login.html");
+    exit();
+  }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,25 +14,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Donate Food - Donor - FoodBridge</title>
 
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap"
     rel="stylesheet">
 
-  <!-- Global Styles -->
   <link rel="stylesheet" href="../../assets/css/global.css">
   <link rel="stylesheet" href="../../assets/css/header.css">
-
-  <!-- Page Specific Styles -->
   <link rel="stylesheet" href="donate.css">
 </head>
 
 <body>
   <div class="noise-bg"></div>
   <header class="dashboard-header">
-    <a href="dashboard.html" class="navbar-brand">
+    <a href="dashboard.php" class="navbar-brand">
       <div class="navbar-logo">
         <img src="../../assets/images/logo.png" alt="Logo" />
       </div>
@@ -32,9 +36,9 @@
 
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
-        <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
-        <a href="donate.html" class="dashboard-nav-item active">Donate</a>
-        <a href="my-donations.html" class="dashboard-nav-item">My Donations</a>
+        <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
+        <a href="donate.php" class="dashboard-nav-item active">Donate</a>
+        <a href="my-donations.php" class="dashboard-nav-item">My Donations</a>
         <a href="leaderboard.html" class="dashboard-nav-item">Leaderboard</a>
         <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
         <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
@@ -77,14 +81,28 @@
     </div>
   </header>
 
-  <!-- Main Content Area -->
+  <?php
+    if (!empty($_SESSION['errors'])) {
+      echo '<div class="success" id = "success">
+              <span class = "successIcon"><img src = "../../assets/images/remove.png" alt = "Error Icon."></span>
+              <span class = "successMessage">';
+      foreach ($_SESSION['errors'] as $error) {
+        echo htmlspecialchars($error) . '<br>';
+      }
+      echo '</span>
+            <button class = "closeBtn" id = "closeBtn">&times;</button>
+            </div>';
+      unset($_SESSION['errors']);
+    }
+  ?>
+
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
       <h1 class="page-heading">Donate Surplus Food</h1>
       <p class="page-subheading">Create a new food listing, set allergy tags, and define convenient pickup slots.</p>
 
       <div class="box-details">
-        <form action="process.php" id="publish-donation-form">
+        <form method="POST" action="donateProcess.php" id="publish-donation-form" enctype="multipart/form-data">
 
           <div class="upload-panel">
             <img src="../../assets/images/photo.png" alt="This is a Photo icon">
@@ -145,7 +163,7 @@
               </div>
               <div class="form-group">
                 <label for="quantity">Quantity</label>
-                <input type="number" name="quantity" id="quantity" required>
+                <input type="number" name="quantity" id="quantity" step="0.01" min="0.01" required>
               </div>
               <div class="form-group">
                 <label for="unit">Unit</label>
@@ -164,35 +182,35 @@
                 <label for="allergyTags">Allergy Tags</label>
                 <div class="allergyTagsCheckBox">
                   <label class="checkBoxTags">
-                    <input type="checkbox" name="allergies" id="nuts" value="nuts">
+                    <input type="checkbox" name="allergies[]" id="nuts" value="nuts">
                     <span>Nuts</span>
                   </label>
                   <label class="checkBoxTags">
-                    <input type="checkbox" name="allergies" id="dairy" value="dairy">
+                    <input type="checkbox" name="allergies[]" id="dairy" value="dairy">
                     <span>Dairy</span>
                   </label>
                   <label class="checkBoxTags">
-                    <input type="checkbox" name="allergies" id="gluten" value="gluten">
+                    <input type="checkbox" name="allergies[]" id="gluten" value="gluten">
                     <span>Gluten</span>
                   </label>
                   <label class="checkBoxTags">
-                    <input type="checkbox" name="allergies" id="shellfish" value="shellfish">
+                    <input type="checkbox" name="allergies[]" id="shellfish" value="shellfish">
                     <span>Shellfish</span>
                   </label>
                   <label class="checkBoxTags">
-                    <input type="checkbox" name="allergies" id="eggs" value="eggs">
+                    <input type="checkbox" name="allergies[]" id="eggs" value="eggs">
                     <span>Eggs</span>
                   </label>
                   <label class="checkBoxTags">
-                    <input type="checkbox" name="allergies" id="soy" value="soy">
+                    <input type="checkbox" name="allergies[]" id="soy" value="soy">
                     <span>Soy</span>
                   </label>
                   <label class="checkBoxTags">
-                    <input type="checkbox" name="allergies" id="vegan-safe" value="vegan-safe">
+                    <input type="checkbox" name="allergies[]" id="vegan-safe" value="vegan-safe">
                     <span>Vegan Safe</span>
                   </label>
                   <label class="checkBoxTags">
-                    <input type="checkbox" name="allergies" id="none" value="none">
+                    <input type="checkbox" name="allergies[]" id="none" value="none">
                     <span>None</span>
                   </label>
                 </div>

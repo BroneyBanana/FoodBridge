@@ -1,3 +1,13 @@
+<?php
+  session_start();
+
+  if(!isset($_SESSION['user'])){
+      header("Location: ../../auth/login.html");
+      exit();
+  }
+
+  require_once "../../../database/db.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,8 +39,8 @@
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
         <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
-        <a href="donate.html" class="dashboard-nav-item">Donate</a>
-        <a href="my-donations.html" class="dashboard-nav-item active">My Donations</a>
+        <a href="donate.php" class="dashboard-nav-item">Donate</a>
+        <a href="my-donations.php" class="dashboard-nav-item active">My Donations</a>
         <a href="leaderboard.html" class="dashboard-nav-item">Leaderboard</a>
         <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
         <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
@@ -65,6 +75,29 @@
   </header>
 
   <!-- Main Content Area -->
+  <?php
+    if(!empty($_SESSION['success'])) {
+      echo '<div class = "success" id  = "success">
+              <span class = "successIcon"><img src="../../assets/images/success.png" alt="Success Icon"></span>
+              <span class = "successMessage">Food donation added successfully!</span>
+              <button class = "closeBtn" id = "closeBtn">&times;</button>      
+            </div>';
+      unset($_SESSION['success']);
+    }
+
+    $sqlExpiry = "UPDATE donations SET status = 'expired' WHERE status = 'active' AND expiry_at <= NOW()";
+    mysqli_query($dbConn, $sqlExpiry);
+
+    $sqlDonation = "SELECT * FROM donations WHERE donor_id = ? ORDER BY donation_id DESC";
+    $stmtDonation = mysqli_prepare($dbConn, $sqlDonation);
+    mysqli_stmt_bind_param(
+      $stmtDonation,
+      "i",
+      $_SESSION['user']['id']
+    );
+    mysqli_stmt_execute($stmtDonation);
+    $result = mysqli_stmt_get_result($stmtDonation);
+  ?>
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
       <h1 class="page-heading">My Donations</h1>
@@ -79,72 +112,99 @@
         </div>
 
         <div class = "my-donations">
-          <div class = "donations-card" data-status = "active">
+        <?php
+          while ($row = mysqli_fetch_assoc($result)) {
+        ?>
+          <div class = "donations-card" data-status = "<?php echo htmlspecialchars($row['status']); ?>">
             <div class = "card-image">
-              <img src="../../assets/images/food3.jpeg" alt="This is a food image.">
-              <span class = "card-status">Active</span>
+              <img src="../../<?php echo htmlspecialchars($row['image_url']); ?>" alt="This is a food image.">
+              <span class = "card-status"><?php echo ucfirst(htmlspecialchars($row['status'])); ?></span>
             </div>
             <div class = "card-content">
               <div class = "card-header">
-                <h2 class = "card-title">Food Name</h2>
+                <h2 class = "card-title"><?php echo htmlspecialchars($row['food_name']); ?></h2>
               </div>
               <div class = "allergy-tags">
-                <span class = "tags">Gluten</span>
-                <span class = "tags">Nuts</span>
+                <?php 
+                  $sqlAllergy = "SELECT allergy_name FROM donation_allergy_tags WHERE donation_id = ?";
+
+                  $stmtAllergy = mysqli_prepare($dbConn, $sqlAllergy);
+
+                  mysqli_stmt_bind_param($stmtAllergy, "i", $row['donation_id']);
+
+                  mysqli_stmt_execute($stmtAllergy);
+
+                  $result2 = mysqli_stmt_get_result($stmtAllergy);
+
+                  while($tag = mysqli_fetch_assoc($result2)) {
+                    $allergyName = [
+                      "nuts" => "Nuts",
+                      "dairy" => "Dairy",
+                      "gluten" => "Gluten",
+                      "shellfish" => "Shellfish",
+                      "eggs" => "Eggs",
+                      "soy" => "Soy",
+                      "vegan-safe" => "Vegan Safe",
+                      "none" => "None"
+                    ];
+                ?>
+                <span class = "tags"><?php echo htmlspecialchars($allergyName[$tag['allergy_name']]); ?></span>
+                <?php
+                  }
+
+                  mysqli_stmt_close($stmtAllergy);
+                ?>
               </div>
+              <?php
+              // put this because if not the value will show as cookedMeal
+                $categoryName = [
+                  "cookedMeal" => "Cooked Meal",
+                  "rawProduce" => "Raw Produce",
+                  "bakery" => "Bakery",
+                  "beverages" => "Beverages",
+                  "cannedGoods" => "Canned Goods",
+                  "others" => "Others"
+              ];
+
+              $quantityDisplay = $row['quantity'];
+
+              if(in_array($row['unit'], ['portions', 'pieces'])) {
+                $quantityDisplay = (int) round($quantityDisplay);
+              }
+
+              ?>
+              <p class = "card-descript"><?php echo htmlspecialchars($quantityDisplay); ?> <?php echo htmlspecialchars($row['unit']); ?> • <?php echo htmlspecialchars($categoryName[$row['category']]); ?></p>
               
-              <p class = "card-descript">15pieces • Food Type</p>
-              
-              <p class = "expiry-date"><strong>Expires: </strong>6/5/26, 11:27 AM</p>
-              <button class = "show-qr">Show QR Code for Pickup</button>
+              <p class = "expiry-date"><strong>Expires: </strong><?php echo htmlspecialchars(date("M j, Y, g:i A", strtotime($row['expiry_at']))); ?></p>
+              <?php 
+                if ($row['status'] == "active") {
+              ?>
+                <button class = "show-qr">Show QR Code for Pickup</button>
+              <?php
+                } else {
+              ?>
+                <button class = "show-qr" disabled title = "Pickup already <?php echo htmlspecialchars($row['status']); ?>">
+                  <?php
+                    if ($row['status'] === 'completed') {
+                      echo 'Pickup Completed!';
+                    } else {
+                      echo 'Donation Expired!';
+                    }
+                  ?>
+                </button>
+              <?php
+                }
+              ?>
               <button class = "tutorial-packup">How to pack</button>
             </div>
           </div>
-          <div class = "donations-card" data-status = "completed">
-            <div class = "card-image">
-              <img src="../../assets/images/food3.jpeg" alt="This is a food image.">
-              <span class = "card-status">Completed</span>
-            </div>
-            <div class = "card-content">
-              <div class = "card-header">
-                <h2 class = "card-title">Food Name</h2>
-              </div>
-              <div class = "allergy-tags">
-                <span class = "tags">Gluten</span>
-                <span class = "tags">Nuts</span>
-              </div>
-              
-              <p class = "card-descript">15pieces • Food Type</p>
-              
-              <p class = "expiry-date"><strong>Expires: </strong>6/5/26, 11:27 AM</p>
-              <button class = "show-qr">Show QR Code for Pickup</button>
-              <button class = "tutorial-packup">How to pack</button>
-            </div>
-          </div>
-          <div class = "donations-card" data-status = "expired">
-            <div class = "card-image">
-              <img src="../../assets/images/food3.jpeg" alt="This is a food image.">
-              <span class = "card-status">Expired</span>
-            </div>
-            <div class = "card-content">
-              <div class = "card-header">
-                <h2 class = "card-title">Food Name</h2>
-              </div>
-              <div class = "allergy-tags">
-                <span class = "tags">Gluten</span>
-                <span class = "tags">Nuts</span>
-              </div>
-              
-              <p class = "card-descript">15pieces • Food Type</p>
-              
-              <p class = "expiry-date"><strong>Expires: </strong>6/5/26, 11:27 AM</p>
-              <button class = "show-qr">Show QR Code for Pickup</button>
-              <button class = "tutorial-packup">How to pack</button>
-            </div>
-          </div>
+  <?php
+    }
+
+    mysqli_stmt_close($stmtDonation);
+  ?>
         </div>
       </div>
-
       <div class = "tutorial" id = "tutorial">
         <div class = "tutorial-card">
           <div class="tutorial-image">
@@ -216,6 +276,7 @@
     </main>
   </div>
 
+  <!-- qr code part -->
   <div id="show-qr-modal" class="show-qr-modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Show QR Code">
     <div class="show-qr-card">
       <div class="show-qr-header">
@@ -227,18 +288,13 @@
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=FoodBridge-Pickup-Auth&color=000000&bgcolor=ffffff" alt="Your Donation QR Code" id="display-qr-img">
       </div>
 
-      <p class="qr-success-msg" style="display: block; margin-top: 10px;">ID: #12345</p>
+      <p class="qr-success-msg" style="display: block; margin-top: 10px;">QR Token: </p>
 
       <div class="qr-modal-actions">
         <button class="qr-btn-close" id="show-qr-close-btn">Close</button>
       </div>
     </div>
   </div>
-
-  <script src="../../assets/js/header.js"></script>
-  <script src="my-donations.js"></script>
-</body>
-</html>
 
   <!-- Page Specific Logic -->
   <script src="../../assets/js/header.js"></script>

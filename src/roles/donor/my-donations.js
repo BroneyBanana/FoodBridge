@@ -133,3 +133,21 @@ document.addEventListener('keydown', e => {
     closeShowQR();
   }
 });
+
+// ============================================================
+// 3. AUTOMATICALLY CLOSE SUCCESS MESSAGE AFTER 5 SECONDS
+// ============================================================
+const success = document.getElementById('success');
+const closeBtn = document.getElementById('closeBtn');
+
+if (success) {
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      success.remove();
+    });
+  }
+
+  setTimeout(() => {
+    success.remove();
+  }, 4000);
+}

@@ -319,6 +319,66 @@
     transform: translateY(-1px); /* Soft lift animation */
 }
 
+@keyframes slideIn {
+    from { 
+        transform: translateX(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.success {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 3000;
+    background-color: #ffffff;
+    border-radius: 40px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0,0.12);
+    animation: slideIn 0.3s ease;
+}
+
+.successIcon img {
+    width: 22px;
+    height: 22px;
+    background-color: var(--color-forest, #1b291d);
+    color: #C8F04A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.successMessage {
+    font-size: 0.9rem;
+    color: #1b291d;
+    font-weight: 600;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: #a1a1aa;
+    cursor: pointer;
+    padding: 0 0 0 4px;
+    line-height: 1;
+}
+
+.closeBtn:hover {
+    color: #52525b;
+}
+
 
 @media screen and (max-width: 768px) {
     .publish-donations-box {
