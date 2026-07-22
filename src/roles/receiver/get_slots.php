@@ -1,4 +1,4 @@
-```php
+
 <?php
 session_start();
 require_once '../../../database/db.php';
@@ -89,4 +89,3 @@ while ($row = mysqli_fetch_assoc($result_slots)) {
 header('Content-Type: application/json');
 echo json_encode($slots);
 ?>
-```
