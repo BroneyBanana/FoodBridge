@@ -1,3 +1,48 @@
+<?php
+require_once '../../../database/db.php';
+
+$query = "SELECT user_id, full_name, trust_score, total_food_donated FROM users WHERE role = 'donor' ORDER BY total_food_donated DESC, trust_score DESC LIMIT 20";
+$result = mysqli_query($dbConn, $query);
+$donors = [];
+if ($result) {
+    $donors = mysqli_fetch_all($result, MYSQLI_ASSOC);
+}
+
+function getInitials($name) {
+    $words = explode(' ', trim($name));
+    $initials = '';
+    foreach ($words as $w) {
+        if (!empty($w)) {
+            $initials .= strtoupper(substr($w, 0, 1));
+        }
+        if (strlen($initials) >= 2) break;
+    }
+    return $initials ? $initials : 'FB';
+}
+
+function getFirstName($name) {
+    $words = explode(' ', trim($name));
+    return htmlspecialchars($words[0]);
+}
+
+$first = $donors[0] ?? null;
+$second = $donors[1] ?? null;
+$third = $donors[2] ?? null;
+
+$rest = array_slice($donors, 3);
+$leaderboardRows = [];
+$rank = 4;
+foreach ($rest as $row) {
+    $leaderboardRows[] = [
+        'rank' => $rank++,
+        'initials' => getInitials($row['full_name']),
+        'name' => htmlspecialchars($row['full_name']),
+        'trust' => (int)$row['trust_score'],
+        'TotalFoodDonated' => (int)$row['total_food_donated']
+    ];
+}
+$leaderboardJson = json_encode($leaderboardRows);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +61,10 @@
   
   <!-- Page Specific Styles -->
   <link rel="stylesheet" href="leaderboard.css">
+  <script>
+    // Inject rest of leaderboard rows via PHP
+    const leaderboardRows = <?= $leaderboardJson ?>;
+  </script>
 </head>
 <body>
   <div class="noise-bg"></div>
@@ -31,7 +80,7 @@
         <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
         <a href="donate.html" class="dashboard-nav-item">Donate</a>
         <a href="my-donations.html" class="dashboard-nav-item">My Donations</a>
-        <a href="leaderboard.html" class="dashboard-nav-item active">Leaderboard</a>
+        <a href="leaderboard.php" class="dashboard-nav-item active">Leaderboard</a>
         <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
         <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
         <a href="trust-score.html" class="dashboard-nav-item">Trust Score</a>
@@ -40,7 +89,7 @@
     </div>
     
     <div class="dashboard-actions">
-      <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.html">
+      <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.php">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
@@ -65,7 +114,7 @@
   </header>
 
   <!-- Main Content Area -->
-<div class="dashboard-wrapper">
+  <div class="dashboard-wrapper">
     <main class="dashboard-content leaderboard-page">
       
       <section class="leaderboard-hero">
@@ -75,51 +124,56 @@
 
       <section class="podium-section" aria-label="Top donor leaderboard">
         
+        <?php if ($second): ?>
         <article class="podium-player second-place">
           <div class="award-icon silver" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
           </div>
-          <div class="donor-avatar">GG</div>
-          <h2>Green</h2>
+          <div class="donor-avatar"><?= getInitials($second['full_name']) ?></div>
+          <h2><?= getFirstName($second['full_name']) ?></h2>
           <div class="podium-card podium-silver">
             <div class="points-wrapper">
-              <strong>1780</strong>
+              <strong><?= $second['total_food_donated'] ?></strong>
               <span>Total Food Donated</span>
             </div>
             <em>2</em>
           </div>
         </article>
+        <?php endif; ?>
 
+        <?php if ($first): ?>
         <article class="podium-player first-place">
           <div class="award-icon trophy" aria-hidden="true">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a7 7 0 0 0-7 7c0 2.52 2 4.47 4.47 5.34h5.06C17 13.47 19 11.52 19 9a7 7 0 0 0-7-7z"/></svg>
           </div>
-          <div class="donor-avatar main-avatar">FB</div>
-          <span class="you-badge">You</span>
-          <h2>Fresh</h2>
+          <div class="donor-avatar main-avatar"><?= getInitials($first['full_name']) ?></div>
+          <h2><?= getFirstName($first['full_name']) ?></h2>
           <div class="podium-card podium-gold">
             <div class="points-wrapper">
-              <strong>2900</strong>
+              <strong><?= $first['total_food_donated'] ?></strong>
               <span>Total Food Donated</span>
             </div>
             <em>1</em>
           </div>
         </article>
+        <?php endif; ?>
 
+        <?php if ($third): ?>
         <article class="podium-player third-place">
           <div class="award-icon bronze" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
           </div>
-          <div class="donor-avatar">MN</div>
-          <h2>Mama</h2>
+          <div class="donor-avatar"><?= getInitials($third['full_name']) ?></div>
+          <h2><?= getFirstName($third['full_name']) ?></h2>
           <div class="podium-card podium-bronze">
             <div class="points-wrapper">
-              <strong>1520</strong>
+              <strong><?= $third['total_food_donated'] ?></strong>
               <span>Total Food Donated</span>
             </div>
             <em>3</em>
           </div>
         </article>
+        <?php endif; ?>
       </section>
 
       <section class="rank-list" aria-label="Other donor ranks" id="rankList"></section>

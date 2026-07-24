@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showToast(message, type = "success") {
     const toast = document.createElement("div");
     toast.className = `toast toast-${type}`;
-    
+
     // Choose icons
     let iconSvg = '';
     if (type === "success") {
@@ -74,20 +74,20 @@ document.addEventListener("DOMContentLoaded", () => {
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     `;
-    
+
     toastContainer.appendChild(toast);
-    
+
     // Animate in
     setTimeout(() => {
       toast.classList.add("show");
     }, 10);
-    
+
     // Auto dismiss after 4 seconds
     const dismissTimeout = setTimeout(() => {
       toast.classList.remove("show");
       setTimeout(() => toast.remove(), 400);
     }, 4000);
-    
+
     // Close button
     toast.querySelector(".toast-close").addEventListener("click", () => {
       clearTimeout(dismissTimeout);
@@ -110,10 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Update UI components dynamically
   function updateUI() {
     const initials = getInitials(profile.name);
-    
+
     // Update sidebar & initials
     sidebarAdminName.textContent = profile.name;
-    
+
     if (profile.avatarImage) {
       profileAvatarImg.src = profile.avatarImage;
       profileAvatarImg.classList.remove("hidden");
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Maintenance Toggle & Status Badge
     const isMaintenance = !!profile.systemMaintenance;
     systemMaintenanceToggle.checked = isMaintenance;
-    
+
     if (isMaintenance) {
       platformStatusBadge.textContent = "Under Maintenance";
       platformStatusBadge.className = "status-indicator-badge maintenance";
@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const isPassword = targetInput.type === "password";
         targetInput.type = isPassword ? "text" : "password";
         btn.classList.toggle("showing", isPassword);
-        
+
         // Update SVG icon representation
         if (isPassword) {
           btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const newName = adminNameInput.value.trim();
     const newEmail = adminEmailInput.value.trim();
-    
+
     // If they typed something in currentPassword or newPassword, handle password change logic
     const currentPass = currentPasswordInput.value;
     const newPass = newPasswordInput.value;
@@ -217,11 +217,11 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast("Passwords do not match.", "error");
         return;
       }
-      
+
       // Update password
       profile.password = newPass;
       passwordChanged = true;
-      
+
       // Reset inputs & hide
       currentPasswordInput.value = "";
       newPasswordInput.value = "";
@@ -233,10 +233,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Save Name and Email
     profile.name = newName;
     profile.email = newEmail;
-    
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
     updateUI();
-    
+
     if (passwordChanged) {
       showToast("Profile credentials and password updated!", "success");
     } else {

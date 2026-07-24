@@ -1,9 +1,4 @@
-const reports = [
-  {id:1, from:'Siti Lailah', fromType:'receiver', against:'Nurul Rashid', againstType:'donor', issue:'Spoiled or unsafe food', time:'2h ago', body:'Food collected was visibly spoiled — rice had mould and bread was stale. Packaging was intact but smell was bad.', status:'pending', deduction:null, note:''},
-  {id:2, from:'Kamarul Musa', fromType:'receiver', against:'Farid Zulkifli', againstType:'donor', issue:'Fake or inaccurate listing', time:'1d ago', body:'Listed "20kg fresh vegetables" but actual collection was barely 5kg of wilted greens. Clear mismatch between listing and reality.', status:'pending', deduction:null, note:''},
-  {id:3, from:'Adam Tan', fromType:'receiver', against:'Siti Bakery', againstType:'donor', issue:'No-show', time:'5h ago', body:'Donor was not at the location during the collection window and did not answer calls.', status:'pending', deduction:null, note:''},
-  {id:4, from:'Ahmad Hafiz', fromType:'receiver', against:'Kamarul Musa', againstType:'donor', issue:'Rude or aggressive behaviour', time:'3d ago', body:'Donor was rude and dismissive during pickup, making us wait 45 minutes.', status:'pending', deduction:null, note:''}
-];
+// `reports` array will be injected dynamically via PHP in reports.php
 
 let currentDeductions = {};
 let currentFilter = 'all';
@@ -67,8 +62,8 @@ function renderReport(r) {
         </div>
         <textarea class="note-area" id="note-${r.id}" rows="2" placeholder="Reason for this adjustment amount (required)..."></textarea>
         <div class="confirm-actions">
-          <button class="btn btn-accent" onclick="confirmDeduct(${r.id})">Confirm adjustment</button>
-          <button class="btn btn-outline" onclick="cancelVerdict(${r.id})">Cancel</button>
+          <button class="btn btn-accent" onclick="confirmDeduct(${r.id})" id="btn-conf-${r.id}">Confirm adjustment</button>
+          <button class="btn btn-outline" onclick="cancelVerdict(${r.id})" id="btn-canc-${r.id}">Cancel</button>
         </div>
       </div>`;
 
@@ -128,7 +123,7 @@ function adjPts(id, delta) {
   display.style.color = currentDeductions[id] > 0 ? '#dc2626' : 'inherit';
 }
 
-function confirmDeduct(id) {
+async function confirmDeduct(id) {
   const noteElem = document.getElementById('note-'+id);
   const note = noteElem.value.trim();
   if(!note) {
@@ -136,29 +131,63 @@ function confirmDeduct(id) {
     noteElem.placeholder = 'A reason is required before confirming.';
     return;
   }
-  const r = reports.find(x => x.id === id);
+  
   const pts = currentDeductions[id] !== undefined ? currentDeductions[id] : 0;
-  r.status = 'resolved';
-  r.deduction = pts;
-  r.note = note;
-  updateCounts();
-  renderReports();
+  
+  document.getElementById('btn-conf-'+id).disabled = true;
+  document.getElementById('btn-canc-'+id).disabled = true;
+  
+  try {
+    const res = await fetch('reports.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'resolve', report_id: id, deduction: pts, note: note })
+    });
+    const data = await res.json();
+    if(data.success) {
+      const r = reports.find(x => x.id === id);
+      r.status = 'resolved';
+      r.deduction = pts;
+      r.note = note;
+      updateCounts();
+      renderReports();
+    } else {
+      alert("Error resolving report.");
+    }
+  } catch(e) {
+    alert("Network error.");
+  }
 }
 
-function dismissReport(id) {
-  const r = reports.find(x => x.id === id);
-  r.status = 'dismissed';
-  updateCounts();
-  renderReports();
+async function dismissReport(id) {
+  try {
+    const res = await fetch('reports.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'dismiss', report_id: id })
+    });
+    const data = await res.json();
+    if(data.success) {
+      const r = reports.find(x => x.id === id);
+      r.status = 'dismissed';
+      updateCounts();
+      renderReports();
+    } else {
+      alert("Error dismissing report.");
+    }
+  } catch(e) {
+    alert("Network error.");
+  }
 }
 
 function updateCounts() {
   document.getElementById('cnt-pending').textContent = reports.filter(r => r.status === 'pending').length;
-  document.getElementById('cnt-resolved').textContent = 17 + reports.filter(r => r.status === 'resolved').length;
-  document.getElementById('cnt-dismissed').textContent = 4 + reports.filter(r => r.status === 'dismissed').length;
+  document.getElementById('cnt-resolved').textContent = reports.filter(r => r.status === 'resolved').length;
+  document.getElementById('cnt-dismissed').textContent = reports.filter(r => r.status === 'dismissed').length;
 }
 
 // Initial render
 document.addEventListener('DOMContentLoaded', () => {
+  updateCounts();
   renderReports();
 });
