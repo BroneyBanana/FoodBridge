@@ -58,3 +58,47 @@
     padding: 40px 16px;
   }
 }
+
+.notification-card {
+  background: var(--color-white);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 15px rgba(28, 43, 30, 0.03);
+  border: 1.5px solid rgba(28, 43, 30, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(28, 43, 30, 0.06);
+}
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.notification-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-forest);
+  margin: 0;
+}
+.notification-time {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+.notification-desc {
+  font-family: var(--font-sans);
+  color: var(--color-text-main);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+}
+.notification-user {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--color-leaf);
+  font-weight: 500;
+}
