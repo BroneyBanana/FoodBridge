@@ -10,12 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($input['action'] === 'resolve') {
             $deduction = (int)($input['deduction'] ?? 0);
-            $note = $input['note'] ?? '';
+            $rawNote = $input['note'] ?? '';
+            $note = $deduction > 0 ? $rawNote . " (-" . $deduction . ")" : $rawNote;
             
-            // 1. Update report status
-            $q1 = "UPDATE reports SET status = 'resolved' WHERE report_id = ?";
+            // 1. Update report status and note
+            $q1 = "UPDATE reports SET status = 'resolved', admin_message = ? WHERE report_id = ?";
             $s1 = mysqli_prepare($dbConn, $q1);
-            mysqli_stmt_bind_param($s1, "i", $reportId);
+            mysqli_stmt_bind_param($s1, "si", $note, $reportId);
             mysqli_stmt_execute($s1);
             
             // 2. If there's a deduction, get the user being reported and reduce their score
@@ -61,6 +62,8 @@ $query = "
         r.report_id, 
         r.issue_type, 
         r.comment, 
+        r.evidence_image_url,
+        r.admin_message,
         r.status, 
         r.created_at,
         rec.full_name AS receiver_name,
@@ -82,6 +85,7 @@ $reportsJsArray = [];
 foreach ($dbReports as $row) {
     // Simple time formatting
     $time = date('d M Y, H:i', strtotime($row['created_at']));
+    $issueType = ucfirst(str_replace('_', ' ', $row['issue_type']));
     
     $reportsJsArray[] = [
         'id' => (int)$row['report_id'],
@@ -89,12 +93,13 @@ foreach ($dbReports as $row) {
         'fromType' => 'receiver',
         'against' => $row['donor_name'],
         'againstType' => 'donor',
-        'issue' => $row['issue_type'],
+        'issue' => $issueType,
         'time' => $time,
         'body' => $row['comment'] ? $row['comment'] : 'No comment provided.',
         'status' => $row['status'] == 'active' ? 'pending' : $row['status'],
         'deduction' => null,
-        'note' => ''
+        'note' => $row['admin_message'] ? $row['admin_message'] : '',
+        'evidence' => $row['evidence_image_url']
     ];
 }
 $reportsJson = json_encode($reportsJsArray);

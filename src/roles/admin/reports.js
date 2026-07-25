@@ -74,7 +74,7 @@ function renderReport(r) {
       </div>
       ${deductArea}`;
   } else if(r.status === 'resolved') {
-    actionArea = `<div class="resolved-notice">Resolved — ${r.deduction > 0 ? '−' : ''}${r.deduction} pts adjusted for ${r.against}. Note: "${r.note}"</div>`;
+    actionArea = `<div class="resolved-notice">Report resolved: ${r.note ? r.note : ''}</div>`;
   } else {
     actionArea = `<div class="dismissed-notice">Dismissed — no action taken against ${r.against}.</div>`;
   }
@@ -94,6 +94,7 @@ function renderReport(r) {
       </div>
       <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--color-forest);">Issue: ${r.issue}</div>
       <div class="rbody">${r.body}</div>
+      ${r.evidence ? `<div style="margin-top: 10px;"><img src="../../${r.evidence}" alt="Evidence Image" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid var(--color-border);" /></div>` : ''}
       ${actionArea}
     </div>`;
 }
@@ -148,7 +149,7 @@ async function confirmDeduct(id) {
       const r = reports.find(x => x.id === id);
       r.status = 'resolved';
       r.deduction = pts;
-      r.note = note;
+      r.note = pts > 0 ? note + ` (-${pts})` : note;
       updateCounts();
       renderReports();
     } else {
