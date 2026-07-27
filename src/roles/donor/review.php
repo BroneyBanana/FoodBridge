@@ -33,7 +33,10 @@ function imagePath(?string $path): ?string
 {
     if (!$path) return null;
     if (preg_match('#^https?://#i', $path)) return $path;
-    return '../../' . ltrim($path, '/');
+    // Older seeded records use "uploads/profiles" while uploaded profile
+    // images are stored in the singular "uploads/profile" directory.
+    $path = preg_replace('#^uploads/profiles/#', 'uploads/profile/', ltrim($path, '/'));
+    return '../../' . $path;
 }
 
 $donorId = (int) $_SESSION['user']['id'];

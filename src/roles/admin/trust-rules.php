@@ -53,24 +53,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = 'The suspension threshold must be a whole number from 0 to 100.';
         $messageType = 'error';
     } else {
-        $statement = mysqli_prepare(
+        mysqli_begin_transaction($dbConn);
+        $settingStatement = mysqli_prepare($dbConn, 'UPDATE trust_rule_settings SET suspension_threshold = ? WHERE setting_id = 1');
+        $banStatement = mysqli_prepare(
             $dbConn,
-            'UPDATE trust_rule_settings SET suspension_threshold = ? WHERE setting_id = 1'
+            "UPDATE users SET status = 'banned' WHERE role IN ('donor', 'receiver') AND trust_score < ? AND status <> 'banned'"
         );
 
-        if ($statement) {
-            mysqli_stmt_bind_param($statement, 'i', $submittedThreshold);
-            $saved = mysqli_stmt_execute($statement);
-            mysqli_stmt_close($statement);
-        } else {
-            $saved = false;
+        $saved = false;
+        $bannedCount = 0;
+        if ($settingStatement && $banStatement) {
+            mysqli_stmt_bind_param($settingStatement, 'i', $submittedThreshold);
+            $settingsSaved = mysqli_stmt_execute($settingStatement);
+            mysqli_stmt_bind_param($banStatement, 'i', $submittedThreshold);
+            $usersUpdated = mysqli_stmt_execute($banStatement);
+            $bannedCount = mysqli_stmt_affected_rows($banStatement);
+            $saved = $settingsSaved && $usersUpdated;
         }
+        if ($settingStatement) mysqli_stmt_close($settingStatement);
+        if ($banStatement) mysqli_stmt_close($banStatement);
 
-        if ($saved) {
-            $_SESSION['trust_rules_notice'] = 'Suspension threshold saved.';
+        if ($saved && mysqli_commit($dbConn)) {
+            $_SESSION['trust_rules_notice'] = sprintf('Threshold saved. %d account%s below it %s banned.', $bannedCount, $bannedCount === 1 ? '' : 's', $bannedCount === 1 ? 'was' : 'were');
             header('Location: trust-rules.php');
             exit;
         }
+
+        mysqli_rollback($dbConn);
 
         $message = 'Unable to save the threshold. Please try again.';
         $messageType = 'error';
@@ -151,7 +160,7 @@ $adminName = (string) ($_SESSION['user']['name'] ?? 'Admin');
     <div class="content-body"><div class="container">
       <section class="trust-box" aria-labelledby="rules-title">
         <div class="title"><h2 id="rules-title">Automated Trust Rules</h2></div>
-        <p>Set the trust-score threshold below which an account is considered at risk for automatic suspension.</p>
+        <p>Set the trust-score threshold below which an account is automatically banned.</p>
         <?php if ($message !== ''): ?>
           <p class="form-notice <?php echo escapeHtml($messageType); ?>" role="status"><?php echo escapeHtml($message); ?></p>
         <?php endif; ?>
@@ -185,6 +194,6 @@ $adminName = (string) ($_SESSION['user']['name'] ?? 'Admin');
     </div></div>
   </main></div>
   <script src="../../assets/js/header.js"></script>
-  <script>const slider=document.getElementById('slider'),value=document.getElementById('sliderValue');slider.addEventListener('input',()=>{value.value=slider.value;value.textContent=slider.value;});</script>
+  <script>const slider=document.getElementById('slider'),value=document.getElementById('sliderValue');function syncSliderValue(){const thumbRadius=11,trackWidth=slider.clientWidth-thumbRadius*2,position=thumbRadius+(trackWidth*Number(slider.value)/100);value.value=slider.value;value.textContent=slider.value;value.style.left=position+'px'}slider.addEventListener('input',syncSliderValue);window.addEventListener('resize',syncSliderValue);syncSliderValue();</script>
 </body>
 </html>

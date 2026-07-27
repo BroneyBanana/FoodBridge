@@ -339,7 +339,8 @@
 
 .readonly-review.hidden,
 .form-fields.hidden,
-.modal-actions.hidden {
+.modal-actions.hidden,
+.review-image-link.hidden {
   display: none;
 }
 
