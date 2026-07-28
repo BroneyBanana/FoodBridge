@@ -82,7 +82,99 @@
       <h1 class="page-heading">Admin Overview</h1>
       <p class="page-subheading">View system activity, active donations, and platform-wide performance heatmap.</p>
 
-      <div class="content-body"></div>
+      <div class="content-body admin-dashboard">
+        <div class="summary-grid">
+          <article class="summary-card">
+            <div class="card-header-with-icon">
+              <span class="summary-label">Food Rescued</span>
+              <div class="icon-circle bg-lime-light">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-forest)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10"></path>
+                  <path d="M7 12h10"></path>
+                  <path d="M7 17h6"></path>
+                  <path d="M5 7c0 8 2.5 10 7 10s7-2 7-10"></path>
+                </svg>
+              </div>
+            </div>
+            <strong><?= htmlspecialchars($rescued['total_items']) ?> items</strong>
+            <small>Lifetime total across all donors</small>
+          </article>
+
+          <article class="summary-card">
+            <div class="card-header-with-icon">
+              <span class="summary-label">Active Donations</span>
+              <div class="icon-circle bg-terracotta-light">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-terracotta)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
+            </div>
+            <strong>05</strong>
+            <small>2 ready for drop-off today</small>
+          </article>
+
+          <article class="summary-card">
+            <div class="card-header-with-icon">
+              <span class="summary-label">Flagged Users</span>
+              <div class="icon-circle bg-forest-light">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-forest)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 9v4"></path>
+                  <path d="M12 17h.01"></path>
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <strong>01</strong>
+            <small>Accounts needing review</small>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel-card main-panel">
+            <div class="section-header">
+              <div>
+                <h2>Recent reports</h2>
+                <p class="muted-text">Issues flagged by donors and receivers that need your review.</p>
+              </div>
+              <span class="date-pill" id="todayDate"></span>
+            </div>
+
+            <div class="pickup-list">
+              <article class="pickup-card" tabindex="0" role="button">
+                <div class="pickup-info">
+                  <span class="pickup-badge badge-review">Needs review</span>
+                  <h3>Spoiled or unsafe food</h3>
+                  <p class="pickup-desc"><span class="meta-item">Siti Lailah reporting Nurul Rashid</span><span class="meta-separator">•</span><span class="meta-item">Rice had mould, bread was stale</span><span class="meta-separator">•</span><span class="meta-item">2h ago</span></p>
+                </div>
+                <a class="btn btn-sm btn-primary" href="reports.html">Review Report</a>
+              </article>
+
+              <article class="pickup-card" tabindex="0" role="button">
+                <div class="pickup-info">
+                  <span class="pickup-badge badge-review">Needs review</span>
+                  <h3>No-show</h3>
+                  <p class="pickup-desc"><span class="meta-item">Adam Tan reporting Siti Bakery</span><span class="meta-separator">•</span><span class="meta-item">Donor absent during collection window</span><span class="meta-separator">•</span><span class="meta-item">5h ago</span></p>
+                </div>
+                <a class="btn btn-sm btn-primary" href="reports.html">Review Report</a>
+              </article>
+            </div>
+          </section>
+
+          <aside class="dashboard-side">
+            <section class="panel-card impact-panel">
+              <h2>Impact snapshot</h2>
+              <ul class="tag-list">
+                <li>4 pending reports</li>
+                <li>17 resolved</li>
+                <li>4 dismissed</li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      </div>
     </main>
   </div>
 

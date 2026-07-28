@@ -134,6 +134,14 @@
   gap: 32px;
 }
 
+.page-heading {
+  font-family: var(--font-syne);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-forest);
+  margin-bottom: 8px;
+}
+
 .profile-section-card {
   position: relative;
 }

@@ -1,6 +1,18 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../PHPMailer-master/src/Exception.php';
+require_once __DIR__ . '/../../PHPMailer-master/src/PHPMailer.php';
+require_once __DIR__ . '/../../PHPMailer-master/src/SMTP.php';
+
+use Dotenv\Dotenv;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->safeLoad();
+
 class FormRenderException extends Exception
 {
 }
@@ -39,6 +51,63 @@ function inputValue(array $data, string $key): string
     return trim((string) ($data[$key] ?? ''));
 }
 
+function respondJson(array $payload, int $statusCode = 200): void
+{
+    http_response_code($statusCode);
+    header('Content-Type: application/json');
+    echo json_encode($payload, JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+function expirePreviousOtps(mysqli $dbConn, string $email): void
+{
+    $stmt = mysqli_prepare($dbConn, 'UPDATE otp_verifications SET status = "expired" WHERE email = ? AND purpose = "registration" AND status = "pending"');
+    if (!$stmt) {
+        return;
+    }
+    mysqli_stmt_bind_param($stmt, 's', $email);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
+
+function sendRegistrationOtpEmail(string $email, string $otpCode): bool
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        $smtpUser = $_ENV['email_server'] ?? '';
+        $smtpPort = $_ENV['email_port'] ?? '465';
+        $smtpPassword = $_ENV['email_password'] ?? '';
+
+        if ($smtpUser === '' || $smtpPassword === '') {
+            error_log('SMTP credentials are missing in .env');
+            return false;
+        }
+
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = $smtpUser;
+        $mail->Password = $smtpPassword;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = (int) $smtpPort;
+
+        $mail->setFrom($smtpUser, 'FoodBridge');
+        $mail->addAddress($email);
+
+        $mail->isHTML(false);
+        $mail->Subject = 'FoodBridge verification code';
+        $mail->Body = "Your verification code is: $otpCode\n\n" .
+            "Enter this code on the FoodBridge registration page within 2 minutes.\n\n" .
+            "If you did not request this code, please ignore this email.";
+
+        return $mail->send();
+    } catch (Exception $e) {
+        error_log('OTP email error: ' . $e->getMessage());
+        return false;
+    }
+}
+
 $formError = '';
 $posted = $_POST;
 
@@ -56,12 +125,199 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        $role = inputValue($posted, 'accountRole');
-        $fullName = inputValue($posted, 'fullName');
+        $action = inputValue($posted, 'action');
         $email = inputValue($posted, 'email');
-        $location = inputValue($posted, 'profileLocation');
-        $password = (string) ($posted['password'] ?? '');
-        $confirmPassword = (string) ($posted['confirmPassword'] ?? '');
+
+        if ($action === 'sendOtp') {
+            if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                respondJson(['success' => false, 'message' => 'Please enter a valid email address.'], 400);
+            }
+
+            $checkStmt = mysqli_prepare($dbConn, 'SELECT user_id FROM users WHERE email = ? LIMIT 1');
+            if (!$checkStmt) {
+                respondJson(['success' => false, 'message' => 'Unable to validate email.'], 500);
+            }
+            mysqli_stmt_bind_param($checkStmt, 's', $email);
+            mysqli_stmt_execute($checkStmt);
+            $result = mysqli_stmt_get_result($checkStmt);
+            $existingUser = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($checkStmt);
+
+            if ($existingUser) {
+                respondJson(['success' => false, 'message' => 'An account with this email already exists.'], 409);
+            }
+
+            expirePreviousOtps($dbConn, $email);
+            $otpCode = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $otpHash = password_hash($otpCode, PASSWORD_DEFAULT);
+            $expiresAt = date('Y-m-d H:i:s', time() + 120);
+            $status = 'pending';
+            $purpose = 'registration';
+
+            $insertStmt = mysqli_prepare(
+                $dbConn,
+                'INSERT INTO otp_verifications (email, otp_hash, purpose, expires_at, status)
+                 VALUES (?, ?, ?, ?, ?)'
+            );
+
+            if (!$insertStmt) {
+                respondJson(['success' => false, 'message' => 'Unable to store verification code.'], 500);
+            }
+
+            mysqli_stmt_bind_param($insertStmt, 'sssss', $email, $otpHash, $purpose, $expiresAt, $status);
+            $created = mysqli_stmt_execute($insertStmt);
+            mysqli_stmt_close($insertStmt);
+
+            if (!$created) {
+                respondJson(['success' => false, 'message' => 'Unable to store verification code.'], 500);
+            }
+
+            if (!sendRegistrationOtpEmail($email, $otpCode)) {
+                respondJson(['success' => false, 'message' => 'Unable to send verification email. Please make sure your server can send mail.'], 500);
+            }
+
+            respondJson(['success' => true, 'message' => 'Verification code sent.']);
+        }
+
+        if ($action === 'verifyOtp') {
+            $otp = inputValue($posted, 'otp');
+            if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || $otp === '' || strlen($otp) !== 6) {
+                respondJson(['success' => false, 'message' => 'Invalid verification request.'], 400);
+            }
+
+            $stmt = mysqli_prepare(
+                $dbConn,
+                'SELECT otp_id, otp_hash, expires_at
+                 FROM otp_verifications
+                 WHERE email = ? AND purpose = "registration" AND status = "pending"
+                 ORDER BY otp_id DESC
+                 LIMIT 1'
+            );
+
+            if (!$stmt) {
+                respondJson(['success' => false, 'message' => 'Unable to verify code.'], 500);
+            }
+
+            mysqli_stmt_bind_param($stmt, 's', $email);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $otpRow = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($stmt);
+
+            if (!$otpRow) {
+                respondJson(['success' => false, 'message' => 'No pending verification code found. Please resend the code.'], 404);
+            }
+
+            if (strtotime($otpRow['expires_at']) < time()) {
+                $expireStmt = mysqli_prepare($dbConn, 'UPDATE otp_verifications SET status = "expired" WHERE otp_id = ?');
+                if ($expireStmt) {
+                    mysqli_stmt_bind_param($expireStmt, 'i', $otpRow['otp_id']);
+                    mysqli_stmt_execute($expireStmt);
+                    mysqli_stmt_close($expireStmt);
+                }
+                respondJson(['success' => false, 'message' => 'The verification code has expired. Please resend the code.'], 410);
+            }
+
+            if (!password_verify($otp, $otpRow['otp_hash'])) {
+                respondJson(['success' => false, 'message' => 'Incorrect verification code. Please try again.'], 401);
+            }
+
+            $useStmt = mysqli_prepare($dbConn, 'UPDATE otp_verifications SET status = "used" WHERE otp_id = ?');
+            if ($useStmt) {
+                mysqli_stmt_bind_param($useStmt, 'i', $otpRow['otp_id']);
+                mysqli_stmt_execute($useStmt);
+                mysqli_stmt_close($useStmt);
+            }
+
+            respondJson(['success' => true, 'message' => 'Verification code accepted.']);
+        }
+
+        if ($action === 'register') {
+            $role = inputValue($posted, 'accountRole');
+            $fullName = inputValue($posted, 'fullName');
+            $location = inputValue($posted, 'profileLocation');
+            $password = (string) ($posted['password'] ?? '');
+            $confirmPassword = (string) ($posted['confirmPassword'] ?? '');
+
+            if (!in_array($role, ['donor', 'receiver'], true)) {
+                respondJson(['success' => false, 'message' => 'Please choose a valid account type.'], 400);
+            }
+
+            if ($fullName === '' || $email === '' || $location === '' || $password === '') {
+                respondJson(['success' => false, 'message' => 'Please complete all required fields.'], 400);
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                respondJson(['success' => false, 'message' => 'Please enter a valid email address.'], 400);
+            }
+
+            if (strlen($password) < 8) {
+                respondJson(['success' => false, 'message' => 'Password must be at least 8 characters.'], 400);
+            }
+
+            if ($password !== $confirmPassword) {
+                respondJson(['success' => false, 'message' => 'Passwords do not match.'], 400);
+            }
+
+            $checkStmt = mysqli_prepare($dbConn, 'SELECT user_id FROM users WHERE email = ? LIMIT 1');
+            if (!$checkStmt) {
+                respondJson(['success' => false, 'message' => 'Unable to prepare registration request.'], 500);
+            }
+
+            mysqli_stmt_bind_param($checkStmt, 's', $email);
+            mysqli_stmt_execute($checkStmt);
+            $existingResult = mysqli_stmt_get_result($checkStmt);
+            $existingUser = mysqli_fetch_assoc($existingResult);
+            mysqli_stmt_close($checkStmt);
+
+            if ($existingUser) {
+                respondJson(['success' => false, 'message' => 'An account with this email already exists.'], 409);
+            }
+
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+            $status = 'active';
+            $insertStmt = mysqli_prepare(
+                $dbConn,
+                'INSERT INTO users (role, full_name, email, password_hash, location, status)
+                 VALUES (?, ?, ?, ?, ?, ?)'
+            );
+
+            if (!$insertStmt) {
+                respondJson(['success' => false, 'message' => 'Unable to create account.'], 500);
+            }
+
+            mysqli_stmt_bind_param($insertStmt, 'ssssss', $role, $fullName, $email, $passwordHash, $location, $status);
+            $created = mysqli_stmt_execute($insertStmt);
+            $userId = mysqli_insert_id($dbConn);
+            mysqli_stmt_close($insertStmt);
+
+            if (!$created) {
+                respondJson(['success' => false, 'message' => 'Unable to save account details.'], 500);
+            }
+
+            session_regenerate_id(true);
+            $_SESSION['user'] = [
+                'id' => (int) $userId,
+                'role' => $role,
+                'name' => $fullName,
+                'email' => $email,
+            ];
+
+            respondJson([
+                'success' => true,
+                'redirect' => "../roles/$role/profile.html",
+                'user' => [
+                    'id' => (int) $userId,
+                    'role' => $role,
+                    'name' => $fullName,
+                    'email' => $email,
+                    'location' => $location,
+                    'trustScore' => 100,
+                    'totalFoodDonated' => 0,
+                    'status' => $status,
+                ],
+            ]);
+        }
 
         if (!in_array($role, ['donor', 'receiver'], true)) {
             finishRegister(['success' => false, 'message' => 'Please choose a valid account type.'], 400);
@@ -178,6 +434,7 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
         <span class="step-dot active" data-dot="0"></span>
         <span class="step-dot" data-dot="1"></span>
         <span class="step-dot" data-dot="2"></span>
+        <span class="step-dot" data-dot="3"></span>
       </div>
 
       <a class="signin-link" href="login.php">Sign in instead</a>
@@ -310,6 +567,32 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
 
           <p class="form-message" id="registerMessage" role="status" aria-live="polite"><?php echo htmlspecialchars($formError, ENT_QUOTES); ?></p>
           <button class="primary-action" type="submit">Continue -></button>
+        </div>
+      </section>
+
+      <section class="register-step otp-step" data-step="3" aria-labelledby="otpTitle">
+        <div class="otp-card">
+          <h1 id="otpTitle">Verify your account</h1>
+          <p id="otpInfo">Enter the 6-digit code we sent to your email to verify your account.</p>
+
+          <div class="otp-inputs" aria-hidden="false">
+            <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-input" aria-label="Digit 1">
+            <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-input" aria-label="Digit 2">
+            <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-input" aria-label="Digit 3">
+            <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-input" aria-label="Digit 4">
+            <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-input" aria-label="Digit 5">
+            <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-input" aria-label="Digit 6">
+          </div>
+
+          <p class="form-message" id="otpMessage" role="status" aria-live="polite"></p>
+
+          <div class="otp-actions" style="margin-top:18px;">
+            <div class="otp-buttons">
+              <button type="button" class="primary-action small" id="resendOtp">Resend code</button>
+              <button class="primary-action" type="submit">Verify code</button>
+            </div>
+            <small id="otpTimer" style="color:rgba(28,43,30,0.64);font-size:0.9rem;margin-top:12px;display:block;text-align:center;">Expires in 5:00</small>
+          </div>
         </div>
       </section>
     </form>
