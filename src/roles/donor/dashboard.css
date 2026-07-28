@@ -1,11 +1,15 @@
 .page-heading {
-  font-family: var(--font-serif); /* or var(--font-display) — whatever it's named in global.css */
+  font-family: var(--font-serif);
+  /* or var(--font-display) — whatever it's named in global.css */
   font-size: 2.25rem;
-  font-weight: 400; /* DM Serif Display only ships a single weight, so drop the 900 */
+  font-weight: 400;
+  /* DM Serif Display only ships a single weight, so drop the 900 */
   line-height: 1.15;
-  letter-spacing: -0.01em; /* serif faces usually want less negative tracking than sans */
+  letter-spacing: -0.01em;
+  /* serif faces usually want less negative tracking than sans */
   color: var(--color-forest);
 }
+
 .page-subheading {
   margin: 8px 0 32px;
   color: var(--color-text-muted);
@@ -412,7 +416,7 @@
   .summary-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -430,6 +434,7 @@
 }
 
 @media (max-width: 576px) {
+
   .panel-card,
   .summary-card {
     padding: 20px;

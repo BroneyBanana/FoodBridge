@@ -1,3 +1,66 @@
+<?php
+session_start();
+require_once '../../../database/db.php';
+
+if (!isset($_SESSION['user'])) {
+    header("Location: ../../auth/login.php");
+    exit;
+}
+$userId = $_SESSION['user']['id'];
+
+// 1. Food Received and Trust Score
+$stmt = mysqli_prepare($dbConn, "SELECT trust_score FROM users WHERE user_id = ?");
+mysqli_stmt_bind_param($stmt, "i", $userId);
+mysqli_stmt_execute($stmt);
+$userRow = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+$trustScore = $userRow['trust_score'];
+
+// Total collected
+$stmt = mysqli_prepare($dbConn, "
+    SELECT COALESCE(SUM(d.quantity), 0) AS total_collected
+    FROM bookings b
+    JOIN donations d ON b.donation_id = d.donation_id
+    WHERE b.receiver_id = ? AND b.status = 'collected'
+");
+mysqli_stmt_bind_param($stmt, "i", $userId);
+mysqli_stmt_execute($stmt);
+$foodReceived = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['total_collected'];
+
+// 2. Active Bookings
+$stmt = mysqli_prepare($dbConn, "SELECT COUNT(*) AS active_count FROM bookings WHERE receiver_id = ? AND status = 'reserved'");
+mysqli_stmt_bind_param($stmt, "i", $userId);
+mysqli_stmt_execute($stmt);
+$activeBookings = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['active_count'];
+
+// 3. Booking Queue
+$stmt = mysqli_prepare($dbConn, "
+    SELECT b.booking_id, d.food_name, d.quantity, d.unit, d.pickup_address, p.timeslot
+    FROM bookings b
+    JOIN donations d ON b.donation_id = d.donation_id
+    JOIN pickup_slots p ON b.pickup_slot_id = p.pickup_slot_id
+    WHERE b.receiver_id = ? AND b.status = 'reserved'
+    ORDER BY p.timeslot ASC
+    LIMIT 3
+");
+mysqli_stmt_bind_param($stmt, "i", $userId);
+mysqli_stmt_execute($stmt);
+$queue = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+
+// 4. Impact
+$stmt = mysqli_prepare($dbConn, "
+    SELECT COUNT(DISTINCT d.donor_id) AS active_donors
+    FROM bookings b
+    JOIN donations d ON b.donation_id = d.donation_id
+    WHERE b.receiver_id = ?
+");
+mysqli_stmt_bind_param($stmt, "i", $userId);
+mysqli_stmt_execute($stmt);
+$donorsSupported = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['active_donors'];
+
+$trustBadge = 'Good';
+if ($trustScore >= 90) $trustBadge = 'Excellent';
+elseif ($trustScore < 50) $trustBadge = 'Warning';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,7 +80,7 @@
   <link rel="stylesheet" href="../../assets/css/header.css">
 
   <!-- Page Specific Styles -->
-  <link rel="stylesheet" href="admin-dashboard.css">
+  <link rel="stylesheet" href="dashboard.css">
 </head>
 
 <body>
@@ -75,14 +138,14 @@
   <!-- Main Content Area -->
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
-      <h1 class="page-heading">Admin Overview</h1>
-      <p class="page-subheading">View system activity, active donations, and platform-wide performance heatmap.</p>
+      <h1 class="page-heading">Receiver Overview</h1>
+      <p class="page-subheading">Track your food collections, manage upcoming pickups, and find new donations.</p>
 
-      <div class="content-body admin-dashboard">
+      <div class="content-body receiver-dashboard">
         <div class="summary-grid">
           <article class="summary-card stat-card-rescued">
             <div class="card-header-with-icon">
-              <span class="summary-label">Food Rescued</span>
+              <span class="summary-label">Food Received</span>
               <div class="icon-circle bg-forest-light">
                 <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-forest)" stroke-width="2"
                   fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -92,13 +155,13 @@
                 </svg>
               </div>
             </div>
-            <strong>128 kg</strong>
-            <small>18 community pickups completed</small>
+            <strong><?= htmlspecialchars($foodReceived) ?> items</strong>
+            <small>Lifetime total collected</small>
           </article>
 
           <article class="summary-card stat-card-active">
             <div class="card-header-with-icon">
-              <span class="summary-label">Active Donations</span>
+              <span class="summary-label">Active Bookings</span>
               <div class="icon-circle bg-terracotta-light">
                 <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-terracotta)" stroke-width="2"
                   fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -109,8 +172,8 @@
                 </svg>
               </div>
             </div>
-            <strong>05</strong>
-            <small>2 ready for drop-off today</small>
+            <strong><?= htmlspecialchars($activeBookings) ?></strong>
+            <small>Pending pickups</small>
           </article>
 
           <article class="summary-card stat-card-trust">
@@ -123,8 +186,8 @@
                 </svg>
               </div>
             </div>
-            <strong>94%</strong>
-            <small>Reliable donor performance</small>
+            <strong><?= htmlspecialchars($trustScore) ?>%</strong>
+            <small><?= $trustBadge ?> receiver performance</small>
           </article>
         </div>
 
@@ -132,71 +195,62 @@
           <section class="panel-card main-panel">
             <div class="section-header">
               <div>
-                <h2>Today&rsquo;s donation queue</h2>
-                <p class="muted-text">Your upcoming food releases, pickup windows, and priority rescue matches.</p>
+                <h2>My upcoming pickups</h2>
+                <p class="muted-text">Your scheduled collections and priority food grabs.</p>
               </div>
               <span class="date-pill" id="todayDate"></span>
             </div>
 
             <div class="pickup-list">
-              <article class="pickup-card" data-href="donations.html" tabindex="0" role="button">
-                <div class="pickup-info">
-                  <span class="pickup-badge badge-ready">
-                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"
-                      stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    Ready in 45 min
-                  </span>
-                  <h3>Sunrise Bakery Outlet</h3>
-                  <p class="pickup-desc">
-                    <span class="meta-item">18 bread trays</span>
-                    <span class="meta-separator">•</span>
-                    <span class="meta-item">surplus from morning prep</span>
-                    <span class="meta-separator">•</span>
-                    <span class="meta-item">pickup at 2:30 PM</span>
-                  </p>
-                </div>
-                <a href="donations.html" class="btn btn-sm btn-primary">
-                  View Details
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </a>
-              </article>
-
-              <article class="pickup-card" data-href="donations.html" tabindex="0" role="button">
-                <div class="pickup-info">
-                  <span class="pickup-badge badge-match">
-                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"
-                      stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
-                      <polygon
-                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                      </polygon>
-                    </svg>
-                    New Match
-                  </span>
-                  <h3>Oak Street Cafe</h3>
-                  <p class="pickup-desc">
-                    <span class="meta-item">12 salad boxes</span>
-                    <span class="meta-separator">•</span>
-                    <span class="meta-item">cooling window</span>
-                    <span class="meta-separator">•</span>
-                    <span class="meta-item">pickup at 4:00 PM</span>
-                  </p>
-                </div>
-                <a href="donations.html" class="btn btn-sm btn-accent">
-                  Schedule
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </a>
-              </article>
+              <?php if (empty($queue)): ?>
+                <p class="muted-text">You have no upcoming pickups right now. Browse donations to find food.</p>
+              <?php else: ?>
+                <?php foreach ($queue as $item): ?>
+                  <?php
+                  $slotTime = strtotime($item['timeslot']);
+                  $hoursUntil = ($slotTime - time()) / 3600;
+                  $isSoon = $hoursUntil <= 2;
+                  ?>
+                  <article class="pickup-card" data-href="bookings.php" tabindex="0" role="button">
+                    <div class="pickup-info">
+                      <span class="pickup-badge <?= $isSoon ? 'badge-ready' : 'badge-match' ?>">
+                        <?php if ($isSoon): ?>
+                          <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                          </svg>
+                          Ready soon
+                        <?php else: ?>
+                          <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                            <polygon
+                              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                          </svg>
+                          Upcoming
+                        <?php endif; ?>
+                      </span>
+                      <h3><?= htmlspecialchars($item['food_name']) ?></h3>
+                      <p class="pickup-desc">
+                        <span class="meta-item"><?= htmlspecialchars($item['quantity']) ?> <?= htmlspecialchars($item['unit']) ?></span>
+                        <span class="meta-separator">•</span>
+                        <span class="meta-item"><?= htmlspecialchars($item['pickup_address']) ?></span>
+                        <span class="meta-separator">•</span>
+                        <span class="meta-item">pickup <?= date('g:i A', $slotTime) ?></span>
+                      </p>
+                    </div>
+                    <a href="bookings.php" class="btn btn-sm <?= $isSoon ? 'btn-primary' : 'btn-accent' ?>">
+                      View Details
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </a>
+                  </article>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </div>
           </section>
 
@@ -204,15 +258,15 @@
             <section class="panel-card trust-panel">
               <div class="panel-header-with-badge">
                 <h2>Impact snapshot</h2>
-                <span class="trust-badge">On track</span>
+                <span class="trust-badge"><?= $trustBadge ?></span>
               </div>
               <div class="trust-meter-wrapper">
                 <div class="trust-meter">
-                  <span class="trust-fill" style="width: 94%;"></span>
+                  <span class="trust-fill" style="width: <?= htmlspecialchars($trustScore) ?>%;"></span>
                 </div>
-                <span class="trust-percentage">94%</span>
+                <span class="trust-percentage"><?= htmlspecialchars($trustScore) ?>%</span>
               </div>
-              <p class="muted-text">Platform-wide donor reliability is trending up this month.</p>
+              <p class="muted-text">You have supported <?= htmlspecialchars($donorsSupported) ?> unique donor<?= $donorsSupported == 1 ? '' : 's' ?> so far.</p>
             </section>
 
             <section class="panel-card actions-panel">
