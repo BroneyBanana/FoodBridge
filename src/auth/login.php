@@ -247,6 +247,51 @@ $selectedRole = in_array($selectedRole, ['donor', 'receiver', 'admin'], true) ? 
 
         <p class="signup-copy">Don't have an account? <a href="register.php">Sign Up</a></p>
       </div>
+      <!-- Forgot Password Modal -->
+<div class="modal-overlay" id="forgotPasswordModal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
+    <button class="modal-close" type="button" id="closeForgotModal" aria-label="Close">&times;</button>
+
+    <!-- Step 1: request code -->
+    <div id="forgotStepEmail">
+      <h3 id="forgotTitle">Reset your password</h3>
+      <p>Enter your email and we'll send you a verification code.</p>
+
+      <form id="forgotPasswordForm">
+        <label class="form-field" for="forgotEmail">
+          <span>Email</span>
+          <input id="forgotEmail" name="email" type="email" required>
+        </label>
+
+        <p class="form-message" id="forgotMessage" role="status" aria-live="polite"></p>
+
+        <button class="sign-in-button" type="submit" id="forgotSubmitBtn">Send Code</button>
+      </form>
+    </div>
+
+    <!-- Step 2: enter code + new password -->
+        <div id="forgotStepReset" hidden>
+          <h3>Enter your code</h3>
+          <p>Check your email for the 6-digit code, then set a new password.</p>
+
+          <form id="resetPasswordForm">
+            <label class="form-field" for="resetOtp">
+              <span>Verification code</span>
+              <input id="resetOtp" name="otp" type="text" inputmode="numeric" maxlength="6" required>
+            </label>
+
+            <label class="form-field" for="resetNewPassword">
+              <span>New password</span>
+              <input id="resetNewPassword" name="new_password" type="password" minlength="8" required>
+            </label>
+
+            <p class="form-message" id="resetMessage" role="status" aria-live="polite"></p>
+
+            <button class="sign-in-button" type="submit" id="resetSubmitBtn">Reset Password</button>
+          </form>
+        </div>
+      </div>
+    </div>
     </section>
   </main>
 

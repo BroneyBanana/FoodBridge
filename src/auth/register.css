@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap');
+
 :root {
-  --font-display: "Space Grotesk", sans-serif;
-  --font-sans: "Inter", sans-serif;
-  --font-syne: "Space Grotesk", sans-serif;
+  /* Poppins for headings and body on the register page */
+  --font-display: "Poppins", sans-serif;
+  --font-sans: "Poppins", sans-serif;
+  --font-syne: "Poppins", sans-serif;
 }
 
 body {
@@ -319,6 +322,50 @@ body {
 .primary-action.compact {
   display: block;
   margin: 34px auto 0;
+}
+
+/* Smaller variant of the primary action used for OTP resend button */
+.primary-action.small {
+  width: 180px;
+  min-height: 48px;
+  padding: 10px 20px;
+  font: 800 0.96rem var(--font-sans);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure OTP card buttons align nicely */
+.otp-card .primary-action {
+  min-width: 280px;
+}
+
+/* OTP button row */
+.otp-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.otp-buttons {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.otp-buttons .primary-action {
+  min-height: 56px;
+}
+
+.otp-buttons .primary-action.small {
+  width: 160px;
+  min-width: 160px;
+}
+
+.otp-card small#otpTimer {
+  color: rgba(28, 43, 30, 0.64);
 }
 
 .quiet-link {

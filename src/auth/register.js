@@ -15,13 +15,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const togglePassword = document.querySelector("#togglePassword");
   const profileSubmit = document.querySelector(".profile-step button[type='submit']");
   const otpSubmit = document.querySelector(".otp-step button[type='submit']");
+  const submitButton = profileSubmit;
   const otpInputs = [...document.querySelectorAll(".otp-input")];
   const otpMessage = document.querySelector("#otpMessage");
   const resendOtpButton = document.querySelector("#resendOtp");
+  const otpTimer = document.querySelector("#otpTimer");
+  const emailInput = document.querySelector("input[name='email']");
   const formMessage = document.querySelector("#registerMessage");
 
   let currentStep = 0;
-  let generatedOtp = "";
+  let otpExpiry = 0;
+  let otpTimerInterval = null;
+  let resendAvailableAt = 0;
+  let resendInterval = null;
+
+  const OTP_LIFETIME_MS = 2 * 60 * 1000; // 2 minutes
+  const RESEND_COOLDOWN_MS = 30 * 1000; // 30 seconds
 
   function selectedRole() {
     return document.querySelector("input[name='accountRole']:checked")?.value || "receiver";
@@ -56,9 +65,65 @@ document.addEventListener("DOMContentLoaded", () => {
     targetElement.classList.toggle("success", type === "success");
   }
 
-  function generateOtp() {
-    generatedOtp = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join("");
-    console.log("OTP code:", generatedOtp);
+  async function sendOtpRequest() {
+    if (!emailInput) {
+      throw new Error('Cannot send OTP without an email address.');
+    }
+
+    const email = emailInput.value.trim();
+    if (!email) {
+      throw new Error('Please enter a valid email address.');
+    }
+
+    const data = new FormData();
+    data.append('action', 'sendOtp');
+    data.append('email', email);
+
+    const response = await fetch('register.php', {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      body: data,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Unable to send verification code.');
+    }
+
+    otpExpiry = Date.now() + OTP_LIFETIME_MS;
+    startOtpTimer();
+    startResendCooldown();
+  }
+
+  function startOtpTimer() {
+    if (!otpTimer) return;
+    clearInterval(otpTimerInterval);
+    function update() {
+      const remaining = Math.max(0, otpExpiry - Date.now());
+      const seconds = Math.ceil(remaining / 1000);
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      otpTimer.textContent = remaining > 0 ? `Expires in ${mins}:${secs.toString().padStart(2, '0')}` : 'Code expired';
+
+      if (remaining <= 0) {
+        clearInterval(otpTimerInterval);
+        setMessage('The verification code has expired. Request a new code.', 'error', 'otp');
+      }
+    }
+    update();
+    otpTimerInterval = setInterval(update, 1000);
+  }
+
+  function startResendCooldown() {
+    if (!resendOtpButton) return;
+    resendAvailableAt = Date.now() + RESEND_COOLDOWN_MS;
+    resendOtpButton.disabled = true;
+    clearTimeout(resendInterval);
+    // Keep button label unchanged; re-enable after cooldown
+    resendInterval = setTimeout(() => {
+      resendOtpButton.disabled = false;
+    }, RESEND_COOLDOWN_MS);
   }
 
   function clearOtp() {
@@ -81,8 +146,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!isValid) return;
 
-        generateOtp();
-        setMessage("A verification code has been sent.", "success", "otp");
+        sendOtpRequest()
+          .then(() => {
+            setMessage("A verification code has been sent.", "success", "otp");
+            goToStep(currentStep + 1);
+          })
+          .catch((error) => {
+            setMessage(error.message, "error", "register");
+          });
+
+        return;
       }
 
       goToStep(currentStep + 1);
@@ -125,11 +198,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  resendOtpButton.addEventListener("click", () => {
-    generateOtp();
-    setMessage("A new code has been sent.", "success", "otp");
-    clearOtp();
-    otpInputs[0]?.focus();
+  resendOtpButton.addEventListener("click", async () => {
+    if (Date.now() < resendAvailableAt) return;
+
+    try {
+      await sendOtpRequest();
+      setMessage("A new code has been sent.", "success", "otp");
+      clearOtp();
+      otpInputs[0]?.focus();
+    } catch (error) {
+      setMessage(error.message, "error", "otp");
+    }
   });
 
   fullNameInput.addEventListener("input", updatePreview);
@@ -164,9 +243,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!isValid) return;
 
-      generateOtp();
-      setMessage("A verification code has been sent.", "success", "otp");
-      goToStep(3);
+      try {
+        await sendOtpRequest();
+        setMessage("A verification code has been sent.", "success", "otp");
+        goToStep(3);
+      } catch (error) {
+        setMessage(error.message, "error", "register");
+      }
+
       return;
     }
 
@@ -177,8 +261,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      if (otpCode !== generatedOtp) {
-        setMessage("Incorrect code. Please try again.", "error", "otp");
+      if (!otpExpiry || Date.now() > otpExpiry) {
+        setMessage('The verification code has expired. Please request a new code.', 'error', 'otp');
         return;
       }
 
@@ -187,34 +271,52 @@ document.addEventListener("DOMContentLoaded", () => {
       otpSubmit.textContent = "Verifying...";
 
       try {
-        const response = await fetch("register.php", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-          body: new FormData(form),
-        });
-        const data = await response.json();
+        const verifyForm = new FormData();
+        verifyForm.append('action', 'verifyOtp');
+        verifyForm.append('email', emailInput.value.trim());
+        verifyForm.append('otp', otpCode);
 
-        if (!response.ok || !data.success) {
-          setMessage(data.message || "Unable to create your account. Please try again.", "error", "otp");
+        const verifyResponse = await fetch('register.php', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: verifyForm,
+        });
+
+        const verifyData = await verifyResponse.json();
+        if (!verifyResponse.ok || !verifyData.success) {
+          setMessage(verifyData.message || 'Unable to verify your code.', 'error', 'otp');
           return;
         }
 
-        const storageKey = data.user.role === "admin" ? "foodbridgeAdminProfile" : "foodbridgeProfile";
+        const registerFormData = new FormData(form);
+        registerFormData.append('action', 'register');
+
+        const response = await fetch('register.php', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: registerFormData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          setMessage(data.message || 'Unable to create your account. Please try again.', 'error', 'otp');
+          return;
+        }
+
+        const storageKey = data.user.role === 'admin' ? 'foodbridgeAdminProfile' : 'foodbridgeProfile';
         localStorage.setItem(storageKey, JSON.stringify(data.user));
         window.location.href = data.redirect;
       } catch (error) {
-        setMessage("Unable to reach the registration server. Please run this page through PHP.", "error", "otp");
+        setMessage('Unable to reach the registration server. Please run this page through PHP.', 'error', 'otp');
       } finally {
         submitButton.disabled = false;
         otpSubmit.disabled = false;
-        otpSubmit.textContent = "Verify code";
+        otpSubmit.textContent = 'Verify code';
       }
     }
   });
 
   updateProgress();
   updatePreview();
-  generateOtp();
 });

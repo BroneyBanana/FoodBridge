@@ -26,22 +26,17 @@
     <section class="login-visual" aria-label="FoodBridge community">
       <img src="../assets/images/impact3.jpg" alt="FoodBridge volunteers packing donated food">
       <div class="visual-shade"></div>
-      <div class="brand-lockup">
-        <img src="../assets/images/logo.png" alt="" aria-hidden="true">
-        <span>FoodBridge</span>
-      </div>
       <h1>Share what you can.<br>Take what you need.</h1>
     </section>
 
     <section class="login-panel" aria-labelledby="login-title">
       <div class="admin-access">
         <a href="#admin" id="adminAccess">Admin Access</a>
-        <span>Use your database account</span>
+        <span>Demo: donor@food.com</span>
       </div>
 
       <div class="login-card">
         <div class="login-header">
-          <p class="eyebrow">FoodBridge Login</p>
           <h2 id="login-title">Welcome Back</h2>
           <p>Sign in to continue your food rescue journey.</p>
         </div>
@@ -49,7 +44,6 @@
         <div class="role-tabs" role="tablist" aria-label="Choose account type">
           <button class="role-tab active" type="button" role="tab" aria-selected="true" data-role="donor">Donor</button>
           <button class="role-tab" type="button" role="tab" aria-selected="false" data-role="receiver">Receiver</button>
-          <button class="role-tab" type="button" role="tab" aria-selected="false" data-role="admin">Admin</button>
         </div>
 
         <form class="login-form" action="#" method="post" id="loginForm">
@@ -84,8 +78,10 @@
               <input type="checkbox" name="remember">
               <span>Remember me</span>
             </label>
-            <a href="#">Forgot password?</a>
+            <a href="#">Forgot Password?</a>
           </div>
+
+          <p class="form-message" role="status" aria-live="polite"></p>
 
           <button class="sign-in-button" type="submit">Sign In</button>
         </form>

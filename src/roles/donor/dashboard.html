@@ -70,8 +70,235 @@
       <h1 class="page-heading">Donor Overview</h1>
       <p class="page-subheading">Track your impact, claim food rescue points, and check your active donations status.</p>
       
-      <!-- Main content body left entirely blank for user coding -->
-      <div class="content-body"></div>
+      <div class="content-body donor-dashboard">
+        <div class="summary-grid">
+          <article class="summary-card stat-card-rescued">
+            <div class="card-header-with-icon">
+              <span class="summary-label">Food Rescued</span>
+              <div class="icon-circle bg-lime-light">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-forest)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10"></path>
+                  <path d="M7 12h10"></path>
+                  <path d="M7 17h6"></path>
+                  <path d="M5 7c0 8 2.5 10 7 10s7-2 7-10"></path>
+                </svg>
+              </div>
+            </div>
+            <strong>128 kg</strong>
+            <small>18 community pickups completed</small>
+          </article>
+
+          <article class="summary-card stat-card-donations">
+            <div class="card-header-with-icon">
+              <span class="summary-label">Active Donations</span>
+              <div class="icon-circle bg-terracotta-light">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-terracotta)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
+            </div>
+            <strong>05</strong>
+            <small>2 ready for drop-off today</small>
+          </article>
+
+          <article class="summary-card stat-card-trust">
+            <div class="card-header-with-icon">
+              <span class="summary-label">Trust Score</span>
+              <div class="icon-circle bg-forest-light">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-forest)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+            </div>
+            <strong>94%</strong>
+            <small>Reliable donor performance</small>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel-card main-panel">
+            <div class="section-header">
+              <div>
+                <h2>Today’s donation queue</h2>
+                <p class="muted-text">Your upcoming food releases, pickup windows, and priority rescue matches.</p>
+              </div>
+              <span class="date-pill" id="todayDate"></span>
+            </div>
+
+            <div class="pickup-list">
+              <article class="pickup-card" data-href="my-donations.html" tabindex="0" role="button">
+                <div class="pickup-info">
+                  <span class="pickup-badge badge-ready">
+                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Ready in 45 min
+                  </span>
+                  <h3>Sunrise Bakery Outlet</h3>
+                  <p class="pickup-desc">
+                    <span class="meta-item">18 bread trays</span>
+                    <span class="meta-separator">•</span>
+                    <span class="meta-item">Surplus from morning prep</span>
+                    <span class="meta-separator">•</span>
+                    <span class="meta-item">pickup at 2:30 PM</span>
+                  </p>
+                </div>
+                <a href="my-donations.html" class="btn btn-sm btn-primary">
+                  View Details
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </article>
+
+              <article class="pickup-card" data-href="donate.html" tabindex="0" role="button">
+                <div class="pickup-info">
+                  <span class="pickup-badge badge-match">
+                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    New Match
+                  </span>
+                  <h3>Green Valley Grocer</h3>
+                  <p class="pickup-desc">
+                    <span class="meta-item">12 produce crates</span>
+                    <span class="meta-separator">•</span>
+                    <span class="meta-item">high-demand cluster</span>
+                    <span class="meta-separator">•</span>
+                    <span class="meta-item">pickup at 4:00 PM</span>
+                  </p>
+                </div>
+                <a href="donate.html" class="btn btn-sm btn-accent">
+                  Schedule
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </article>
+
+              <article class="pickup-card" data-href="review.html" tabindex="0" role="button">
+                <div class="pickup-info">
+                  <span class="pickup-badge badge-review">
+                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Needs review
+                  </span>
+                  <h3>Community Kitchen Care Pack</h3>
+                  <p class="pickup-desc">
+                    <span class="meta-item">9 sealed containers</span>
+                    <span class="meta-separator">•</span>
+                    <span class="meta-item">temperature check required</span>
+                    <span class="meta-separator">•</span>
+                    <span class="meta-item">drop-off before 6:00 PM</span>
+                  </p>
+                </div>
+                <a href="review.html" class="btn btn-sm btn-outline">
+                  Open Review
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </article>
+            </div>
+          </section>
+
+          <aside class="dashboard-side">
+            <section class="panel-card impact-panel">
+              <h2>Impact snapshot</h2>
+              <ul class="tag-list">
+                <li>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v20"></path>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  24 meals rescued
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 8l-2 4h4l-2 4"></path>
+                  </svg>
+                  5 active partners
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12h18"></path>
+                    <path d="M12 3v18"></path>
+                  </svg>
+                  2 priority windows
+                </li>
+              </ul>
+            </section>
+
+            <section class="panel-card trust-panel">
+              <div class="panel-header-with-badge">
+                <h2>Trust snapshot</h2>
+                <span class="trust-badge">Excellent</span>
+              </div>
+              <div class="trust-meter-wrapper">
+                <div class="trust-meter">
+                  <span class="trust-fill" style="width: 94%;"></span>
+                </div>
+                <span class="trust-percentage">94%</span>
+              </div>
+              <p class="muted-text">Your pickup reliability and review score continue to rise.</p>
+            </section>
+
+            <section class="panel-card actions-panel">
+              <h2>Quick actions</h2>
+              <div class="quick-actions">
+                <a href="donate.html" class="action-link-item">
+                  <div class="link-left-content">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="action-icon">
+                      <path d="M12 5v14"></path>
+                      <path d="M5 12h14"></path>
+                    </svg>
+                    <span>Donate new food</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </a>
+                <a href="my-donations.html" class="action-link-item">
+                  <div class="link-left-content">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="action-icon">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span>Manage donations</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </a>
+                <a href="leaderboard.html" class="action-link-item">
+                  <div class="link-left-content">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="action-icon">
+                      <path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z"></path>
+                    </svg>
+                    <span>View leaderboard</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </a>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </div>
     </main>
   </div>
 
