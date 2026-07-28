@@ -10,7 +10,7 @@
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
     if(!isset($_SESSION['user'])){
-        header("Location: ../../auth/login.html");
+        header("Location: ../../auth/login.php");
         exit();
     }
 

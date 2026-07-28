@@ -74,7 +74,7 @@ $notificationsJson = json_encode($notificationsJsArray);
 <body>
   <div class="noise-bg"></div>
   <header class="dashboard-header">
-    <a href="dashboard.html" class="navbar-brand">
+    <a href="dashboard.php" class="navbar-brand">
       <div class="navbar-logo">
         <img src="../../assets/images/logo.png" alt="Logo" />
       </div>
@@ -82,13 +82,13 @@ $notificationsJson = json_encode($notificationsJsArray);
 
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
-        <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
-        <a href="users.html" class="dashboard-nav-item">Users</a>
-        <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
-        <a href="donations.html" class="dashboard-nav-item">Donations</a>
-        <a href="trust-rules.html" class="dashboard-nav-item">Trust Rules</a>
+        <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
+        <a href="users.php" class="dashboard-nav-item">Users</a>
+        <a href="vouchers.php" class="dashboard-nav-item">Vouchers</a>
+        <a href="donations.php" class="dashboard-nav-item">Donations</a>
+        <a href="trust-rules.php" class="dashboard-nav-item">Trust Rules</a>
         <a href="reports.php" class="dashboard-nav-item">Reports</a>
-        <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
+        <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
         <a href="trust-score.php" class="dashboard-nav-item">Trust Score</a>
         <a href="review.php" class="dashboard-nav-item">Review</a>
       </nav>
@@ -106,9 +106,9 @@ $notificationsJson = json_encode($notificationsJsArray);
           style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
-      <a href="profile.html" class="profile-avatar">DO</a>
+      <a href="profile.php" class="profile-avatar">DO</a>
 
-      <a href="../../auth/login.html" class="action-btn-circle hide-mobile" title="Log Out">
+      <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>

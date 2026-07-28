@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         respond([
             'success' => true,
-            'redirect' => $redirects[$user['role']] ?? '../../index.html',
+            'redirect' => $redirects[$user['role']] ?? '../../index.php',
             'user' => [
                 'id' => (int) $user['user_id'],
                 'role' => $user['role'],
@@ -170,7 +170,7 @@ $selectedRole = in_array($selectedRole, ['donor', 'receiver', 'admin'], true) ? 
   <div class="noise-bg"></div>
 
   <main class="login-page">
-    <a class="back-button" href="../../index.html" aria-label="Back to home">
+    <a class="back-button" href="../../index.php" aria-label="Back to home">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M19 12H5"></path>
         <path d="m12 19-7-7 7-7"></path>

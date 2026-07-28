@@ -17,7 +17,7 @@ const landingHamburger = document.getElementById('landingHamburger');
     }
   });
 
-document.querySelector('a[href="index.html#community-impact"]').addEventListener('click', function(e) {
+document.querySelector('a[href="index.php#community-impact"]').addEventListener('click', function(e) {
   e.preventDefault();
   document.querySelector('#community-impact').scrollIntoView({
     behavior: 'smooth'
@@ -33,7 +33,7 @@ document.querySelector('a[href="#community-impact"]').addEventListener('click', 
 });
 
 // Smooth scroll for How It Works navbar link
-document.querySelector('a[href="index.html#how-it-works"]').addEventListener('click', function(e) {
+document.querySelector('a[href="index.php#how-it-works"]').addEventListener('click', function(e) {
   e.preventDefault();
   document.querySelector('#how-it-works').scrollIntoView({
     behavior: 'smooth'

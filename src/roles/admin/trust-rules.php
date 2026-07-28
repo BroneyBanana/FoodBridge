@@ -140,23 +140,23 @@ $adminName = (string) ($_SESSION['user']['name'] ?? 'Admin');
 <body>
   <div class="noise-bg"></div>
   <header class="dashboard-header">
-    <a href="dashboard.html" class="navbar-brand">
+    <a href="dashboard.php" class="navbar-brand">
       <div class="navbar-logo"><img src="../../assets/images/logo.png" alt="FoodBridge logo"></div>
     </a>
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
-        <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
-        <a href="users.html" class="dashboard-nav-item">Users</a>
-        <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
-        <a href="donations.html" class="dashboard-nav-item">Donations</a>
+        <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
+        <a href="users.php" class="dashboard-nav-item">Users</a>
+        <a href="vouchers.php" class="dashboard-nav-item">Vouchers</a>
+        <a href="donations.php" class="dashboard-nav-item">Donations</a>
         <a href="trust-rules.php" class="dashboard-nav-item active">Trust Rules</a>
-        <a href="reports.html" class="dashboard-nav-item">Reports</a>
-        <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
+        <a href="reports.php" class="dashboard-nav-item">Reports</a>
+        <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
       </nav>
     </div>
     <div class="dashboard-actions">
-      <a class="action-btn-circle hide-mobile" title="Notifications" href="notifications.html">&#128276;</a>
-      <a href="profile.html" class="profile-avatar"><?php echo escapeHtml(initials($adminName)); ?></a>
+      <a class="action-btn-circle hide-mobile" title="Notifications" href="notifications.php">&#128276;</a>
+      <a href="profile.php" class="profile-avatar"><?php echo escapeHtml(initials($adminName)); ?></a>
       <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">&#10132;</a>
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">&#9776;</button>
     </div>

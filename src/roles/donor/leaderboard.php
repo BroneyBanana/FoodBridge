@@ -103,7 +103,7 @@ $leaderboardJson = json_encode($leaderboardRows);
 <body>
   <div class="noise-bg"></div>
   <header class="dashboard-header">
-    <a href="dashboard.html" class="navbar-brand">
+    <a href="dashboard.php" class="navbar-brand">
       <div class="navbar-logo">
         <img src="../../assets/images/logo.png" alt="Logo" />
       </div>
@@ -111,14 +111,14 @@ $leaderboardJson = json_encode($leaderboardRows);
 
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
-        <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
-        <a href="donate.html" class="dashboard-nav-item">Donate</a>
-        <a href="my-donations.html" class="dashboard-nav-item">My Donations</a>
+        <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
+        <a href="donate.php" class="dashboard-nav-item">Donate</a>
+        <a href="my-donations.php" class="dashboard-nav-item">My Donations</a>
         <a href="leaderboard.php" class="dashboard-nav-item active">Leaderboard</a>
-        <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
-        <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
-        <a href="trust-score.html" class="dashboard-nav-item">Trust Score</a>
-        <a href="review.html" class="dashboard-nav-item">Review</a>
+        <a href="vouchers.php" class="dashboard-nav-item">Vouchers</a>
+        <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
+        <a href="trust-score.php" class="dashboard-nav-item">Trust Score</a>
+        <a href="review.php" class="dashboard-nav-item">Review</a>
       </nav>
     </div>
 
@@ -134,7 +134,7 @@ $leaderboardJson = json_encode($leaderboardRows);
           style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
-      <a href="profile.html" class="profile-avatar">DO</a>
+      <a href="profile.php" class="profile-avatar">DO</a>
 
       <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

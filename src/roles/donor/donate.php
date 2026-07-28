@@ -2,7 +2,7 @@
   session_start();
 
   if(!isset($_SESSION['user'])){
-    header("Location: ../../auth/login.html");
+    header("Location: ../../auth/login.php");
     exit();
   }
 ?>
@@ -39,9 +39,9 @@
         <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
         <a href="donate.php" class="dashboard-nav-item active">Donate</a>
         <a href="my-donations.php" class="dashboard-nav-item">My Donations</a>
-        <a href="leaderboard.html" class="dashboard-nav-item">Leaderboard</a>
-        <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
-        <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
+        <a href="leaderboard.php" class="dashboard-nav-item">Leaderboard</a>
+        <a href="vouchers.php" class="dashboard-nav-item">Vouchers</a>
+        <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
         <a href="trust-score.php" class="dashboard-nav-item">Trust Score</a>
         <a href="review.php" class="dashboard-nav-item">Review</a>
       </nav>
@@ -49,7 +49,7 @@
 
     <div class="dashboard-actions">
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
-        href="notifications.html">
+        href="notifications.php">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
@@ -59,9 +59,9 @@
           style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
-      <a href="profile.html" class="profile-avatar">DO</a>
+      <a href="profile.php" class="profile-avatar">DO</a>
 
-      <a href="../../auth/login.html" class="action-btn-circle hide-mobile" title="Log Out">
+      <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -140,7 +140,7 @@
               <h2>Food Details</h2>
 
               <div class="close-button">
-                <a href="dashboard.html">&times;</a>
+                <a href="dashboard.php">&times;</a>
               </div>
             </div>
 

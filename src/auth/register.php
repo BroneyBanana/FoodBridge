@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         finishRegister([
             'success' => true,
-            'redirect' => "../roles/$role/profile.html",
+            'redirect' => "../roles/$role/profile.php",
             'user' => [
                 'id' => (int) $userId,
                 'role' => $role,
@@ -169,7 +169,7 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
 
   <main class="register-page">
     <header class="register-topbar">
-      <a class="brand-pill" href="../../index.html" aria-label="FoodBridge home">
+      <a class="brand-pill" href="../../index.php" aria-label="FoodBridge home">
         <span class="brand-mark">F</span>
         <span>FoodBridge</span>
       </a>

@@ -17,7 +17,7 @@
   <div class="noise-bg"></div>
 
   <nav class="global-navbar">
-  <a href="index.html" class="navbar-brand">
+  <a href="index.php" class="navbar-brand">
     <div class="navbar-logo">
         <img src="./src/assets/images/logo.png" alt="Logo" />
     </div>
@@ -37,14 +37,14 @@
   
   <div class="nav-menu-wrapper" id="navMenuWrapper">
     <div class="navbar-links">
-      <a href="index.html" class="navbar-link">Home</a>
-      <a href="index.html#how-it-works" class="navbar-link">How It Works</a>
-      <a href="index.html#community-impact" class="navbar-link">Community Impact</a>
+      <a href="index.php" class="navbar-link">Home</a>
+      <a href="index.php#how-it-works" class="navbar-link">How It Works</a>
+      <a href="index.php#community-impact" class="navbar-link">Community Impact</a>
     </div>
     
     <div class="navbar-actions">
-      <a href="./src/auth/login.html" class="btn btn-outline" style="padding: 10px 15px; font-size: 0.85rem; width: 100%;">Log In</a>
-      <a href="./src/auth/register.html" class="btn btn-primary" style="padding: 10px 24px; font-size: 0.85rem; width: 100%;">Get Started</a>
+      <a href="./src/auth/login.php" class="btn btn-outline" style="padding: 10px 15px; font-size: 0.85rem; width: 100%;">Log In</a>
+      <a href="./src/auth/register.php" class="btn btn-primary" style="padding: 10px 24px; font-size: 0.85rem; width: 100%;">Get Started</a>
     </div>
   </div>
 </nav>
@@ -55,7 +55,7 @@
         <h1 class="page-heading">Food that's left behind — find a home.</h1>
         <p class="page-subheading">Malaysia's first food rescue platform, optimized for our community in a more easy way.</p>
         <div class="action-button">
-          <a href="./src/auth/register.html" class="btn btn-primary" style="padding: 15px 24px; font-size: 0.85rem;">Donate Now</a>
+          <a href="./src/auth/register.php" class="btn btn-primary" style="padding: 15px 24px; font-size: 0.85rem;">Donate Now</a>
           <div>
             <a href="#community-impact" class="btn btn-outline" style="padding: 15px 24px; font-size: 0.85rem; gap: 5px; border: 0;"><svg xmlns="http://www.w3.org/2000/svg" width=".85rem" height=".85rem" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play w-4 h-4 fill-forest group-hover:scale-110 transition-transform"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg> View Impact</a>
           </div>
@@ -281,7 +281,7 @@
           <h2 class="joinTitle">Ready to Make a Difference?</h2>
           <p class="joinSubheading">Join our community of food rescuers and help turn surplus into smiles.</p>
           <div class="joinBtn">
-            <a href="./src/auth/register.html" class="joinBtn">Yes, I Want To Join The Community!</a>
+            <a href="./src/auth/register.php" class="joinBtn">Yes, I Want To Join The Community!</a>
           </div>
         </div>
       </section>
@@ -330,8 +330,8 @@
             <p class="footer-tagline">ZERO WASTE. ZERO HUNGER.</p>
           </div>
           <nav class="footer-links">
-            <a href="./src/auth/login.html">Login</a>
-            <a href="./src/auth/register.html">Signup</a>
+            <a href="./src/auth/login.php">Login</a>
+            <a href="./src/auth/register.php">Signup</a>
           </nav>
           <p class="footer-copy">© 2026 FoodBridge. All rights reserved.</p>
         </div>

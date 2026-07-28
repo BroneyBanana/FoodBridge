@@ -71,18 +71,18 @@ $score = max(0, min(100, (int) $user['trust_score']));
 
 <body>
     <div class="noise-bg"></div>
-    <header class="dashboard-header"><a href="dashboard.html" class="navbar-brand">
+    <header class="dashboard-header"><a href="dashboard.php" class="navbar-brand">
             <div class="navbar-logo"><img src="../../assets/images/logo.png" alt="FoodBridge logo"></div>
         </a>
         <div class="nav-overlay" id="navOverlay">
-            <nav class="dashboard-nav"><a href="dashboard.html" class="dashboard-nav-item">Overview</a><a
-                    href="browse-donations.html" class="dashboard-nav-item">Browse Food</a><a href="bookings.html"
+            <nav class="dashboard-nav"><a href="dashboard.php" class="dashboard-nav-item">Overview</a><a
+                    href="browse-donations.php" class="dashboard-nav-item">Browse Food</a><a href="bookings.php"
                     class="dashboard-nav-item">My Bookings</a><a href="trust-score.php"
                     class="dashboard-nav-item active">Trust Score</a><a href="history.php"
                     class="dashboard-nav-item">History</a></nav>
         </div>
         <div class="dashboard-actions"><a class="action-btn-circle hide-mobile" title="Notifications"
-                href="notifications.html">&#128276;</a><a href="profile.html"
+                href="notifications.php">&#128276;</a><a href="profile.php"
                 class="profile-avatar"><?php echo h(initials($user['full_name'])); ?></a><a href="../../auth/login.php"
                 class="action-btn-circle hide-mobile" title="Log Out">&#10132;</a><button class="hamburger-btn"
                 id="hamburgerBtn" aria-label="Toggle mobile menu">&#9776;</button></div>
