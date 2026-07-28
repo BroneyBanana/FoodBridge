@@ -145,6 +145,11 @@
   color: #166534;
 }
 
+.badge-receiver {
+  background: #314738;
+  color: #94da12;
+}
+
 .badge-active {
   border: 1px solid #86efac;
   color: #16a34a;
@@ -183,6 +188,7 @@
   background: #fef3c7;
   color: #b45309;
 }
+
 .btn-action.warn:hover {
   background: #fde68a;
 }
@@ -191,6 +197,7 @@
   background: #fee2e2;
   color: #b91c1c;
 }
+
 .btn-action.ban:hover {
   background: #fecaca;
 }
@@ -202,10 +209,13 @@
     gap: 16px;
     padding: 16px;
   }
+
   .search-box {
     width: 100%;
   }
-  .users-table th, .users-table td {
+
+  .users-table th,
+  .users-table td {
     padding: 16px;
   }
 }

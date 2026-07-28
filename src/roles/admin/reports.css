@@ -225,7 +225,8 @@
   gap: 12px;
 }
 
-.resolved-notice, .dismissed-notice {
+.resolved-notice,
+.dismissed-notice {
   font-size: 14px;
   display: flex;
   align-items: center;

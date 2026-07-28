@@ -1,3 +1,49 @@
+<?php
+session_start();
+if (!isset($_SESSION['user']['id'])) {
+    header('Location: ../../auth/login.php');
+    exit;
+}
+$userId = (int)$_SESSION['user']['id'];
+
+require_once '../../../database/db.php';
+
+// Fetch notifications
+$query = "
+    SELECT 
+        n.notification_id, 
+        n.title, 
+        n.description, 
+        n.created_at, 
+        u.full_name 
+    FROM notifications n
+    JOIN users u ON n.user_id = u.user_id
+    WHERE n.user_id = ?
+    ORDER BY n.created_at DESC
+";
+$stmt = mysqli_prepare($dbConn, $query);
+mysqli_stmt_bind_param($stmt, 'i', $userId);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+$dbNotifications = [];
+if ($result) {
+    $dbNotifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
+}
+
+$notificationsJsArray = [];
+foreach ($dbNotifications as $row) {
+    $time = date('d M Y, H:i', strtotime($row['created_at']));
+    $notificationsJsArray[] = [
+        'id' => (int)$row['notification_id'],
+        'title' => $row['title'],
+        'description' => $row['description'],
+        'time' => $time,
+        'user' => $row['full_name']
+    ];
+}
+$notificationsJson = json_encode($notificationsJsArray);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,6 +65,10 @@
 
   <!-- Page Specific Styles -->
   <link rel="stylesheet" href="notifications.css">
+  <script>
+    // Inject the notifications data from PHP to JS
+    const notificationsList = <?= $notificationsJson ?>;
+  </script>
 </head>
 
 <body>
@@ -37,14 +87,14 @@
         <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
         <a href="donations.html" class="dashboard-nav-item">Donations</a>
         <a href="trust-rules.html" class="dashboard-nav-item">Trust Rules</a>
-        <a href="reports.html" class="dashboard-nav-item">Reports</a>
+        <a href="reports.php" class="dashboard-nav-item">Reports</a>
         <a href="certificates.html" class="dashboard-nav-item">Certificates</a>
       </nav>
     </div>
 
     <div class="dashboard-actions">
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
-        href="notifications.html">
+        href="notifications.php">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>

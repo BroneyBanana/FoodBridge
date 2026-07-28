@@ -204,6 +204,7 @@ CREATE TABLE reports (
   issue_type         VARCHAR(80) NOT NULL,
   comment            TEXT NULL,
   evidence_image_url VARCHAR(500) NULL,
+  admin_message      TEXT NULL,
   status             ENUM('active', 'resolved', 'dismissed') NOT NULL DEFAULT 'active',
   created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_report_booking

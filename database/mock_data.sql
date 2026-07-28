@@ -154,10 +154,10 @@ VALUES
 -- 14. REPORTS
 -- ============================================================
 INSERT INTO reports
-  (report_id, booking_id, issue_type, comment, evidence_image_url, status, created_at)
+  (report_id, booking_id, issue_type, comment, evidence_image_url, admin_message, status, created_at)
 VALUES
-  (1, 3, 'missed_pickup', 'The receiver never showed up to pick up the donation.', NULL, 'resolved', '2026-06-25 15:00:00'),
-  (2, 1, 'food_quality',  'The food smelled stale when opened later.', 'uploads/reports/ape.jpg', 'active', '2026-06-26 12:20:00');
+  (1, 3, 'missed_pickup', 'The receiver never showed up to pick up the donation.', NULL, 'Receiver missed the pickup without any notice (-10)', 'resolved', '2026-06-25 15:00:00'),
+  (2, 1, 'food_quality',  'The food smelled stale when opened later.', 'uploads/reports/ape.jpg', NULL, 'active', '2026-06-26 12:20:00');
 
 -- ============================================================
 -- DEMO QUERIES (uncomment to run)
