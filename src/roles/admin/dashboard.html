@@ -96,8 +96,8 @@
                 </svg>
               </div>
             </div>
-            <strong><?= htmlspecialchars($rescued['total_items']) ?> items</strong>
-            <small>Lifetime total across all donors</small>
+            <strong><?= number_format($totalKg, 0) ?> kg</strong>
+            <small><?= $pickupCount ?> community pickups completed</small>
           </article>
 
           <article class="summary-card">
