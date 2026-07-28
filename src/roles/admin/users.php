@@ -206,25 +206,24 @@ if ($result) {
                 </tr>
               </thead>
               <tbody>
-                <tr data-role="<?= strtolower($u['role']) ?>">
-                  <?php foreach ($users as $u): ?>
-                    <?php
-                    $scoreClass = 'score-high';
-                    if ($u['trust_score'] < 50)
-                      $scoreClass = 'score-low';
-                    else if ($u['trust_score'] < 80)
-                      $scoreClass = 'score-medium';
+                <?php foreach ($users as $u): ?>
+                  <?php
+                  $scoreClass = 'score-high';
+                  if ($u['trust_score'] < 50)
+                    $scoreClass = 'score-low';
+                  else if ($u['trust_score'] < 80)
+                    $scoreClass = 'score-medium';
 
-                    $statusClass = 'badge-active';
-                    if ($u['status'] === 'warned')
-                      $statusClass = 'badge-warn';
-                    else if ($u['status'] === 'suspended' || $u['status'] === 'banned')
-                      $statusClass = 'badge-ban';
+                  $statusClass = 'badge-active';
+                  if ($u['status'] === 'warned')
+                    $statusClass = 'badge-warn';
+                  else if ($u['status'] === 'suspended' || $u['status'] === 'banned')
+                    $statusClass = 'badge-ban';
 
-                    $avatar = strtoupper(substr($u['full_name'], 0, 2));
-                    $safeName = htmlspecialchars($u['full_name'], ENT_QUOTES);
-                    ?>
-                  <tr>
+                  $avatar = strtoupper(substr($u['full_name'], 0, 2));
+                  $safeName = htmlspecialchars($u['full_name'], ENT_QUOTES);
+                  ?>
+                  <tr data-role="<?= strtolower($u['role']) ?>">
                     <td>
                       <div class="user-cell">
                         <div class="user-avatar"><?= $avatar ?></div>
@@ -254,7 +253,6 @@ if ($result) {
                       found in database.</td>
                   </tr>
                 <?php endif; ?>
-                </tr>
               </tbody>
             </table>
           </div>
