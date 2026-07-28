@@ -105,24 +105,44 @@ function closeCancelModal() {
 }
 
 function confirmCancel() {
-  if (pendingCancelCard) {
-    pendingCancelCard.style.transition = 'opacity 0.25s, transform 0.25s';
-    pendingCancelCard.style.opacity    = '0';
-    pendingCancelCard.style.transform  = 'scale(0.97)';
-    setTimeout(() => pendingCancelCard.remove(), 250);
-  }
-  closeCancelModal();
-}
+  if (!pendingCancelCard) return;
 
-document.querySelectorAll('.Cancel').forEach(btn => {
-  btn.addEventListener('click', () => openCancelModal(btn.closest('.bookingCard')));
-});
-cancelKeepBtn.addEventListener('click', closeCancelModal);
-cancelConfirmBtn.addEventListener('click', confirmCancel);
-cancelModal.addEventListener('click', e => { if (e.target === cancelModal) closeCancelModal(); });
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !cancelModal.classList.contains('hidden')) closeCancelModal();
-});
+  const cancelBtn = pendingCancelCard.querySelector('.Cancel');
+  const bookingId = cancelBtn?.dataset.bookingId;
+
+  if (!bookingId) {
+    closeCancelModal();
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('booking_id', bookingId);
+
+  fetch('cancel_booking.php', {
+    method: 'POST',
+    body: formData
+  })
+    .then(function (response) {
+      return response.json().then(function (data) {
+        return { ok: response.ok, data: data };
+      });
+    })
+    .then(function (result) {
+      if (result.ok && result.data.success) {
+        pendingCancelCard.style.transition = 'opacity 0.25s, transform 0.25s';
+        pendingCancelCard.style.opacity    = '0';
+        pendingCancelCard.style.transform  = 'scale(0.97)';
+        setTimeout(() => pendingCancelCard.remove(), 250);
+      } else {
+        alert(result.data.error || 'Cancellation failed.');
+      }
+      closeCancelModal();
+    })
+    .catch(function () {
+      alert('Something went wrong. Please try again.');
+      closeCancelModal();
+    });
+}
 
 
 // ── Directions Map Modal ──

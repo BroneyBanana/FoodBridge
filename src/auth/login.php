@@ -126,9 +126,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
 
         $redirects = [
-            'admin' => '../roles/admin/dashboard.html',
-            'donor' => '../roles/donor/dashboard.html',
-            'receiver' => '../roles/receiver/dashboard.html',
+            'admin' => '../roles/admin/dashboard.php',
+            'donor' => '../roles/donor/dashboard.php',
+            'receiver' => '../roles/receiver/dashboard.php',
         ];
 
         respond([
