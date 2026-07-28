@@ -119,6 +119,22 @@
   color: #1a6b3a;
 }
 
+.status-pill.reported {
+  background: #ffe0db;
+  color: #a63a2b;
+}
+
+.history-notice,
+.empty-history {
+  margin: 20px 5%;
+  color: var(--color-forest);
+  font-weight: 700;
+}
+
+.history-notice.error {
+  color: #a63a2b;
+}
+
 .card-actions {
   display: flex;
   align-items: center;
@@ -323,7 +339,8 @@
 
 .readonly-review.hidden,
 .form-fields.hidden,
-.modal-actions.hidden {
+.modal-actions.hidden,
+.review-image-link.hidden {
   display: none;
 }
 

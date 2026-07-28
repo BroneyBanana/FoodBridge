@@ -220,3 +220,16 @@ CREATE INDEX idx_report_status ON reports (status, created_at);
 CREATE TABLE platform_settings (
   maintenance_mode ENUM('on', 'off') NOT NULL PRIMARY KEY
 );
+
+-- ============================================================
+-- TRUST RULE SETTINGS
+-- ============================================================
+CREATE TABLE trust_rule_settings (
+  setting_id            TINYINT UNSIGNED NOT NULL PRIMARY KEY,
+  suspension_threshold  TINYINT UNSIGNED NOT NULL DEFAULT 30,
+  updated_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CHECK (setting_id = 1),
+  CHECK (suspension_threshold BETWEEN 0 AND 100)
+);
+
+INSERT INTO trust_rule_settings (setting_id, suspension_threshold) VALUES (1, 30);

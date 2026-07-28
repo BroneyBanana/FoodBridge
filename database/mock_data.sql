@@ -5,6 +5,8 @@ USE foodbridge;
 -- ============================================================
 INSERT IGNORE INTO platform_settings (maintenance_mode) VALUES ('off');
 
+INSERT IGNORE INTO trust_rule_settings (setting_id, suspension_threshold) VALUES (1, 30);
+
 -- ============================================================
 -- 2. USERS
 -- ============================================================

@@ -95,8 +95,8 @@ while ($row = mysqli_fetch_assoc($result_past)) {
           <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
           <a href="browse-donations.html" class="dashboard-nav-item">Browse Food</a>
           <a href="bookings.html" class="dashboard-nav-item active">My Bookings</a>
-          <a href="trust-score.html" class="dashboard-nav-item">Trust Score</a>
-          <a href="history.html" class="dashboard-nav-item">History</a>
+          <a href="trust-score.php" class="dashboard-nav-item">Trust Score</a>
+          <a href="history.php" class="dashboard-nav-item">History</a>
         </nav>
       </div>
       
@@ -200,7 +200,7 @@ while ($row = mysqli_fetch_assoc($result_past)) {
               <?php endif; ?>
 
               <div class="viewHistory">
-                    <a href="history.html" class="historyButton">View Collection History →</a>
+                    <a href="history.php" class="historyButton">View Collection History →</a>
                 </div>
 
             </div>
