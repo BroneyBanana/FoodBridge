@@ -113,11 +113,19 @@
     display: block;
   }
 
+<<<<<<< HEAD
   .donationCardCont {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 2rem;
   }
+=======
+.donationCardCont {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+>>>>>>> Yeoh
 
   .donationCard {
     background: #fff;
@@ -275,6 +283,7 @@
   background: #1a5c38;
 }
 
+<<<<<<< HEAD
   /* PICKUP MODAL */
   .modal {
     position: fixed;
@@ -284,6 +293,91 @@
     align-items: center;
     justify-content: center;
   }
+=======
+/* Pickup Time Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 14px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: #1a1a1a;
+}
+
+.modal-content label {
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.modal-content select,
+.modal-content input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.confirmBtn {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.8rem;
+  background: #2e7d4f;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirmBtn:hover {
+  background: #1a5c38;
+}
+
+/* MAP VIEW */
+#map {
+  height: 500px;
+  width: 100%;
+  border-radius: 8px;
+  z-index: 1; /* Prevents map controls from overlapping topbar */
+  border: 1px solid #ddd;
+}
+>>>>>>> Yeoh
 
   .modal-content {
     background: #fff;

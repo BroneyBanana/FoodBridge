@@ -46,6 +46,27 @@ try {
         throw new Exception('Not enough quantity left');
     }
 
+<<<<<<< HEAD
+=======
+    // QUERY 3A-2: NO HOGGING — same rule as get_slots.php's Query 2,
+    // checked again here because this is the real security boundary,
+    // not just the dropdown. FOR UPDATE keeps it race-safe against
+    // two simultaneous requests from the same receiver.
+    $sql_dup = "SELECT booking_id FROM bookings
+                WHERE donation_id = ?
+                AND receiver_id = ?
+                AND status != 'cancelled'
+                FOR UPDATE";
+    $stmt_dup = mysqli_prepare($dbConn, $sql_dup);
+    mysqli_stmt_bind_param($stmt_dup, 'ii', $donation_id, $receiver_id);
+    mysqli_stmt_execute($stmt_dup);
+    $result_dup = mysqli_stmt_get_result($stmt_dup);
+
+    if (mysqli_fetch_assoc($result_dup)) {
+        throw new Exception('You already have a booking on this donation');
+    }
+
+>>>>>>> Yeoh
 
     // QUERY 3B: INSERT BOOKING
     $sql_insert = "INSERT INTO bookings (donation_id, pickup_slot_id, receiver_id, booking_time, quantity, status)
@@ -53,10 +74,16 @@ try {
 
     $stmt_insert = mysqli_prepare($dbConn, $sql_insert);
     mysqli_stmt_bind_param($stmt_insert, 'iiid', $donation_id, $pickup_slot_id, $receiver_id, $quantity);
+<<<<<<< HEAD
     mysqli_stmt_execute($stmt_insert);
 
     // if sametime donation is being filled in by another ppl
     if (mysqli_stmt_errno($stmt_insert) !== 0) {
+=======
+
+    // if sametime donation is being filled in by another ppl
+    if (!mysqli_stmt_execute($stmt_insert)) {
+>>>>>>> Yeoh
         throw new Exception('This slot was just taken by someone else');
     }
 

@@ -127,7 +127,15 @@ document.querySelectorAll('.BookDonation').forEach(function (button) {
         const select = document.getElementById('slotSelect');
         select.innerHTML = '';
 
+<<<<<<< HEAD
         if (slots.length === 0) {
+=======
+        if (slots.error) {
+          // handles get_slots.php's hogging-check response (an object, not an array)
+          document.getElementById('pickupModalError').textContent = slots.error;
+          select.innerHTML = '<option value="">No slots available</option>';
+        } else if (slots.length === 0) {
+>>>>>>> Yeoh
           select.innerHTML = '<option value="">No slots available</option>';
         } else {
           slots.forEach(function (slot) {

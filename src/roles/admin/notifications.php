@@ -83,7 +83,13 @@ $notificationsJson = json_encode($notificationsJsArray);
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
         <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
+<<<<<<< HEAD:src/roles/admin/notifications.php
         <a href="users.html" class="dashboard-nav-item">Users</a>
+=======
+        <a href="donate.php" class="dashboard-nav-item">Donate</a>
+        <a href="my-donations.php" class="dashboard-nav-item">My Donations</a>
+        <a href="leaderboard.html" class="dashboard-nav-item">Leaderboard</a>
+>>>>>>> Yeoh:src/roles/donor/notifications.html
         <a href="vouchers.html" class="dashboard-nav-item">Vouchers</a>
         <a href="donations.html" class="dashboard-nav-item">Donations</a>
         <a href="trust-rules.php" class="dashboard-nav-item">Trust Rules</a>
