@@ -85,7 +85,7 @@ CREATE TABLE pickup_slots (
 CREATE TABLE bookings (
   booking_id     INT AUTO_INCREMENT PRIMARY KEY,
   donation_id    INT NOT NULL,
-  pickup_slot_id INT NOT NULL UNIQUE,
+  pickup_slot_id INT NOT NULL,
   receiver_id    INT NOT NULL,
   booking_time   DATETIME NOT NULL,
   quantity       DECIMAL(10, 2) NOT NULL,

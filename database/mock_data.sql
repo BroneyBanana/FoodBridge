@@ -43,10 +43,10 @@ INSERT INTO donations
   (donation_id, donor_id, food_name, category, quantity, unit, image_url,
    pickup_address, expiry_at, status, qr_token_hash)
 VALUES
-  (1, 2, 'Bread and Pastries',   'bakery',     40, 'pieces',   'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-06-12 20:00:00', 'completed', '$2y$10$mockQrHashDon1000000000000000000000000000000000'),
-  (2, 2, 'Nasi Lemak Packs',     'cookedMeal', 25, 'portions', 'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-07-07 21:00:00', 'active',    '$2y$10$mockQrHashDon2000000000000000000000000000000000'),
-  (3, 3, 'Vegetarian Rice Box',  'cookedMeal', 18, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-07-07 19:30:00', 'active',    '$2y$10$mockQrHashDon3000000000000000000000000000000000'),
-  (4, 3, 'Mixed Lunch Packs',    'cookedMeal', 12, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-06-25 15:00:00', 'expired',   '$2y$10$mockQrHashDon4000000000000000000000000000000000');
+  (1, 2, 'Bread and Pastries',   'bakery',     40, 'pieces',   'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', DATE_SUB(NOW(), INTERVAL 2 DAY), 'completed', '$2y$10$mockQrHashDon1000000000000000000000000000000000'),
+  (2, 2, 'Nasi Lemak Packs',     'cookedMeal', 25, 'portions', 'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', DATE_ADD(NOW(), INTERVAL 3 DAY), 'active',    '$2y$10$mockQrHashDon2000000000000000000000000000000000'),
+  (3, 3, 'Vegetarian Rice Box',  'cookedMeal', 18, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       DATE_ADD(NOW(), INTERVAL 4 DAY), 'active',    '$2y$10$mockQrHashDon3000000000000000000000000000000000'),
+  (4, 3, 'Mixed Lunch Packs',    'cookedMeal', 12, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       DATE_SUB(NOW(), INTERVAL 5 DAY), 'expired',   '$2y$10$mockQrHashDon4000000000000000000000000000000000');
 
 -- ============================================================
 -- 5. DONATION_ALLERGY_TAGS
@@ -65,12 +65,12 @@ INSERT INTO donation_allergy_tags (donation_id, allergy_name) VALUES
 INSERT INTO pickup_slots
   (pickup_slot_id, donation_id, timeslot)
 VALUES
-  (1, 1, '2026-06-12 18:00:00'),
-  (2, 2, '2026-07-07 17:00:00'),
-  (3, 2, '2026-07-07 18:00:00'),
-  (4, 2, '2026-07-07 19:00:00'),
-  (5, 3, '2026-07-07 17:30:00'),
-  (6, 4, '2026-06-25 14:00:00');
+  (1, 1, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+  (2, 2, DATE_ADD(NOW(), INTERVAL 1 DAY)),
+  (3, 2, DATE_ADD(NOW(), INTERVAL 2 DAY)),
+  (4, 2, DATE_ADD(NOW(), INTERVAL 3 DAY)),
+  (5, 3, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+  (6, 4, DATE_SUB(NOW(), INTERVAL 5 DAY));
 
 -- ============================================================
 -- 7. BOOKINGS
