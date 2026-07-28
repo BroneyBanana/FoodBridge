@@ -48,7 +48,7 @@ function switchView(view, btn) {
       // Heatmap
       L.heatLayer(heatData.map(item => [item[0], item[1], 1]), {
         radius: 40, blur: 25, maxZoom: 14, max: 3,
-        gradient: {0.4: 'green', 0.7: 'yellow', 1.0: 'red'}
+        gradient: { 0.4: 'green', 0.7: 'yellow', 1.0: 'red' }
       }).addTo(map);
 
       // Markers
@@ -127,15 +127,11 @@ document.querySelectorAll('.BookDonation').forEach(function (button) {
         const select = document.getElementById('slotSelect');
         select.innerHTML = '';
 
-<<<<<<< HEAD
-        if (slots.length === 0) {
-=======
         if (slots.error) {
           // handles get_slots.php's hogging-check response (an object, not an array)
           document.getElementById('pickupModalError').textContent = slots.error;
           select.innerHTML = '<option value="">No slots available</option>';
         } else if (slots.length === 0) {
->>>>>>> Yeoh
           select.innerHTML = '<option value="">No slots available</option>';
         } else {
           slots.forEach(function (slot) {

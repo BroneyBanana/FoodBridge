@@ -65,13 +65,13 @@ try {
     $stmt_restore = mysqli_prepare($dbConn, $sql_restore);
     mysqli_stmt_bind_param($stmt_restore, 'di', $quantity_to_restore, $donation_id);
     mysqli_stmt_execute($stmt_restore);
- 
- 
+
+
     mysqli_commit($dbConn);
- 
+
     header('Content-Type: application/json');
     echo json_encode(['success' => true]);
- 
+
 } catch (Exception $e) {
     mysqli_rollback($dbConn);
     http_response_code(409);
