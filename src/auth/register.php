@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load();
+
+$apiKey = $_ENV['TOMTOM_API_KEY'];
+
 class FormRenderException extends Exception
 {
 }
@@ -60,6 +67,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fullName = inputValue($posted, 'fullName');
         $email = inputValue($posted, 'email');
         $location = inputValue($posted, 'profileLocation');
+
+        // Initialize variables to prevent undefined errors if the API fails
+        $latitude = 3.05540000;
+        $longitude = 101.69820000;
+
+        if (!empty($location)) {
+            $tomtomKey = $_ENV['TOMTOM_API_KEY'] ?? '';
+
+            if (!empty($tomtomKey)) {
+                $encodedLocation = urlencode($location);
+                // TomTom Geocoding API endpoint
+                $apiUrl = "https://api.tomtom.com/search/2/geocode/{$encodedLocation}.json?key={$tomtomKey}&limit=1";
+                
+                $response = @file_get_contents($apiUrl);
+                
+                if ($response !== false) {
+                    $data = json_decode($response, true);
+                    // Check if TomTom found valid results
+                    if (!empty($data['results']) && isset($data['results'][0]['position'])) {
+                        $latitude = (float) $data['results'][0]['position']['lat'];
+                        $longitude = (float) $data['results'][0]['position']['lon'];
+                    }
+                }
+            }
+        }
+        
         $password = (string) ($posted['password'] ?? '');
         $confirmPassword = (string) ($posted['confirmPassword'] ?? '');
 
@@ -101,17 +134,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         $status = 'active';
+        
+        // Include latitude and longitude in the INSERT statement
         $insertStmt = mysqli_prepare(
             $dbConn,
-            'INSERT INTO users (role, full_name, email, password_hash, location, status)
-             VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO users (role, full_name, email, password_hash, location, latitude, longitude, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         );
 
         if (!$insertStmt) {
             finishRegister(['success' => false, 'message' => 'Unable to create account.'], 500);
         }
 
-        mysqli_stmt_bind_param($insertStmt, 'ssssss', $role, $fullName, $email, $passwordHash, $location, $status);
+        // Bind the parameters: 5 strings, 2 doubles (d), 1 string
+        mysqli_stmt_bind_param($insertStmt, 'sssssdds', $role, $fullName, $email, $passwordHash, $location, $latitude, $longitude, $status);
         $created = mysqli_stmt_execute($insertStmt);
         $userId = mysqli_insert_id($dbConn);
         mysqli_stmt_close($insertStmt);
@@ -138,6 +174,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'name' => $fullName,
                 'email' => $email,
                 'location' => $location,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
                 'trustScore' => 100,
                 'totalFoodDonated' => 0,
                 'status' => $status,
