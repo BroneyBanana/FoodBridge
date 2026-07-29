@@ -23,7 +23,7 @@ $receiver_id = $_SESSION['user']['id'];
 // ----- QUERY 1: ALL ACTIVE DONATIONS ---- //
 $sql_donations = "SELECT donations.donation_id, donations.food_name, donations.category,
       donations.quantity, donations.unit, donations.image_url, donations.pickup_address,
-      users.full_name AS donor_name, users.trust_score,
+      users.full_name AS donor_name, users.trust_score, users.latitude, users.longitude,
       MAX(pickup_slots.timeslot) AS latest_slot,
       GROUP_CONCAT(DISTINCT donation_allergy_tags.allergy_name) AS allergy_tags
     FROM donations
@@ -246,6 +246,15 @@ while ($row = mysqli_fetch_assoc($result_donations)) {
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
   <!-- Page Specific Logic -->
+  <!-- Pass PHP data to JS -->
+  <script>
+    window.APP_CONFIG = {
+        donations: <?php echo json_encode($donations, JSON_NUMERIC_CHECK); ?>
+    };
+  </script>
+
+  <!-- Page Specific Logic -->
   <script src="../../assets/js/header.js"></script>
   <script src="browse-donations.js"></script>
 </body>
+</html>

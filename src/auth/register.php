@@ -12,6 +12,7 @@ use PHPMailer\PHPMailer\Exception;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->safeLoad();
+$apiKey = $_ENV['TOMTOM_API_KEY'];
 
 class FormRenderException extends Exception
 {
@@ -121,9 +122,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $jsonData = json_decode(file_get_contents('php://input'), true);
 
       if (is_array($jsonData)) {
-        $posted = $jsonData;
-      }
+                $posted = $jsonData;
+            }
+        }
+
+    $role = inputValue($posted, 'accountRole');
+    $fullName = inputValue($posted, 'fullName');
+    $email = inputValue($posted, 'email');
+    $location = inputValue($posted, 'profileLocation');
+
+    // Initialize variables to prevent undefined errors if the API fails
+    $latitude = 3.05540000;
+    $longitude = 101.69820000;
+
+    if (!empty($location)) {
+        $tomtomKey = $_ENV['TOMTOM_API_KEY'] ?? '';
+
+        if (!empty($tomtomKey)) {
+            $encodedLocation = urlencode($location);
+            // TomTom Geocoding API endpoint
+            $apiUrl = "https://api.tomtom.com/search/2/geocode/{$encodedLocation}.json?key={$tomtomKey}&limit=1";
+            
+            $response = @file_get_contents($apiUrl);
+            
+            if ($response !== false) {
+                $data = json_decode($response, true);
+                // Check if TomTom found valid results
+                if (!empty($data['results']) && isset($data['results'][0]['position'])) {
+                    $latitude = (float) $data['results'][0]['position']['lat'];
+                    $longitude = (float) $data['results'][0]['position']['lon'];
+                }
+            }
+        }
     }
+    
+    $password = (string) ($posted['password'] ?? '');
+    $confirmPassword = (string) ($posted['confirmPassword'] ?? '');
 
     $action = inputValue($posted, 'action');
     $email = inputValue($posted, 'email');

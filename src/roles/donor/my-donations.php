@@ -189,11 +189,11 @@
               <?php 
                 if ($row['status'] == "active") {
               ?>
-                <button class = "show-qr">Show QR Code for Pickup</button>
+                <button class="show-qr" data-donation-id="<?php echo (int)$row['donation_id']; ?>">Show QR Code for Pickup</button>
               <?php
                 } else {
               ?>
-                <button class = "show-qr" disabled title = "Pickup already <?php echo htmlspecialchars($row['status']); ?>">
+                <button class="show-qr" data-donation-id="<?php echo (int)$row['donation_id']; ?>" disabled title="Pickup already <?php echo htmlspecialchars($row['status']); ?>">
                   <?php
                     if ($row['status'] === 'completed') {
                       echo 'Pickup Completed!';
@@ -295,10 +295,12 @@
       </div>
       
       <div class="show-qr-wrap">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=FoodBridge-Pickup-Auth&color=000000&bgcolor=ffffff" alt="Your Donation QR Code" id="display-qr-img">
+        <!-- The src will be injected by JavaScript -->
+        <img src="" alt="Your Donation QR Code" id="display-qr-img">
       </div>
 
-      <p class="qr-success-msg" style="display: block; margin-top: 10px;">QR Token: </p>
+      <!-- Added an ID to this paragraph to update it dynamically -->
+      <p class="qr-success-msg" id="modal-donation-id-text" style="display: block; margin-top: 10px;">ID: #</p>
 
       <div class="qr-modal-actions">
         <button class="qr-btn-close" id="show-qr-close-btn">Close</button>

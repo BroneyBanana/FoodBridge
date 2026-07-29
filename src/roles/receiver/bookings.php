@@ -10,12 +10,19 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
     exit();
 }
 
+require_once __DIR__ . '/../../../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
+$dotenv->load();
+
+// Store the key in a PHP variable
+$tomtomKey = $_ENV['TOMTOM_API_KEY'];
+
 $receiver_id = $_SESSION['user']['id'];
 
 // ------ QUERY 1 : UPCOMING BOOKINGS ------
 $sql_upcoming = "SELECT bookings.booking_id, bookings.quantity, bookings.status,
                          donations.food_name, donations.image_url, donations.pickup_address,
-                         users.full_name AS donor_name,
+                         users.full_name AS donor_name, users.latitude AS latitude, users.longitude AS longitude,
                          pickup_slots.timeslot
                   FROM bookings
                   JOIN donations ON bookings.donation_id = donations.donation_id
@@ -166,6 +173,8 @@ while ($row = mysqli_fetch_assoc($result_past)) {
                           <button class="scanQR" data-booking-id="<?php echo (int) $booking['booking_id']; ?>">Scan QR</button>
                           <button class="Directions"
                                   data-booking-id="<?php echo (int) $booking['booking_id']; ?>"
+                                  data-latitude="<?php echo (float) $booking['latitude']; ?>"
+                                  data-longitude="<?php echo (float) $booking['longitude']; ?>"
                                   data-address="<?php echo htmlspecialchars($booking['pickup_address']); ?>">Directions</button>
                           <button class="Cancel"
                                   data-booking-id="<?php echo (int) $booking['booking_id']; ?>"
@@ -303,6 +312,13 @@ while ($row = mysqli_fetch_assoc($result_past)) {
     <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
     <!-- Page Specific Logic -->
     <script src="../../assets/js/header.js"></script>
+
+    <script>
+      window.APP_CONFIG = {
+          tomtomApiKey: "<?php echo htmlspecialchars($tomtomKey, ENT_QUOTES); ?>"
+      };
+  </script>
+
     <script src="bookings.js"></script>
   </body>
   </html>
