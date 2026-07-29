@@ -6,6 +6,10 @@ if (($_SESSION['user']['role'] ?? '') !== 'receiver') {
     header('Location: ../../auth/login.php');
     exit;
 }
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
+
 require_once __DIR__ . '/../../../database/db.php';
 
 function h(string $value): string
@@ -152,11 +156,46 @@ mysqli_stmt_close($historyStatement);
                     class="dashboard-nav-item">My Bookings</a><a href="trust-score.php" class="dashboard-nav-item">Trust
                     Score</a><a href="history.php" class="dashboard-nav-item active">History</a></nav>
         </div>
-        <div class="dashboard-actions"><a class="action-btn-circle hide-mobile" title="Notifications"
-                href="notifications.php">&#128276;</a><a href="profile.php"
-                class="profile-avatar"><?php echo h(initials($receiver['full_name'])); ?></a><a
-                href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">&#10132;</a><button
-                class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">&#9776;</button></div>
+        <div class="dashboard-actions">
+            <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
+                href="notifications.php">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                </svg>
+                <span
+                    style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+            </a>
+
+            <a href="profile.php" class="profile-avatar">
+                <?php if (!empty($userAvatar)): ?>
+                    <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+                        style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                <?php else: ?>
+                    <?= htmlspecialchars($initials) ?>
+                <?php endif; ?>
+            </a>
+
+            <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </a>
+
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
     </header>
     <div class="dashboard-wrapper">
         <main class="dashboard-content">
@@ -174,7 +213,8 @@ mysqli_stmt_close($historyStatement);
                                 <div class="history-info">
                                     <h3><?php echo h($item['food_name']); ?></h3>
                                     <p class="history-meta"><?php echo h($item['donor_name']); ?> &bull;
-                                        <?php echo h(date('j F Y', strtotime($item['booking_time']))); ?></p>
+                                        <?php echo h(date('j F Y', strtotime($item['booking_time']))); ?>
+                                    </p>
                                 </div>
                                 <div class="card-actions">
                                     <?php if ($item['rating'] !== null): ?><button class="text-action-btn review" type="button"
@@ -210,7 +250,7 @@ mysqli_stmt_close($historyStatement);
                             name="rating" id="star3" value="3"><label for="star3">3</label><input type="radio"
                             name="rating" id="star2" value="2"><label for="star2">2</label><input type="radio"
                             name="rating" id="star1" value="1"><label for="star1">1</label></div>
-                    </label><label>Comment<textarea name="comment" rows="4" required
+                </label><label>Comment<textarea name="comment" rows="4" required
                         placeholder="Share how the collection went..."></textarea></label><label>Picture <span
                         class="upload-box"><input type="file" name="review_image" accept="image/*"><span
                             class="upload-button">Choose Image</span></span></label></div>

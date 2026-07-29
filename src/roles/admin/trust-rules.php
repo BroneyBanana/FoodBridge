@@ -141,10 +141,17 @@ $adminName = (string) ($_SESSION['user']['name'] ?? 'Admin');
 
 <body>
   <div class="noise-bg"></div>
+
+  <!-- ============================================================ -->
+  <!-- HEADER (updated to match dashboard.php)                       -->
+  <!-- ============================================================ -->
   <header class="dashboard-header">
     <a href="dashboard.php" class="navbar-brand">
-      <div class="navbar-logo"><img src="../../assets/images/logo.png" alt="FoodBridge logo"></div>
+      <div class="navbar-logo">
+        <img src="../../assets/images/logo.png" alt="Logo" />
+      </div>
     </a>
+
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
         <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
@@ -156,11 +163,45 @@ $adminName = (string) ($_SESSION['user']['name'] ?? 'Admin');
         <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
       </nav>
     </div>
+
     <div class="dashboard-actions">
-      <a class="action-btn-circle hide-mobile" title="Notifications" href="notifications.php">&#128276;</a>
-      <a href="profile.php" class="profile-avatar"><?php echo escapeHtml(initials($adminName)); ?></a>
-      <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">&#10132;</a>
-      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">&#9776;</button>
+      <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
+        href="notifications.php">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+        </svg>
+        <span
+          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+      </a>
+
+      <a href="profile.php" class="profile-avatar">
+        <?php if (!empty($userAvatar)): ?>
+          <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        <?php else: ?>
+          <?= htmlspecialchars($initials) ?>
+        <?php endif; ?>
+      </a>
+
+      <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </a>
+
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
     </div>
   </header>
 

@@ -4,7 +4,7 @@
 // header("Cache-Control: post-check=0, pre-check=0", false);
 // header("Pragma: no-cache");
 
-require_once '../../../database/db.php'; 
+require_once '../../../database/db.php';
 session_start();
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
@@ -237,7 +237,6 @@ if ($result) {
                   <tr data-role="<?= strtolower($u['role']) ?>">
                     <td>
                       <div class="user-cell">
-                        <div class="user-avatar"><?= $avatar ?></div>
                         <span class="user-name"><?= htmlspecialchars($u['full_name']) ?></span>
                       </div>
                     </td>
