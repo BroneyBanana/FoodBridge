@@ -1,11 +1,14 @@
 <?php
   session_start();
-
+  
   if(!isset($_SESSION['user'])){
-      header("Location: ../../auth/login.php");
-      exit();
-  }
-
+    header("Location: ../../auth/login.php");
+    exit();
+    }
+    
+  $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+  $userName = $_SESSION['user']['name'] ?? 'User';
+  $initials = strtoupper(substr($userName, 0, 2));
   require_once "../../../database/db.php";
 ?>
 <!DOCTYPE html>
@@ -58,7 +61,14 @@
         <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
-      <a href="profile.php" class="profile-avatar">DO</a>
+      <a href="profile.php" class="profile-avatar">
+        <?php if (!empty($userAvatar)): ?>
+          <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        <?php else: ?>
+          <?= htmlspecialchars($initials) ?>
+        <?php endif; ?>
+      </a>
       
       <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>

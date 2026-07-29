@@ -4,7 +4,11 @@
 // header("Cache-Control: post-check=0, pre-check=0", false);
 // header("Pragma: no-cache");
 
-require_once '../../../database/db.php';
+require_once '../../../database/db.php'; 
+session_start();
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 
 // Handle AJAX POST requests for CRUD
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -146,7 +150,14 @@ if ($result) {
           style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
-      <a href="profile.php" class="profile-avatar">DO</a>
+      <a href="profile.php" class="profile-avatar">
+        <?php if (!empty($userAvatar)): ?>
+          <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        <?php else: ?>
+          <?= htmlspecialchars($initials) ?>
+        <?php endif; ?>
+      </a>
 
       <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

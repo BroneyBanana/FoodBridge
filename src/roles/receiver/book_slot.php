@@ -1,6 +1,9 @@
 <?php
 session_start();
-require_once '../../../database/db.php';
+require_once '../../../database/db.php'; 
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 
 // if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'receiver') {
 //     http_response_code(403);

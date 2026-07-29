@@ -9,6 +9,9 @@ if (($_SESSION['user']['role'] ?? '') !== 'donor') {
 }
 
 require_once __DIR__ . '/../../../database/db.php';
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 
 function h(string $value): string
 {
@@ -43,9 +46,6 @@ function imagePath(?string $path): ?string
     return null;
   if (preg_match('#^https?://#i', $path))
     return $path;
-  // Older seeded records use "uploads/profiles" while uploaded profile
-  // images are stored in the singular "uploads/profile" directory.
-  $path = preg_replace('#^uploads/profiles/#', 'uploads/profile/', ltrim($path, '/'));
   return '../../' . $path;
 }
 
@@ -163,14 +163,16 @@ $thisMonth = count(array_filter($reviews, static fn(array $review): bool => strt
                           alt="<?php echo h($review['receiver_name']); ?>">
                       <?php else: ?>
                         <div class="reviewer-avatar reviewer-initials" aria-hidden="true">
-                          <?php echo h(initials($review['receiver_name'])); ?></div><?php endif; ?>
+                          <?php echo h(initials($review['receiver_name'])); ?>
+                        </div><?php endif; ?>
                       <div>
                         <h3><?php echo h($review['receiver_name']); ?></h3><span>Receiver &middot;
                           <?php echo h(relativeDate($review['created_at'])); ?></span>
                       </div>
                     </div>
                     <div class="stars" aria-label="<?php echo (int) $review['rating']; ?> out of 5 stars">
-                      <?php echo $stars; ?></div>
+                      <?php echo $stars; ?>
+                    </div>
                     <?php if ($review['comment']): ?>
                       <p><?php echo nl2br(h($review['comment'])); ?></p><?php endif; ?>
                     <small class="review-donation">Donation: <?php echo h($review['food_name']); ?></small>

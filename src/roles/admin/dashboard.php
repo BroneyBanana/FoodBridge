@@ -2,8 +2,11 @@
 // ============================================================
 // DB CONNECTION
 // ============================================================
-require_once '../../../database/db.php'; // real path: FoodBridge/database/db.php
-
+require_once '../../../database/db.php'; 
+session_start();
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 // Temporary debug switches — remove once confirmed working
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -134,7 +137,14 @@ $activePartners = mysqli_fetch_assoc($res)['active_partners'];
           style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
-      <a href="profile.php" class="profile-avatar">DO</a>
+      <a href="profile.php" class="profile-avatar">
+        <?php if (!empty($userAvatar)): ?>
+          <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        <?php else: ?>
+          <?= htmlspecialchars($initials) ?>
+        <?php endif; ?>
+      </a>
 
       <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -177,7 +187,9 @@ $activePartners = mysqli_fetch_assoc($res)['active_partners'];
                 </svg>
               </div>
             </div>
-            <strong><?= htmlspecialchars($foodRescued) ?> items</strong>
+            <strong>
+              <?= htmlspecialchars($foodRescued) ?> items
+            </strong>
             <small>Lifetime total across all donors</small>
           </article>
 
@@ -194,8 +206,12 @@ $activePartners = mysqli_fetch_assoc($res)['active_partners'];
                 </svg>
               </div>
             </div>
-            <strong><?= htmlspecialchars($activeDonations) ?></strong>
-            <small><?= htmlspecialchars($readyToday) ?> ready in the next 24h</small>
+            <strong>
+              <?= htmlspecialchars($activeDonations) ?>
+            </strong>
+            <small>
+              <?= htmlspecialchars($readyToday) ?> ready in the next 24h
+            </small>
           </article>
 
           <article class="summary-card">
@@ -211,7 +227,9 @@ $activePartners = mysqli_fetch_assoc($res)['active_partners'];
                 </svg>
               </div>
             </div>
-            <strong><?= htmlspecialchars($flaggedUsers) ?></strong>
+            <strong>
+              <?= htmlspecialchars($flaggedUsers) ?>
+            </strong>
             <small>Accounts need to be aware of</small>
           </article>
         </div>
@@ -241,14 +259,22 @@ $activePartners = mysqli_fetch_assoc($res)['active_partners'];
                       <span class="pickup-badge <?= $isSoon ? 'badge-ready' : 'badge-match' ?>">
                         <?= $isSoon ? 'Ready soon' : 'Upcoming' ?>
                       </span>
-                      <h3><?= htmlspecialchars($item['food_name']) ?></h3>
+                      <h3>
+                        <?= htmlspecialchars($item['food_name']) ?>
+                      </h3>
                       <p class="pickup-desc">
-                        <span class="meta-item"><?= htmlspecialchars($item['quantity']) ?>
-                          <?= htmlspecialchars($item['unit']) ?></span>
+                        <span class="meta-item">
+                          <?= htmlspecialchars($item['quantity']) ?>
+                          <?= htmlspecialchars($item['unit']) ?>
+                        </span>
                         <span class="meta-separator">•</span>
-                        <span class="meta-item"><?= htmlspecialchars($item['pickup_address']) ?></span>
+                        <span class="meta-item">
+                          <?= htmlspecialchars($item['pickup_address']) ?>
+                        </span>
                         <span class="meta-separator">•</span>
-                        <span class="meta-item">pickup <?= date('g:i A', $slotTime) ?></span>
+                        <span class="meta-item">pickup
+                          <?= date('g:i A', $slotTime) ?>
+                        </span>
                       </p>
                     </div>
                     <a href="donations.php" class="btn btn-sm btn-accent">
@@ -269,9 +295,18 @@ $activePartners = mysqli_fetch_assoc($res)['active_partners'];
             <section class="panel-card impact-panel">
               <h2>Impact snapshot</h2>
               <ul class="tag-list">
-                <li><?= htmlspecialchars($openReports) ?> open report<?= $openReports == 1 ? '' : 's' ?></li>
-                <li><?= htmlspecialchars($activePartners) ?> available donor<?= $activePartners == 1 ? '' : 's' ?></li>
-                <li><?= htmlspecialchars($readyToday) ?> pickup<?= $readyToday == 1 ? '' : 's' ?> in 24h</li>
+                <li>
+                  <?= htmlspecialchars($openReports) ?> open report
+                  <?= $openReports == 1 ? '' : 's' ?>
+                </li>
+                <li>
+                  <?= htmlspecialchars($activePartners) ?> available donor
+                  <?= $activePartners == 1 ? '' : 's' ?>
+                </li>
+                <li>
+                  <?= htmlspecialchars($readyToday) ?> pickup
+                  <?= $readyToday == 1 ? '' : 's' ?> in 24h
+                </li>
               </ul>
             </section>
           </aside>

@@ -1,29 +1,34 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const profile = window.adminProfileConfig || {};
+  // ---- Load config from PHP ----
+  const profile = window.donorProfileConfig || {};
 
-  // DOM refs
+  // If no config, fallback to empty (prevents errors)
+  if (!profile.name) {
+    console.warn("Donor profile config not found – check PHP injection.");
+  }
+
+  // ---- DOM references ----
   const avatarContainer = document.getElementById("profileAvatarContainer");
   const avatarImg = document.getElementById("profileAvatarImg");
   const avatarInput = document.getElementById("avatarFileInput");
   const initialsEl = document.getElementById("profileInitials");
   const sidebarName = document.getElementById("sidebarAdminName");
   const metaMemberSince = document.getElementById("metaMemberSince");
+  const statDonations = document.getElementById("statDonations");
+  const statReliability = document.getElementById("statReliability");
 
   const credForm = document.getElementById("credentialsForm");
   const adminName = document.getElementById("adminName");
   const adminEmail = document.getElementById("adminEmail");
-
   const togglePasswordBtn = document.getElementById("togglePasswordFormBtn");
   const chevron = document.getElementById("chevronIcon");
   const passwordContainer = document.getElementById("passwordFieldsContainer");
   const currentPass = document.getElementById("currentPassword");
   const newPass = document.getElementById("newPassword");
   const confirmPass = document.getElementById("confirmPassword");
-
   const maintenanceToggle = document.getElementById("systemMaintenanceToggle");
   const platformStatusBadge = document.getElementById("platformStatusBadge");
   const saveMaintenanceBtn = document.getElementById("saveMaintenanceBtn");
-
   const toastContainer = document.getElementById("toastContainer");
 
   // Toast system
@@ -54,12 +59,11 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => toast.remove(), 400);
     });
   }
-
   // Update UI
   function updateUI() {
     sidebarName.textContent = profile.name || "Admin";
     metaMemberSince.textContent = profile.memberSince || "N/A";
-
+    // Avatar
     if (profile.avatarImage) {
       avatarImg.src = "../../" + profile.avatarImage;
       avatarImg.classList.remove("hidden");
@@ -95,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Password visibility
   document.querySelectorAll(".password-toggle-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const target = document.getElementById(btn.dataset.toggleTarget);
@@ -107,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
         : `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
     });
   });
-
   // Submit credentials form
   credForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -141,6 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (data.success) {
         profile.name = data.name;
+        // Update location from input
+        profile.location = location;
+        // Update session name for header (if needed)
+        localStorage.setItem("foodbridgeAdminProfile", JSON.stringify(profile));
         updateUI();
         currentPass.value = "";
         newPass.value = "";
@@ -155,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast("Server error. Please try again.", "error");
     }
   });
-
   // Save maintenance
   saveMaintenanceBtn.addEventListener("click", async () => {
     const isChecked = maintenanceToggle.checked;
@@ -179,7 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Avatar upload (reloads page after success)
   avatarContainer.addEventListener("click", () => avatarInput.click());
 
   avatarInput.addEventListener("change", async (e) => {
@@ -196,16 +200,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("profile.php", { method: "POST", body: formData });
       const data = await res.json();
       if (data.success) {
+        profile.avatarImage = data.avatarUrl;
         window.location.reload();
+        updateUI();
+        window.location.reload();
+        // Update header if function exists
+        if (typeof window.updateHeaderAvatar === "function") window.updateHeaderAvatar();
+        showToast("Profile picture updated.", "success");
       } else {
         showToast(data.message, "error");
       }
     } catch (err) {
       showToast("Server error during upload.", "error");
     }
-    avatarInput.value = "";
+    avatarInput.value = ""; // Reset
   });
 
-  // Initial render
+  // ---- Initial render ----
   updateUI();
+
+  // ---- Optional: store profile in localStorage for header.js ----
+  localStorage.setItem("foodbridgeAdminProfile", JSON.stringify(profile));
 });
