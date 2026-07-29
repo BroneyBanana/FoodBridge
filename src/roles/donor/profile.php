@@ -12,7 +12,7 @@ $userId = $_SESSION['user']['id'];
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 
-// --- Helper: compute initials ---
+// --- Helper: get initials ---
 function getInitials($fullName)
 {
   $parts = array_filter(explode(' ', trim($fullName)));
@@ -57,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $updatePassword = true;
       $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
     }
-
     if ($updatePassword) {
       $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ?, location = ?, password_hash = ? WHERE user_id = ?");
       mysqli_stmt_bind_param($stmt, "sssi", $name, $location, $newHash, $userId);
@@ -115,29 +114,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
   }
-
-  // 3. Save preferences (optional – we'll just echo success for now, as no DB table)
-  if ($action === 'save_preferences') {
-    // For demonstration, we just return success.
-    // You can store these in a user_preferences table if needed.
-    echo json_encode(['success' => true, 'message' => 'Preferences saved.']);
-    exit;
-  }
-
-  // Unknown action
   echo json_encode(['success' => false, 'message' => 'Invalid action.']);
   exit;
 }
 
-// --- Load donor data for display ---
-$stmt = mysqli_prepare($dbConn, "SELECT full_name, email, profile_url, location, trust_score, total_food_donated, created_at FROM users WHERE user_id = ?");
+// --- Load receiver data for display ---
+$stmt = mysqli_prepare($dbConn, "SELECT full_name, email, profile_url, location, trust_score, created_at FROM users WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt, "i", $userId);
 mysqli_stmt_execute($stmt);
 $user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$user) {
-  // User not found – redirect to login
   header('Location: ../../auth/login.php');
   exit;
 }
@@ -146,16 +134,15 @@ $memberSince = date('F Y', strtotime($user['created_at']));
 $profileUrl = $user['profile_url'] ?? '';
 $initials = getInitials($user['full_name']);
 
-// --- Compute stats ---
-// Total donations count (active, completed, expired, cancelled? we count all)
+// --- Compute receiver stats ---
+// Total pickups (bookings)
 $stmt = mysqli_prepare($dbConn, "SELECT COUNT(*) AS total_donations FROM donations WHERE donor_id = ?");
 mysqli_stmt_bind_param($stmt, "i", $userId);
 mysqli_stmt_execute($stmt);
-$donationCount = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['total_donations'] ?? 0;
+$pickupCount = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['total_donations'] ?? 0;
 mysqli_stmt_close($stmt);
 
-// Reliability: percentage of completed bookings out of total bookings for this donor's donations
-// We can compute: (completed bookings / total bookings) * 100
+// On-time rate: percentage of 'collected' bookings out of total
 $stmt = mysqli_prepare($dbConn, "
     SELECT 
         COUNT(*) AS total_bookings,
@@ -166,16 +153,14 @@ $stmt = mysqli_prepare($dbConn, "
 ");
 mysqli_stmt_bind_param($stmt, "i", $userId);
 mysqli_stmt_execute($stmt);
-$bookingStats = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+$stats = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 $totalBookings = $bookingStats['total_bookings'] ?? 0;
 $completedBookings = $bookingStats['completed_bookings'] ?? 0;
-$reliability = $totalBookings > 0 ? round(($completedBookings / $totalBookings) * 100) : 100;
+$onTimeRate = $totalBookings > 0 ? round(($completedBookings / $totalBookings) * 100) : 100;
 
-// For trust score, we have it from $user['trust_score']
-
-// Prepare JSON data for JavaScript initialization
+// --- Prepare JSON config for JavaScript ---
 $initData = json_encode([
   'name' => $user['full_name'],
   'email' => $user['email'],
@@ -183,11 +168,10 @@ $initData = json_encode([
   'avatarImage' => $profileUrl,
   'memberSince' => $memberSince,
   'trustScore' => $user['trust_score'],
-  'totalDonations' => (int) $donationCount,
-  'reliability' => $reliability,
+  'pickups' => (int) $pickupCount,
+  'onTimeRate' => $onTimeRate,
   'initials' => $initials
 ]);
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -225,7 +209,7 @@ $initData = json_encode([
       <nav class="dashboard-nav">
         <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
         <a href="donate.php" class="dashboard-nav-item">Donate</a>
-        <a href="my-donations.php" class="dashboard-nav-item">My Donations</a>
+        <a href="my-donations.php" class="dashboard-nav-item active">My Donations</a>
         <a href="leaderboard.php" class="dashboard-nav-item">Leaderboard</a>
         <a href="vouchers.php" class="dashboard-nav-item">Vouchers</a>
         <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
@@ -279,20 +263,19 @@ $initData = json_encode([
   <div class="dashboard-wrapper">
     <main class="dashboard-content">
       <h1 class="page-heading">Donor Profile</h1>
-      <p class="page-subheading">Update your organization info, address location, contact details, and preferences
-        settings.</p>
+      <p class="page-subheading">Update your profile credentials, address location, and notification preferences.</p>
 
-      <!-- Main content body for donor configuration -->
+      <!-- Main content body for receiver configuration -->
       <div class="content-body">
         <div class="profile-grid">
           <!-- Left Panel: Sidebar Info & Quick Summary -->
-          <aside class="profile-sidebar" aria-labelledby="sidebarDonorName">
+          <aside class="profile-sidebar" aria-labelledby="sidebarReceiverName">
             <div class="profile-card">
               <div class="profile-avatar-large" id="profileAvatarContainer"
                 style="cursor: pointer; position: relative; overflow: hidden;" title="Click to change profile picture">
                 <span id="profileInitials"><?= htmlspecialchars($initials) ?></span>
-                <img id="profileAvatarImg" class="hidden" src="../../<?= htmlspecialchars($profileUrl) ?>"
-                  alt="Profile Picture"
+                <img id="profileAvatarImg" class="<?= empty($profileUrl) ? 'hidden' : '' ?>"
+                  src="../../<?= htmlspecialchars($profileUrl) ?>" alt="Profile Picture"
                   style="width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;" />
                 <div class="avatar-overlay"
                   style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; opacity: 0; transition: opacity 0.2s;">
@@ -300,7 +283,7 @@ $initData = json_encode([
                 </div>
               </div>
               <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" />
-              <h2 id="sidebarDonorName" class="profile-name"><?= htmlspecialchars($user['full_name']) ?></h2>
+              <h2 id="sidebarReceiverName" class="profile-name"><?= htmlspecialchars($user['full_name']) ?></h2>
               <span class="profile-role">Donor</span>
 
               <div class="profile-meta-info">
@@ -310,9 +293,8 @@ $initData = json_encode([
                 </div>
                 <div class="meta-item">
                   <span class="meta-label">Trust Score</span>
-                  <span class="meta-value" style="color: #22c55e; font-weight: 700;">
-                    <?= htmlspecialchars($user['trust_score']) ?>/100
-                  </span>
+                  <span class="meta-value"
+                    style="color: #22c55e; font-weight: 700;"><?= $user['trust_score'] ?>/100</span>
                 </div>
               </div>
             </div>
@@ -321,11 +303,11 @@ $initData = json_encode([
             <div class="profile-card stats-sidebar-card">
               <div class="activity-grid">
                 <div>
-                  <strong id="statDonations"><?= $donationCount ?></strong>
+                  <strong id="statPickups"><?= $pickupCount ?></strong>
                   <span>Donations</span>
                 </div>
                 <div>
-                  <strong id="statReliability"><?= $reliability ?>%</strong>
+                  <strong id="statOnTime"><?= $onTimeRate ?>%</strong>
                   <span>Reliability</span>
                 </div>
               </div>
@@ -340,20 +322,20 @@ $initData = json_encode([
               <form id="credentialsForm" class="profile-form">
                 <div class="form-group-row">
                   <div class="form-group">
-                    <label for="donorName">Full Name</label>
-                    <input type="text" id="donorName" required placeholder="Enter full name"
+                    <label for="receiverName">Full Name</label>
+                    <input type="text" id="receiverName" required placeholder="Enter full name"
                       value="<?= htmlspecialchars($user['full_name']) ?>" />
                   </div>
                   <div class="form-group">
-                    <label for="donorEmail">Email Address</label>
-                    <input type="email" id="donorEmail" disabled placeholder="Enter email address"
+                    <label for="receiverEmail">Email Address</label>
+                    <input type="email" id="receiverEmail" disabled placeholder="Enter email address"
                       value="<?= htmlspecialchars($user['email']) ?>" />
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="donorLocation">Location / Address</label>
-                  <input type="text" id="donorLocation" required placeholder="Subang Jaya, Selangor"
+                  <label for="receiverLocation">Location / Address</label>
+                  <input type="text" id="receiverLocation" required placeholder="Subang Jaya, Selangor"
                     value="<?= htmlspecialchars($user['location'] ?? '') ?>" />
                 </div>
 
@@ -421,51 +403,6 @@ $initData = json_encode([
                 </div>
               </form>
             </section>
-
-            <!-- Form 2: Preferences Settings -->
-            <section class="profile-section-card" aria-labelledby="preferencesTitle">
-              <h3 id="preferencesTitle" class="section-title">Donor Preferences</h3>
-              <p class="section-desc">Manage your donation options and alert triggers.</p>
-
-              <div class="trigger-settings-list">
-                <div class="trigger-setting-item">
-                  <label class="switch-container">
-                    <input type="checkbox" id="prefAlertExpiry" checked />
-                    <span class="slider"></span>
-                  </label>
-                  <div class="trigger-desc">
-                    <strong>Short Expiry Notifications</strong>
-                    <span>Remind me to highlight items with less than 24 hours of freshness left.</span>
-                  </div>
-                </div>
-
-                <div class="trigger-setting-item">
-                  <label class="switch-container">
-                    <input type="checkbox" id="prefHalalDefault" />
-                    <span class="slider"></span>
-                  </label>
-                  <div class="trigger-desc">
-                    <strong>Default to Halal Certified</strong>
-                    <span>Automatically pre-select the 'Halal' badge when creating new donation listings.</span>
-                  </div>
-                </div>
-
-                <div class="trigger-setting-item">
-                  <label class="switch-container">
-                    <input type="checkbox" id="prefContactVisible" checked />
-                    <span class="slider"></span>
-                  </label>
-                  <div class="trigger-desc">
-                    <strong>Show Contact details on bookings</strong>
-                    <span>Allow approved receivers to see my phone number once a pickup is scheduled.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-actions">
-                <button type="button" id="savePreferencesBtn" class="btn btn-primary">Apply Settings</button>
-              </div>
-            </section>
           </div>
         </div>
       </div>
@@ -477,7 +414,7 @@ $initData = json_encode([
 
   <!-- Pass data to JavaScript -->
   <script>
-    window.donorProfileConfig = <?= $initData ?>;
+    window.receiverProfileConfig = <?= $initData ?>;
   </script>
 
   <!-- Page Specific Logic -->

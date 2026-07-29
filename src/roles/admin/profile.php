@@ -389,7 +389,7 @@ $initData = json_encode([
                 <div class="permission-item maintenance-item">
                   <div class="permission-info">
                     <strong>Enable Maintenance Mode</strong>
-                    <span>Temporarily disable access to all receiver and donor dashboards. Admins will retain
+                    <span>Temporarily disable access to all receiver and admin dashboards. Admins will retain
                       access.</span>
                   </div>
                   <label class="switch-container">

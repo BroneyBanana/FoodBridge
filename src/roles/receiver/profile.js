@@ -174,34 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast("Server error. Please try again.", "error");
     }
   });
-
-  // ---- Submit: Preferences ----
-  savePrefsBtn.addEventListener("click", async () => {
-    const prefs = {
-      alertNearby: prefNearby.checked,
-      weeklyDigest: prefWeekly.checked,
-      detailsVisible: prefDetails.checked
-    };
-
-    const formData = new FormData();
-    formData.append("action", "save_preferences");
-    formData.append("preferences", JSON.stringify(prefs));
-
-    try {
-      const res = await fetch("profile.php", { method: "POST", body: formData });
-      const data = await res.json();
-      if (data.success) {
-        profile.preferences = prefs;
-        localStorage.setItem("foodbridgeReceiverProfile", JSON.stringify(profile));
-        showToast(data.message, "success");
-      } else {
-        showToast(data.message, "error");
-      }
-    } catch (err) {
-      showToast("Server error. Please try again.", "error");
-    }
-  });
-
   // ---- Avatar upload ----
   avatarContainer.addEventListener("click", () => avatarInput.click());
 

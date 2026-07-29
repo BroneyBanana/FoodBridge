@@ -1,10 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ---- Load config from PHP ----
-  const profile = window.donorProfileConfig || {};
+  const profile = window.adminProfileConfig || {};
 
-  // If no config, fallback to empty (prevents errors)
   if (!profile.name) {
-    console.warn("Donor profile config not found – check PHP injection.");
+    console.warn("Admin profile config not found – check PHP injection.");
   }
 
   // ---- DOM references ----
@@ -14,24 +13,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const initialsEl = document.getElementById("profileInitials");
   const sidebarName = document.getElementById("sidebarAdminName");
   const metaMemberSince = document.getElementById("metaMemberSince");
-  const statDonations = document.getElementById("statDonations");
-  const statReliability = document.getElementById("statReliability");
 
   const credForm = document.getElementById("credentialsForm");
   const adminName = document.getElementById("adminName");
   const adminEmail = document.getElementById("adminEmail");
+
   const togglePasswordBtn = document.getElementById("togglePasswordFormBtn");
   const chevron = document.getElementById("chevronIcon");
   const passwordContainer = document.getElementById("passwordFieldsContainer");
   const currentPass = document.getElementById("currentPassword");
   const newPass = document.getElementById("newPassword");
   const confirmPass = document.getElementById("confirmPassword");
+
   const maintenanceToggle = document.getElementById("systemMaintenanceToggle");
-  const platformStatusBadge = document.getElementById("platformStatusBadge");
   const saveMaintenanceBtn = document.getElementById("saveMaintenanceBtn");
+
   const toastContainer = document.getElementById("toastContainer");
 
-  // Toast system
+  // ---- Toast system ----
   function showToast(message, type = "success") {
     const toast = document.createElement("div");
     toast.className = `toast toast-${type}`;
@@ -59,10 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => toast.remove(), 400);
     });
   }
-  // Update UI
+
+  // ---- Update UI from profile data ----
   function updateUI() {
     sidebarName.textContent = profile.name || "Admin";
     metaMemberSince.textContent = profile.memberSince || "N/A";
+
     // Avatar
     if (profile.avatarImage) {
       avatarImg.src = "../../" + profile.avatarImage;
@@ -74,21 +75,17 @@ document.addEventListener("DOMContentLoaded", () => {
       initialsEl.textContent = profile.initials || "AD";
     }
 
+    // Form fields
     adminName.value = profile.name || "";
     adminEmail.value = profile.email || "";
 
-    const isMaintenance = !!profile.systemMaintenance;
-    maintenanceToggle.checked = isMaintenance;
-    if (isMaintenance) {
-      platformStatusBadge.textContent = "Under Maintenance";
-      platformStatusBadge.className = "status-indicator-badge maintenance";
-    } else {
-      platformStatusBadge.textContent = "Active & Online";
-      platformStatusBadge.className = "status-indicator-badge online";
+    // Maintenance toggle (already set in HTML, but keep in sync)
+    if (profile.systemMaintenance !== undefined) {
+      maintenanceToggle.checked = !!profile.systemMaintenance;
     }
   }
 
-  // Toggle password fields
+  // ---- Toggle password fields ----
   togglePasswordBtn.addEventListener("click", () => {
     const hidden = passwordContainer.classList.toggle("hidden");
     chevron.classList.toggle("rotated", !hidden);
@@ -99,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // ---- Password visibility toggles ----
   document.querySelectorAll(".password-toggle-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const target = document.getElementById(btn.dataset.toggleTarget);
@@ -110,12 +108,14 @@ document.addEventListener("DOMContentLoaded", () => {
         : `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
     });
   });
-  // Submit credentials form
+
+  // ---- Submit: Account credentials ----
   credForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const name = adminName.value.trim();
     if (!name) {
-      showToast("Name cannot be empty.", "error");
+      showToast("Name is required.", "error");
       return;
     }
 
@@ -143,11 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (data.success) {
         profile.name = data.name;
-        // Update location from input
-        profile.location = location;
-        // Update session name for header (if needed)
+        // Update session name for header
         localStorage.setItem("foodbridgeAdminProfile", JSON.stringify(profile));
         updateUI();
+        // Clear password fields and collapse
         currentPass.value = "";
         newPass.value = "";
         confirmPass.value = "";
@@ -161,29 +160,37 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast("Server error. Please try again.", "error");
     }
   });
-  // Save maintenance
+
+  // ---- Submit: Maintenance settings ----
   saveMaintenanceBtn.addEventListener("click", async () => {
-    const isChecked = maintenanceToggle.checked;
+    const isMaintenance = maintenanceToggle.checked;
+
     const formData = new FormData();
     formData.append("action", "update_maintenance");
-    formData.append("maintenance", isChecked ? "true" : "false");
+    formData.append("maintenance", isMaintenance ? "true" : "false");
 
     try {
       const res = await fetch("profile.php", { method: "POST", body: formData });
       const data = await res.json();
       if (data.success) {
-        profile.systemMaintenance = isChecked;
-        updateUI();
-        showToast(isChecked ? "Maintenance mode ENABLED" : "Maintenance mode DISABLED", isChecked ? "info" : "success");
+        profile.systemMaintenance = isMaintenance;
+        localStorage.setItem("foodbridgeAdminProfile", JSON.stringify(profile));
+        // Update the status badge
+        const badge = document.getElementById("platformStatusBadge");
+        if (badge) {
+          badge.textContent = isMaintenance ? "Under Maintenance" : "Active & Online";
+          badge.className = `status-indicator-badge ${isMaintenance ? "maintenance" : "online"}`;
+        }
+        showToast(data.message, "success");
       } else {
         showToast(data.message, "error");
-        maintenanceToggle.checked = !isChecked;
       }
     } catch (err) {
       showToast("Server error. Please try again.", "error");
     }
   });
 
+  // ---- Avatar upload ----
   avatarContainer.addEventListener("click", () => avatarInput.click());
 
   avatarInput.addEventListener("change", async (e) => {
@@ -201,10 +208,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (data.success) {
         profile.avatarImage = data.avatarUrl;
-        window.location.reload();
+        window.location.reload(); // Reload to show new avatar everywhere
         updateUI();
-        window.location.reload();
-        // Update header if function exists
         if (typeof window.updateHeaderAvatar === "function") window.updateHeaderAvatar();
         showToast("Profile picture updated.", "success");
       } else {
@@ -213,12 +218,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       showToast("Server error during upload.", "error");
     }
-    avatarInput.value = ""; // Reset
+    avatarInput.value = "";
   });
 
   // ---- Initial render ----
   updateUI();
 
-  // ---- Optional: store profile in localStorage for header.js ----
+  // Store profile in localStorage for header sync
   localStorage.setItem("foodbridgeAdminProfile", JSON.stringify(profile));
 });

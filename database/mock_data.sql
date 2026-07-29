@@ -12,17 +12,28 @@ INSERT IGNORE INTO trust_rule_settings (setting_id, suspension_threshold) VALUES
 -- ============================================================
 INSERT INTO users
   (user_id, role, full_name, email, profile_url, password_hash, location,
-   trust_score, total_food_donated, status, created_at)
+   latitude, longitude, trust_score, total_food_donated, status, created_at)
 VALUES
-  -- Admin
-  (1, 'admin',    'Daniel Ong',            'admin@foodbridge.com',          'uploads/profiles/ape.jpg',   'ABC@123', 'Asia Pacific University, Kuala Lumpur', 100,   0, 'active', '2026-06-01 09:00:00'),
-  -- Donors
-  (2, 'donor',    'Sunrise Bakery',         'donor@food.com',                'uploads/profiles/ape.jpg',  'ABC@123', 'Subang Jaya, Selangor',                100, 780, 'active', '2026-06-02 10:15:00'),
-  (3, 'donor',    'Green Kitchen',          'green@foodbridge.com',           'uploads/profiles/ape.jpg', 'ABC@123', 'Bukit Jalil, Kuala Lumpur',             92, 420, 'active', '2026-06-05 13:20:00'),
-  -- Receivers
-  (4, 'receiver', 'Daniel Receiver',        'receiver@food.com',             'uploads/profiles/ape.jpg',  'ABC@123', 'Subang Jaya, Selangor',                 85,   0, 'active', '2026-06-03 11:00:00'),
-  (5, 'receiver', 'Aisha Community Home',   'aisha.home@foodbridge.com',     'uploads/profiles/ape.jpg',  'ABC@123', 'Puchong, Selangor',                     96,   0, 'active', '2026-06-07 08:45:00'),
-  (6, 'receiver', 'Care Shelter KL',        'care.shelter@foodbridge.com',   'uploads/profiles/ape.jpg',  'ABC@123', 'Kuala Lumpur City Centre',              65,   0, 'warned', '2026-06-10 15:25:00');
+  (1, 'admin',    'Daniel Ong',            'admin@foodbridge.com',          'uploads/profiles/ape.jpg',
+    '$2y$10$TkJF1C5D0VhY1A6Zx9K3kuL1N2m3oP4Q5R6S7T8U9V0W1X2Y3Z4A5B',        'Asia Pacific University, Kuala Lumpur',
+    3.07150000,   101.76420000,          100,      0,         'active',     '2026-06-01 09:00:00'),
+  (2, 'donor',    'Sunrise Bakery',         'donor@food.com',                'uploads/profiles/ape.jpg',
+   '$2y$10$TkJF1C5D0VhY1A6Zx9K3kuL1N2m3oP4Q5R6S7T8U9V0W1X2Y3Z4A5B',         'Subang Jaya, Selangor',
+   3.04380000,    101.58050000,          100,      780,        'active',    '2026-06-02 10:15:00'),
+  (3, 'donor',    'Green Kitchen',          'green@foodbridge.com',           'uploads/profiles/ape.jpg',
+   '$2y$10$TkJF1C5D0VhY1A6Zx9K3kuL1N2m3oP4Q5R6S7T8U9V0W1X2Y3Z4A5B',         'Bukit Jalil, Kuala Lumpur',
+   3.05470000,    101.67780000,         92,       420,          'active',   '2026-06-05 13:20:00'),
+  (4, 'receiver', 'Daniel Receiver',        'receiver@food.com',             'uploads/profiles/ape.jpg',
+   '$2y$10$TkJF1C5D0VhY1A6Zx9K3kuL1N2m3oP4Q5R6S7T8U9V0W1X2Y3Z4A5B',         'Subang Jaya, Selangor',
+   3.04380000,    101.58050000,         85,        0,           'active',   '2026-06-03 11:00:00'),
+  (5, 'receiver', 'Aisha Community Home',   'aisha.home@foodbridge.com',     'uploads/profiles/ape.jpg',
+   '$2y$10$TkJF1C5D0VhY1A6Zx9K3kuL1N2m3oP4Q5R6S7T8U9V0W1X2Y3Z4A5B',         'Puchong, Selangor',
+   3.03330000,    101.61670000,         96,         0,          'active',   '2026-06-07 08:45:00'),
+  (6, 'receiver', 'Care Shelter KL',        'care.shelter@foodbridge.com',   'uploads/profiles/ape.jpg',
+   '$2y$10$TkJF1C5D0VhY1A6Zx9K3kuL1N2m3oP4Q5R6S7T8U9V0W1X2Y3Z4A5B',         'Kuala Lumpur City Centre',
+   3.14780000,    101.69530000,         65,        0,           'warned',   '2026-06-10 15:25:00');
+
+
 
 -- ============================================================
 -- 3. OTP_VERIFICATIONS

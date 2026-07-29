@@ -12,6 +12,8 @@ CREATE TABLE users (
   profile_url         VARCHAR(500) NULL,
   password_hash       VARCHAR(255) NOT NULL,
   location            VARCHAR(255) NULL,
+  latitude            DECIMAL(10, 8) NULL,
+  longitude           DECIMAL(11, 8) NULL,
   trust_score         INT NOT NULL DEFAULT 100,
   total_food_donated  INT NOT NULL DEFAULT 0,
   status              ENUM('pending_verification', 'active', 'warned', 'suspended', 'banned') NOT NULL DEFAULT 'pending_verification',

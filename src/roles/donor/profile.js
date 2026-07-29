@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ---- Load config from PHP ----
-  const profile = window.donorProfileConfig || {};
+  const profile = window.receiverProfileConfig || {};
 
-  // If no config, fallback to empty (prevents errors)
+  // Fallback defaults if config is missing
   if (!profile.name) {
-    console.warn("Donor profile config not found – check PHP injection.");
+    console.warn("Receiver profile config not found – check PHP injection.");
   }
 
   // ---- DOM references ----
@@ -12,15 +12,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const avatarImg = document.getElementById("profileAvatarImg");
   const avatarInput = document.getElementById("avatarFileInput");
   const initialsEl = document.getElementById("profileInitials");
-  const sidebarName = document.getElementById("sidebarDonorName");
+  const sidebarName = document.getElementById("sidebarReceiverName");
   const metaMemberSince = document.getElementById("metaMemberSince");
-  const statDonations = document.getElementById("statDonations");
-  const statReliability = document.getElementById("statReliability");
+  const statPickups = document.getElementById("statPickups");
+  const statOnTime = document.getElementById("statOnTime");
 
   const credForm = document.getElementById("credentialsForm");
-  const donorName = document.getElementById("donorName");
-  const donorEmail = document.getElementById("donorEmail");
-  const donorLocation = document.getElementById("donorLocation");
+  const receiverName = document.getElementById("receiverName");
+  const receiverEmail = document.getElementById("receiverEmail");
+  const receiverLocation = document.getElementById("receiverLocation");
 
   const togglePasswordBtn = document.getElementById("togglePasswordFormBtn");
   const chevron = document.getElementById("chevronIcon");
@@ -29,9 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const newPass = document.getElementById("newPassword");
   const confirmPass = document.getElementById("confirmPassword");
 
-  const prefAlert = document.getElementById("prefAlertExpiry");
-  const prefHalal = document.getElementById("prefHalalDefault");
-  const prefContact = document.getElementById("prefContactVisible");
+  const prefNearby = document.getElementById("prefAlertNearby");
+  const prefWeekly = document.getElementById("prefWeeklyDigest");
+  const prefDetails = document.getElementById("prefDetailsVisible");
   const savePrefsBtn = document.getElementById("savePreferencesBtn");
 
   const toastContainer = document.getElementById("toastContainer");
@@ -67,11 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---- Update UI from profile data ----
   function updateUI() {
-    // Sidebar
-    sidebarName.textContent = profile.name || "Donor";
+    sidebarName.textContent = profile.name || "Receiver";
     metaMemberSince.textContent = profile.memberSince || "N/A";
-    statDonations.textContent = profile.totalDonations ?? 0;
-    statReliability.textContent = (profile.reliability ?? 100) + "%";
+    statPickups.textContent = profile.pickups ?? 0;
+    statOnTime.textContent = (profile.onTimeRate ?? 100) + "%";
 
     // Avatar
     if (profile.avatarImage) {
@@ -85,15 +84,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Form fields
-    donorName.value = profile.name || "";
-    donorEmail.value = profile.email || "";
-    donorLocation.value = profile.location || "";
+    receiverName.value = profile.name || "";
+    receiverEmail.value = profile.email || "";
+    receiverLocation.value = profile.location || "";
 
     // Preferences (if stored)
     if (profile.preferences) {
-      prefAlert.checked = !!profile.preferences.alertExpiry;
-      prefHalal.checked = !!profile.preferences.halalDefault;
-      prefContact.checked = !!profile.preferences.contactVisible;
+      prefNearby.checked = !!profile.preferences.alertNearby;
+      prefWeekly.checked = !!profile.preferences.weeklyDigest;
+      prefDetails.checked = !!profile.preferences.detailsVisible;
     }
   }
 
@@ -125,8 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
   credForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name = donorName.value.trim();
-    const location = donorLocation.value.trim();
+    const name = receiverName.value.trim();
+    const location = receiverLocation.value.trim();
     if (!name || !location) {
       showToast("Name and location are required.", "error");
       return;
@@ -136,7 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const newPw = newPass.value;
     const conf = confirmPass.value;
 
-    // Validate password change if any field filled
     if (cur || newPw || conf) {
       if (!cur) return showToast("Current password is required.", "error");
       if (!newPw) return showToast("New password is required.", "error");
@@ -158,10 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (data.success) {
         profile.name = data.name;
-        // Update location from input
         profile.location = location;
-        // Update session name for header (if needed)
-        localStorage.setItem("foodbridgeDonorProfile", JSON.stringify(profile));
+        // Update session name for header
+        localStorage.setItem("foodbridgeReceiverProfile", JSON.stringify(profile));
         updateUI();
         // Clear password fields and collapse
         currentPass.value = "";
@@ -177,35 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast("Server error. Please try again.", "error");
     }
   });
-
-  // ---- Submit: Preferences ----
-  savePrefsBtn.addEventListener("click", async () => {
-    const prefs = {
-      alertExpiry: prefAlert.checked,
-      halalDefault: prefHalal.checked,
-      contactVisible: prefContact.checked
-    };
-
-    const formData = new FormData();
-    formData.append("action", "save_preferences");
-    formData.append("preferences", JSON.stringify(prefs));
-
-    try {
-      const res = await fetch("profile.php", { method: "POST", body: formData });
-      const data = await res.json();
-      if (data.success) {
-        profile.preferences = prefs;
-        // Optionally store in localStorage for header sync
-        localStorage.setItem("foodbridgeDonorProfile", JSON.stringify(profile));
-        showToast(data.message, "success");
-      } else {
-        showToast(data.message, "error");
-      }
-    } catch (err) {
-      showToast("Server error. Please try again.", "error");
-    }
-  });
-
   // ---- Avatar upload ----
   avatarContainer.addEventListener("click", () => avatarInput.click());
 
@@ -224,9 +192,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (data.success) {
         profile.avatarImage = data.avatarUrl;
-        window.location.reload();
         updateUI();
-        // Update header if function exists
+        window.location.reload();
+
         if (typeof window.updateHeaderAvatar === "function") window.updateHeaderAvatar();
         showToast("Profile picture updated.", "success");
       } else {
@@ -235,12 +203,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       showToast("Server error during upload.", "error");
     }
-    avatarInput.value = ""; // Reset
+    avatarInput.value = "";
   });
 
   // ---- Initial render ----
   updateUI();
 
   // ---- Optional: store profile in localStorage for header.js ----
-  localStorage.setItem("foodbridgeDonorProfile", JSON.stringify(profile));
+  localStorage.setItem("foodbridgeReceiverProfile", JSON.stringify(profile));
 });

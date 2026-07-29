@@ -57,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $updatePassword = true;
       $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
     }
-
     if ($updatePassword) {
       $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ?, location = ?, password_hash = ? WHERE user_id = ?");
       mysqli_stmt_bind_param($stmt, "sssi", $name, $location, $newHash, $userId);
@@ -115,15 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
   }
-
-  // 3. Save preferences (optional – store in a user_preferences table if needed)
-  if ($action === 'save_preferences') {
-    // You can store preferences in a separate table later.
-    // For now, just acknowledge success.
-    echo json_encode(['success' => true, 'message' => 'Preferences saved.']);
-    exit;
-  }
-
   echo json_encode(['success' => false, 'message' => 'Invalid action.']);
   exit;
 }
@@ -408,51 +398,6 @@ $initData = json_encode([
                   <button type="submit" class="btn btn-primary">Save Account Details</button>
                 </div>
               </form>
-            </section>
-
-            <!-- Form 2: Preferences Settings -->
-            <section class="profile-section-card" aria-labelledby="preferencesTitle">
-              <h3 id="preferencesTitle" class="section-title">Receiver Preferences</h3>
-              <p class="section-desc">Manage alert zones and communication triggers.</p>
-
-              <div class="trigger-settings-list">
-                <div class="trigger-setting-item">
-                  <label class="switch-container">
-                    <input type="checkbox" id="prefAlertNearby" checked />
-                    <span class="slider"></span>
-                  </label>
-                  <div class="trigger-desc">
-                    <strong>Nearby Donation Alerts</strong>
-                    <span>Notify me instantly when new listings are uploaded within a 5km radius.</span>
-                  </div>
-                </div>
-
-                <div class="trigger-setting-item">
-                  <label class="switch-container">
-                    <input type="checkbox" id="prefWeeklyDigest" />
-                    <span class="slider"></span>
-                  </label>
-                  <div class="trigger-desc">
-                    <strong>Weekly Meal Digest</strong>
-                    <span>Send a weekly summary of vouchers claimed, points collected, and leaderboard standings.</span>
-                  </div>
-                </div>
-
-                <div class="trigger-setting-item">
-                  <label class="switch-container">
-                    <input type="checkbox" id="prefDetailsVisible" checked />
-                    <span class="slider"></span>
-                  </label>
-                  <div class="trigger-desc">
-                    <strong>Show details on reservation</strong>
-                    <span>Enable donors to see my organization name once I schedule a booking.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-actions">
-                <button type="button" id="savePreferencesBtn" class="btn btn-primary">Apply Settings</button>
-              </div>
             </section>
           </div>
         </div>
