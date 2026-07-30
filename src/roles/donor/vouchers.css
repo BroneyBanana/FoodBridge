@@ -215,4 +215,97 @@
     max-width: 440px;
     margin: 0 auto;
   }
-}/* Vouchers Specific Styles */
+}
+
+/* Modal Overlay Container */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.modal.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* Modal Content Card */
+.modal-content {
+  background: var(--color-white, #ffffff);
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(10px);
+  transition: transform 0.25s ease-in-out;
+  text-align: center;
+}
+
+.modal.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-content h2 {
+  font-family: var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-forest, #1c2b1e);
+  margin-bottom: 12px;
+}
+
+.modal-content p {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--color-text-muted, #6b7280);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* Modal Action Buttons */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.modal-actions button,
+.modal-content > button {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition-smooth, all 0.2s ease);
+}
+
+.btn-primary {
+  background: var(--color-forest, #1c2b1e);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}

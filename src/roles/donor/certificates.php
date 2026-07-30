@@ -7,8 +7,8 @@ session_start();
 // will still use donor_id 2 regardless). This is only for testing — remove
 // this whole block and restore a real session check before going anywhere
 // near production, or any logged-in donor could see donor_id 2's certs.
-$_SESSION['user_id'] = 2;
-$_SESSION['role'] = 'donor';
+// $_SESSION['user_id'] = 2;
+// $_SESSION['role'] = 'donor';
 
 $donor_id = (int) $_SESSION['user_id'];
 
