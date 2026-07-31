@@ -1,0 +1,114 @@
+.admin-notifications {
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.admin-notifications .page-heading {
+    font-family: var(--font-display);
+    color: var(--color-forest);
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+}
+
+.admin-notifications .page-subheading {
+    color: var(--color-text-muted);
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    font-family: var(--font-sans);
+}
+
+.page-subheading {
+    margin-bottom: 20px;
+}
+
+.empty-notifications-card {
+    background: var(--color-white);
+    border-radius: 28px;
+    padding: 24px 32px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(28, 43, 30, 0.01);
+    border: 1.5px solid rgba(28, 43, 30, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition-smooth);
+    max-width: 760px;
+    margin: 0 auto;
+    margin-top: 32px;
+}
+
+.empty-notifications-card p {
+    font-family: var(--font-sans);
+    color: var(--color-text-muted);
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+    .admin-notifications {
+        padding-top: 32px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .empty-notifications-card {
+        border-radius: 24px;
+        padding: 40px 16px;
+    }
+}
+
+.notification-card {
+    background: var(--color-white);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(28, 43, 30, 0.03);
+    border: 1.5px solid rgba(28, 43, 30, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(28, 43, 30, 0.06);
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.notification-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-forest);
+    margin: 0;
+}
+
+.notification-time {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.notification-desc {
+    font-family: var(--font-sans);
+    color: var(--color-text-main);
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+}
+
+.notification-user {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--color-leaf);
+    font-weight: 500;
+}

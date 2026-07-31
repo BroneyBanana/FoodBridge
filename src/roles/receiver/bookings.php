@@ -1,18 +1,28 @@
 <?php
 session_start();
-require_once '../../../database/db.php';
+require_once '../../../database/db.php'; 
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
     header('Location: ../../auth/login.php');
     exit();
 }
 
+require_once __DIR__ . '/../../../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
+$dotenv->load();
+
+// Store the key in a PHP variable
+$tomtomKey = $_ENV['TOMTOM_API_KEY'];
+
 $receiver_id = $_SESSION['user']['id'];
 
 // ------ QUERY 1 : UPCOMING BOOKINGS ------
 $sql_upcoming = "SELECT bookings.booking_id, bookings.quantity, bookings.status,
                          donations.food_name, donations.image_url, donations.pickup_address,
-                         users.full_name AS donor_name,
+                         users.full_name AS donor_name, users.latitude AS latitude, users.longitude AS longitude,
                          pickup_slots.timeslot
                   FROM bookings
                   JOIN donations ON bookings.donation_id = donations.donation_id
@@ -84,7 +94,7 @@ while ($row = mysqli_fetch_assoc($result_past)) {
   <body>
     <div class="noise-bg"></div>
     <header class="dashboard-header">
-      <a href="dashboard.html" class="navbar-brand">
+      <a href="dashboard.php" class="navbar-brand">
         <div class="navbar-logo">
           <img src="../../assets/images/logo.png" alt="Logo" />
         </div>
@@ -92,16 +102,16 @@ while ($row = mysqli_fetch_assoc($result_past)) {
       
       <div class="nav-overlay" id="navOverlay">
         <nav class="dashboard-nav">
-          <a href="dashboard.html" class="dashboard-nav-item">Overview</a>
-          <a href="browse-donations.html" class="dashboard-nav-item">Browse Food</a>
-          <a href="bookings.html" class="dashboard-nav-item active">My Bookings</a>
-          <a href="trust-score.html" class="dashboard-nav-item">Trust Score</a>
-          <a href="history.html" class="dashboard-nav-item">History</a>
+          <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
+          <a href="browse-donations.php" class="dashboard-nav-item">Browse Food</a>
+          <a href="bookings.php" class="dashboard-nav-item active">My Bookings</a>
+          <a href="trust-score.php" class="dashboard-nav-item">Trust Score</a>
+          <a href="history.php" class="dashboard-nav-item">History</a>
         </nav>
       </div>
       
       <div class="dashboard-actions">
-        <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.html">
+        <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.php">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
@@ -109,9 +119,16 @@ while ($row = mysqli_fetch_assoc($result_past)) {
           <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
         </a>
 
-        <a href="profile.html" class="profile-avatar">DO</a>
+        <a href="profile.php" class="profile-avatar">
+          <?php if (!empty($userAvatar)): ?>
+            <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+              style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+          <?php else: ?>
+            <?= htmlspecialchars($initials) ?>
+          <?php endif; ?>
+        </a>
         
-        <a href="../../auth/login.html" class="action-btn-circle hide-mobile" title="Log Out">
+        <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
         </a>
 
@@ -156,6 +173,8 @@ while ($row = mysqli_fetch_assoc($result_past)) {
                           <button class="scanQR" data-booking-id="<?php echo (int) $booking['booking_id']; ?>">Scan QR</button>
                           <button class="Directions"
                                   data-booking-id="<?php echo (int) $booking['booking_id']; ?>"
+                                  data-latitude="<?php echo (float) $booking['latitude']; ?>"
+                                  data-longitude="<?php echo (float) $booking['longitude']; ?>"
                                   data-address="<?php echo htmlspecialchars($booking['pickup_address']); ?>">Directions</button>
                           <button class="Cancel"
                                   data-booking-id="<?php echo (int) $booking['booking_id']; ?>"
@@ -200,7 +219,7 @@ while ($row = mysqli_fetch_assoc($result_past)) {
               <?php endif; ?>
 
               <div class="viewHistory">
-                    <a href="history.html" class="historyButton">View Collection History →</a>
+                    <a href="history.php" class="historyButton">View Collection History →</a>
                 </div>
 
             </div>
@@ -293,6 +312,13 @@ while ($row = mysqli_fetch_assoc($result_past)) {
     <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
     <!-- Page Specific Logic -->
     <script src="../../assets/js/header.js"></script>
+
+    <script>
+      window.APP_CONFIG = {
+          tomtomApiKey: "<?php echo htmlspecialchars($tomtomKey, ENT_QUOTES); ?>"
+      };
+  </script>
+
     <script src="bookings.js"></script>
   </body>
   </html>

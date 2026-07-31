@@ -11,12 +11,13 @@ erDiagram
         VARCHAR email
         VARCHAR password_hash
         VARCHAR location
+        DECIMAL latitude
+        DECIMAL longitude
         INT trust_score
         INT total_food_donated
         ENUM status
         DATETIME created_at
     }
-
     OTP_VERIFICATIONS {
         INT otp_id PK
         VARCHAR email

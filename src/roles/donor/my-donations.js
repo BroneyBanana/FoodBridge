@@ -105,7 +105,28 @@ const showQrModal    = document.getElementById('show-qr-modal');
 const btnShowQrList  = document.querySelectorAll('.show-qr');
 const btnCloseShowQr = document.getElementById('show-qr-close-btn');
 
-function openShowQR() {
+// Add selectors for the dynamic elements inside the modal
+const qrImage = document.getElementById('display-qr-img');
+const qrIdText = document.getElementById('modal-donation-id-text');
+
+function openShowQR(e) {
+  // 1. Get the specific button that triggered the event
+  const btn = e.currentTarget;
+  
+  // 2. Extract the donation ID
+  const donationId = btn.getAttribute('data-donation-id');
+  
+  if (donationId) {
+    // 3. Construct the dynamic QR payload and URL
+    const qrData = "donation_id=" + donationId;
+    const newQrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(qrData) + "&color=000000&bgcolor=ffffff";
+    
+    // 4. Update the modal's image source and ID text
+    if (qrImage) qrImage.src = newQrUrl;
+    if (qrIdText) qrIdText.textContent = "ID: #" + donationId;
+  }
+
+  // 5. Reveal the modal
   showQrModal.classList.remove('hidden');
 }
 

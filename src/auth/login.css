@@ -47,7 +47,8 @@ body {
 
 .login-visual {
   min-height: min(830px, calc(100vh - 160px));
-  border-radius: 0 60px 0 60px;
+  margin-left: 60px;
+  border-radius: 40px;
   overflow: hidden;
   position: relative;
   box-shadow: 0 28px 80px rgba(28, 43, 30, 0.12);
@@ -165,15 +166,6 @@ body {
 
 .admin-access a::after {
   content: " ->";
-}
-
-.admin-access span {
-  padding: 10px 16px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.76);
-  color: rgba(28, 43, 30, 0.66);
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
 }
 
 .login-card {
@@ -492,3 +484,4 @@ body {
     min-height: 60px;
   }
 }
+

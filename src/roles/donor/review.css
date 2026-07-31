@@ -156,6 +156,15 @@
   border: 3px solid var(--color-parchment);
 }
 
+.reviewer-initials {
+  display: grid;
+  flex: 0 0 52px;
+  place-items: center;
+  background: var(--color-parchment);
+  color: var(--color-forest);
+  font-weight: 900;
+}
+
 .review-header h3 {
   color: var(--color-forest);
   font-family: var(--font-sans);
@@ -176,6 +185,14 @@
 .review-body p {
   margin-top: 12px;
   color: rgba(28, 43, 30, 0.78);
+}
+
+.review-donation,
+.empty-reviews {
+  display: block;
+  margin-top: 14px;
+  color: var(--color-text-muted);
+  font-weight: 700;
 }
 
 @media (max-width: 860px) {

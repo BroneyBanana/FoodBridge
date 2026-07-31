@@ -1,15 +1,27 @@
 // 2. Map & View Logic
-const mapCurrentPos = { lat: 3.1333, lng: 101.6833 };
-const heatData = [
-  [3.1422, 101.6875, "Healthy Bowls", "Vegan Salad Bowls"],
-  [3.1425, 101.6870, "Green Bites", "Organic Wraps"],
-  [3.1420, 101.6880, "Juice Works", "Detox Juices"],
-  [3.1428, 101.6878, "Salad Atelier", "Custom Salads"],
-  [3.1450, 101.6900, "Eco Bakery", "Sourdough Loaf"],
-  [3.1455, 101.6905, "Pastry Hub", "Croissants"],
-  [3.1380, 101.6840, "Perdana Cafe", "Nasi Lemak"],
-  [3.1320, 101.6860, "KL Express", "Chicken Rice"]
-];
+// Default center (e.g., Kuala Lumpur or user's current location)
+const mapCurrentPos = { lat: 3.0554, lng: 101.6982 }; 
+
+if ("geolocation" in navigator) {
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      // Success! Update coordinates with the real location
+      mapCurrentPos.lat = position.coords.latitude;
+      mapCurrentPos.lng = position.coords.longitude;
+      
+      // If the user already opened the map before the GPS located them, recenter it
+      if (typeof mapInitialized !== 'undefined' && mapInitialized && map) {
+        map.setView([mapCurrentPos.lat, mapCurrentPos.lng], 12);
+      }
+    },
+    function(error) {
+      console.warn("Location access denied or unavailable. Using default coordinates.");
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+} else {
+  console.warn("Geolocation is not supported by this browser.");
+}
 
 let mapInitialized = false;
 let map;
@@ -40,26 +52,47 @@ function switchView(view, btn) {
 
   if (view === 'map') {
     if (!mapInitialized) {
-      map = L.map('map').setView([3.1412, 101.6865], 14);
+      map = L.map('map').setView([mapCurrentPos.lat, mapCurrentPos.lng], 12);
+      
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
       }).addTo(map);
 
-      // Heatmap
-      L.heatLayer(heatData.map(item => [item[0], item[1], 1]), {
+      // Fetch dynamic donations passed from PHP
+      const dynamicDonations = window.APP_CONFIG.donations || [];
+
+      // Filter out any donations that are missing latitude/longitude just to be safe
+      const validLocations = dynamicDonations.filter(d => d.latitude && d.longitude);
+
+      // 1. Build Dynamic Heatmap
+      const heatPoints = validLocations.map(d => [d.latitude, d.longitude, 1]);
+      L.heatLayer(heatPoints, {
         radius: 40, blur: 25, maxZoom: 14, max: 3,
-        gradient: {0.4: 'green', 0.7: 'yellow', 1.0: 'red'}
+        gradient: { 0.4: 'green', 0.7: 'yellow', 1.0: 'red' }
       }).addTo(map);
 
-      // Markers
-      heatData.forEach(item => {
-        const marker = L.marker([item[0], item[1]], { icon: customPin }).addTo(map);
+      // 2. Build Dynamic Markers
+      validLocations.forEach(donation => {
+        const marker = L.marker([donation.latitude, donation.longitude], { icon: customPin }).addTo(map);
+        
         marker.on('click', async () => {
-          marker.bindPopup(`<div class="popup-title">${item[3]}</div><div class="popup-subtitle">${item[2]}</div><div class="popup-distance">⏳ Calculating...</div>`).openPopup();
-          const dist = await getDistance(item[0], item[1]);
-          marker.setPopupContent(`<div class="popup-title">${item[3]}</div><div class="popup-subtitle">${item[2]}</div><div class="popup-distance">${dist ? dist + 'km away' : '⚠️ Distance N/A'}</div>${dist ? '<button class="popup-btn">Book Pickup</button>' : ''}`).openPopup();
+          marker.bindPopup(`
+            <div class="popup-title">${donation.food_name}</div>
+            <div class="popup-subtitle">By ${donation.donor_name}</div>
+            <div class="popup-distance">⏳ Calculating...</div>
+          `).openPopup();
+          
+          const dist = await getDistance(donation.latitude, donation.longitude);
+          
+          marker.setPopupContent(`
+            <div class="popup-title">${donation.food_name}</div>
+            <div class="popup-subtitle">By ${donation.donor_name}</div>
+            <div class="popup-distance">${dist ? dist + 'km away' : '⚠️ Distance N/A'}</div>
+            ${dist ? `<button class="popup-btn" onclick="document.querySelector('.BookDonation[data-donation-id=\\'${donation.donation_id}\\']').click()">Book Pickup</button>` : ''}
+          `).openPopup();
         });
       });
+
       mapInitialized = true;
     } else {
       setTimeout(() => map.invalidateSize(), 10);
@@ -75,8 +108,6 @@ async function getDistance(destLat, destLng) {
   } catch (e) { return null; }
 }
 
-
-// ---------------- Category filter (list view) ---------------- //
 document.querySelectorAll('.categoryBtn').forEach(function (button) {
   button.addEventListener('click', function () {
 
@@ -127,7 +158,11 @@ document.querySelectorAll('.BookDonation').forEach(function (button) {
         const select = document.getElementById('slotSelect');
         select.innerHTML = '';
 
-        if (slots.length === 0) {
+        if (slots.error) {
+          // handles get_slots.php's hogging-check response (an object, not an array)
+          document.getElementById('pickupModalError').textContent = slots.error;
+          select.innerHTML = '<option value="">No slots available</option>';
+        } else if (slots.length === 0) {
           select.innerHTML = '<option value="">No slots available</option>';
         } else {
           slots.forEach(function (slot) {

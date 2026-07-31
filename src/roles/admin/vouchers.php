@@ -62,19 +62,41 @@ $_SESSION['user_initials'] = 'AD';
     </div>
 
     <div class="dashboard-actions">
+<<<<<<< HEAD:src/roles/admin/vouchers.php
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.php">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+=======
+      <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
+        href="notifications.php">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+>>>>>>> 169593a4854735c579f78223aa5481e3ee4fa1f8:src/roles/admin/vouchers.html
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
         <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
       </a>
 
+<<<<<<< HEAD:src/roles/admin/vouchers.php
       <a href="profile.php" class="profile-avatar"><?php echo htmlspecialchars($_SESSION['user_initials']); ?></a>
 
       <!-- Direct testing link to stay on page instead of redirecting to login.html -->
       <a href="vouchers.php" class="action-btn-circle hide-mobile" title="Testing Mode Active">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+=======
+      <a href="profile.php" class="profile-avatar">
+        <?php if (!empty($userAvatar)): ?>
+          <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        <?php else: ?>
+          <?= htmlspecialchars($initials) ?>
+        <?php endif; ?>
+      </a>
+
+      <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+>>>>>>> 169593a4854735c579f78223aa5481e3ee4fa1f8:src/roles/admin/vouchers.html
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
           <polyline points="16 17 21 12 16 7"></polyline>
           <line x1="21" y1="12" x2="9" y2="12"></line>

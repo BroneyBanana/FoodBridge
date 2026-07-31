@@ -102,6 +102,8 @@
 
 .slider-wrapper {
     margin-top: 60px;
+    padding-top: 58px;
+    position: relative;
 }
 
 .value-box {
@@ -113,10 +115,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 28%;
     font-weight: bold;
-    margin-bottom: 20px;
-    position: relative;
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
 }
 
 .value-box::after {
@@ -130,6 +132,7 @@
 
 input[type="range"] {
     width: 100%;
+    display: block;
     appearance: none;
     height: 8px;
     border-radius: 10px;

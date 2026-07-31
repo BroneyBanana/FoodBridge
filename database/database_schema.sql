@@ -9,8 +9,11 @@ CREATE TABLE users (
   role                ENUM('donor', 'receiver', 'admin') NOT NULL,
   full_name           VARCHAR(120) NOT NULL,
   email               VARCHAR(190) NOT NULL UNIQUE,
+  profile_url         VARCHAR(500) NULL,
   password_hash       VARCHAR(255) NOT NULL,
   location            VARCHAR(255) NULL,
+  latitude            DECIMAL(10, 8) NULL,
+  longitude           DECIMAL(11, 8) NULL,
   trust_score         INT NOT NULL DEFAULT 100,
   total_food_donated  INT NOT NULL DEFAULT 0,
   status              ENUM('pending_verification', 'active', 'warned', 'suspended', 'banned') NOT NULL DEFAULT 'pending_verification',
@@ -84,7 +87,7 @@ CREATE TABLE pickup_slots (
 CREATE TABLE bookings (
   booking_id     INT AUTO_INCREMENT PRIMARY KEY,
   donation_id    INT NOT NULL,
-  pickup_slot_id INT NOT NULL UNIQUE,
+  pickup_slot_id INT NOT NULL,
   receiver_id    INT NOT NULL,
   booking_time   DATETIME NOT NULL,
   quantity       DECIMAL(10, 2) NOT NULL,
@@ -204,6 +207,7 @@ CREATE TABLE reports (
   issue_type         VARCHAR(80) NOT NULL,
   comment            TEXT NULL,
   evidence_image_url VARCHAR(500) NULL,
+  admin_message      TEXT NULL,
   status             ENUM('active', 'resolved', 'dismissed') NOT NULL DEFAULT 'active',
   created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_report_booking
@@ -219,3 +223,28 @@ CREATE INDEX idx_report_status ON reports (status, created_at);
 CREATE TABLE platform_settings (
   maintenance_mode ENUM('on', 'off') NOT NULL PRIMARY KEY
 );
+
+-- ============================================================
+-- TRUST RULE SETTINGS
+-- ============================================================
+CREATE TABLE trust_rule_settings (
+  setting_id            TINYINT UNSIGNED NOT NULL PRIMARY KEY,
+  suspension_threshold  TINYINT UNSIGNED NOT NULL DEFAULT 30,
+  updated_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CHECK (setting_id = 1),
+  CHECK (suspension_threshold BETWEEN 0 AND 100)
+);
+
+-- ============================================================
+-- EXPIRY REMINDER LOG
+-- ============================================================
+CREATE TABLE expiry_reminder_log (
+    donation_id INT NOT NULL,
+    reminder_time ENUM('6h', '2h', '30m') NOT NULL,
+    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (donation_id, reminder_time),
+    CONSTRAINT fk_reminder_donation FOREIGN KEY (donation_id)
+        REFERENCES donations(donation_id) ON DELETE CASCADE
+);
+
+INSERT INTO trust_rule_settings (setting_id, suspension_threshold) VALUES (1, 30);

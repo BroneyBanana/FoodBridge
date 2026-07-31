@@ -5,22 +5,35 @@ USE foodbridge;
 -- ============================================================
 INSERT IGNORE INTO platform_settings (maintenance_mode) VALUES ('off');
 
+INSERT IGNORE INTO trust_rule_settings (setting_id, suspension_threshold) VALUES (1, 30);
+
 -- ============================================================
 -- 2. USERS
 -- ============================================================
 INSERT INTO users
-  (user_id, role, full_name, email, password_hash, location,
-   trust_score, total_food_donated, status, created_at)
+  (user_id, role, full_name, email, profile_url, password_hash, location,
+   latitude, longitude, trust_score, total_food_donated, status, created_at)
 VALUES
-  -- Admin
-  (1, 'admin',    'Daniel Ong',            'admin@foodbridge.com',         'ABC@123', 'Asia Pacific University, Kuala Lumpur', 100,   0, 'active', '2026-06-01 09:00:00'),
-  -- Donors
-  (2, 'donor',    'Sunrise Bakery',         'donor@food.com',               'ABC@123', 'Subang Jaya, Selangor',                100, 780, 'active', '2026-06-02 10:15:00'),
-  (3, 'donor',    'Green Kitchen',          'green@foodbridge.com',          'ABC@123', 'Bukit Jalil, Kuala Lumpur',             92, 420, 'active', '2026-06-05 13:20:00'),
-  -- Receivers
-  (4, 'receiver', 'Daniel Receiver',        'receiver@food.com',            'ABC@123', 'Subang Jaya, Selangor',                 85,   0, 'active', '2026-06-03 11:00:00'),
-  (5, 'receiver', 'Aisha Community Home',   'aisha.home@foodbridge.com',    'ABC@123', 'Puchong, Selangor',                     96,   0, 'active', '2026-06-07 08:45:00'),
-  (6, 'receiver', 'Care Shelter KL',        'care.shelter@foodbridge.com',  'ABC@123', 'Kuala Lumpur City Centre',              65,   0, 'warned', '2026-06-10 15:25:00');
+  (1, 'admin',    'Daniel Ong',            'admin@foodbridge.com',          'uploads/profiles/ape.jpg',
+    '$2y$10$y8844s4LGh1cWtjr03g7Du1et4Gvvh1/gFdnHoRLr6zZz1GSSeO1a',        'Asia Pacific University, Kuala Lumpur',
+    3.07150000,   101.76420000,          100,      0,         'active',     '2026-06-01 09:00:00'),
+  (2, 'donor',    'Sunrise Bakery',         'donor@food.com',                'uploads/profiles/ape.jpg',
+   '$2y$10$y8844s4LGh1cWtjr03g7Du1et4Gvvh1/gFdnHoRLr6zZz1GSSeO1a',         'Subang Jaya, Selangor',
+   3.04380000,    101.58050000,          100,      780,        'active',    '2026-06-02 10:15:00'),
+  (3, 'donor',    'Green Kitchen',          'green@foodbridge.com',           'uploads/profiles/ape.jpg',
+   '$2y$10$y8844s4LGh1cWtjr03g7Du1et4Gvvh1/gFdnHoRLr6zZz1GSSeO1a',         'Bukit Jalil, Kuala Lumpur',
+   3.05470000,    101.67780000,         92,       420,          'active',   '2026-06-05 13:20:00'),
+  (4, 'receiver', 'Daniel Receiver',        'receiver@food.com',             'uploads/profiles/ape.jpg',
+   '$2y$10$y8844s4LGh1cWtjr03g7Du1et4Gvvh1/gFdnHoRLr6zZz1GSSeO1a',         'Subang Jaya, Selangor',
+   3.04380000,    101.58050000,         85,        0,           'active',   '2026-06-03 11:00:00'),
+  (5, 'receiver', 'Aisha Community Home',   'aisha.home@foodbridge.com',     'uploads/profiles/ape.jpg',
+   '$2y$10$y8844s4LGh1cWtjr03g7Du1et4Gvvh1/gFdnHoRLr6zZz1GSSeO1a',         'Puchong, Selangor',
+   3.03330000,    101.61670000,         96,         0,          'active',   '2026-06-07 08:45:00'),
+  (6, 'receiver', 'Care Shelter KL',        'care.shelter@foodbridge.com',   'uploads/profiles/ape.jpg',
+   '$2y$10$y8844s4LGh1cWtjr03g7Du1et4Gvvh1/gFdnHoRLr6zZz1GSSeO1a',         'Kuala Lumpur City Centre',
+   3.14780000,    101.69530000,         65,        0,           'warned',   '2026-06-10 15:25:00');
+
+
 
 -- ============================================================
 -- 3. OTP_VERIFICATIONS
@@ -41,10 +54,10 @@ INSERT INTO donations
   (donation_id, donor_id, food_name, category, quantity, unit, image_url,
    pickup_address, expiry_at, status, qr_token_hash)
 VALUES
-  (1, 2, 'Bread and Pastries',   'bakery',     40, 'pieces',   'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-06-12 20:00:00', 'completed', '$2y$10$mockQrHashDon1000000000000000000000000000000000'),
-  (2, 2, 'Nasi Lemak Packs',     'cookedMeal', 25, 'portions', 'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', '2026-07-07 21:00:00', 'active',    '$2y$10$mockQrHashDon2000000000000000000000000000000000'),
-  (3, 3, 'Vegetarian Rice Box',  'cookedMeal', 18, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-07-07 19:30:00', 'active',    '$2y$10$mockQrHashDon3000000000000000000000000000000000'),
-  (4, 3, 'Mixed Lunch Packs',    'cookedMeal', 12, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       '2026-06-25 15:00:00', 'expired',   '$2y$10$mockQrHashDon4000000000000000000000000000000000');
+  (1, 2, 'Bread and Pastries',   'bakery',     40, 'pieces',   'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', DATE_SUB(NOW(), INTERVAL 2 DAY), 'completed', '$2y$10$mockQrHashDon1000000000000000000000000000000000'),
+  (2, 2, 'Nasi Lemak Packs',     'cookedMeal', 25, 'portions', 'uploads/donations/ape.jpg', 'Sunrise Bakery, SS15 Subang Jaya', DATE_ADD(NOW(), INTERVAL 3 DAY), 'active',    '$2y$10$mockQrHashDon2000000000000000000000000000000000'),
+  (3, 3, 'Vegetarian Rice Box',  'cookedMeal', 18, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       DATE_ADD(NOW(), INTERVAL 4 DAY), 'active',    '$2y$10$mockQrHashDon3000000000000000000000000000000000'),
+  (4, 3, 'Mixed Lunch Packs',    'cookedMeal', 12, 'portions', 'uploads/donations/ape.jpg', 'Green Kitchen, Bukit Jalil',       DATE_SUB(NOW(), INTERVAL 5 DAY), 'expired',   '$2y$10$mockQrHashDon4000000000000000000000000000000000');
 
 -- ============================================================
 -- 5. DONATION_ALLERGY_TAGS
@@ -63,12 +76,12 @@ INSERT INTO donation_allergy_tags (donation_id, allergy_name) VALUES
 INSERT INTO pickup_slots
   (pickup_slot_id, donation_id, timeslot)
 VALUES
-  (1, 1, '2026-06-12 18:00:00'),
-  (2, 2, '2026-07-07 17:00:00'),
-  (3, 2, '2026-07-07 18:00:00'),
-  (4, 2, '2026-07-07 19:00:00'),
-  (5, 3, '2026-07-07 17:30:00'),
-  (6, 4, '2026-06-25 14:00:00');
+  (1, 1, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+  (2, 2, DATE_ADD(NOW(), INTERVAL 1 DAY)),
+  (3, 2, DATE_ADD(NOW(), INTERVAL 2 DAY)),
+  (4, 2, DATE_ADD(NOW(), INTERVAL 3 DAY)),
+  (5, 3, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+  (6, 4, DATE_SUB(NOW(), INTERVAL 5 DAY));
 
 -- ============================================================
 -- 7. BOOKINGS
@@ -154,10 +167,10 @@ VALUES
 -- 14. REPORTS
 -- ============================================================
 INSERT INTO reports
-  (report_id, booking_id, issue_type, comment, evidence_image_url, status, created_at)
+  (report_id, booking_id, issue_type, comment, evidence_image_url, admin_message, status, created_at)
 VALUES
-  (1, 3, 'missed_pickup', 'The receiver never showed up to pick up the donation.', NULL, 'resolved', '2026-06-25 15:00:00'),
-  (2, 1, 'food_quality',  'The food smelled stale when opened later.', 'uploads/reports/ape.jpg', 'active', '2026-06-26 12:20:00');
+  (1, 3, 'missed_pickup', 'The receiver never showed up to pick up the donation.', NULL, 'Receiver missed the pickup without any notice (-10)', 'resolved', '2026-06-25 15:00:00'),
+  (2, 1, 'food_quality',  'The food smelled stale when opened later.', 'uploads/reports/ape.jpg', NULL, 'active', '2026-06-26 12:20:00');
 
 -- ============================================================
 -- DEMO QUERIES (uncomment to run)

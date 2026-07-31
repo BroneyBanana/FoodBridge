@@ -62,12 +62,53 @@ function scanFrame() {
 }
 
 function onQRDetected(data) {
+  // Stop scanning immediately to prevent duplicate requests
   scanning = false;
   stopCamera();
-  scannerWrap.classList.add('success');
-  successMsg.textContent   = 'Scanned: ' + data;
+
+  // Show a loading state to the user
+  successMsg.textContent = 'Processing scan...';
   successMsg.style.display = 'block';
-  setTimeout(closeScanner, 2000);
+  successMsg.style.color = '#f39c12'; // Orange/Yellow for processing
+  errorMsg.style.display = 'none';
+
+  // Prepare the data to send via POST
+  const formData = new FormData();
+  formData.append('qr_data', data);
+
+  // Send the data to your PHP file
+  fetch('process_qr.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json()) // Expect a JSON response from PHP
+  .then(result => {
+    if (result.success) {
+      // 🟢 Success Path: Update UI and close scanner
+      scannerWrap.classList.add('success');
+      successMsg.textContent = result.message || 'Status updated successfully!';
+      successMsg.style.color = '#2ecc71'; // Green for success
+      
+      // Close the modal and reload the page to refresh the dashboard data
+      setTimeout(() => {
+        closeScanner();
+        location.reload(); 
+      }, 1500);
+    } else {
+      // 🔴 Error Path: The PHP script rejected the data
+      successMsg.style.display = 'none';
+      errorMsg.textContent = result.error || 'Failed to update status.';
+      errorMsg.style.display = 'block';
+      
+      // Optionally, add a button to restart the camera here if they need to scan again
+    }
+  })
+  .catch(error => {
+    // 🔴 Network Error Path: Could not reach the PHP script
+    successMsg.style.display = 'none';
+    errorMsg.textContent = 'Network error. Please check your connection.';
+    errorMsg.style.display = 'block';
+  });
 }
 
 function getCameraError(err) {
@@ -129,10 +170,7 @@ function confirmCancel() {
     })
     .then(function (result) {
       if (result.ok && result.data.success) {
-        pendingCancelCard.style.transition = 'opacity 0.25s, transform 0.25s';
-        pendingCancelCard.style.opacity    = '0';
-        pendingCancelCard.style.transform  = 'scale(0.97)';
-        setTimeout(() => pendingCancelCard.remove(), 250);
+        window.location.reload();
       } else {
         alert(result.data.error || 'Cancellation failed.');
       }
@@ -144,10 +182,34 @@ function confirmCancel() {
     });
 }
 
+document.querySelectorAll('.Cancel').forEach(btn => {
+  btn.addEventListener('click', function() {
+    // Find the closest parent div with the class "bookingCard"
+    const card = this.closest('.bookingCard'); 
+    openCancelModal(card);
+  });
+});
+
+// 2. Listen for clicks on the modal buttons (Keep Booking / Yes, Cancel)
+if (cancelKeepBtn) {
+  cancelKeepBtn.addEventListener('click', closeCancelModal);
+}
+if (cancelConfirmBtn) {
+  cancelConfirmBtn.addEventListener('click', confirmCancel);
+}
+
+// 3. (Optional) Close modal if they click the background overlay
+if (cancelModal) {
+  cancelModal.addEventListener('click', e => { 
+    if (e.target === cancelModal) closeCancelModal(); 
+  });
+}
+
 
 // ── Directions Map Modal ──
-const TOMTOM_KEY = 'gs85aMga5cMBIDXUMyWr0dqEvDlZdDXV';
-const FIXED_DEST = [3.1390, 101.6869]; // change to actual pickup coords
+const TOMTOM_KEY = window.APP_CONFIG.tomtomApiKey;
+
+let currentDestination = [3.1390, 101.6869]; 
 
 const mapModal    = document.getElementById('map-modal');
 const mapCloseBtn = document.getElementById('map-close-btn');
@@ -160,6 +222,29 @@ let mapRoutePath   = null;
 let mapCurrentPos  = null;
 let mapGeoWatch    = null;
 
+// 2. Combine the button click listeners into one single block
+document.querySelectorAll('.Directions').forEach(btn => {
+  btn.addEventListener('click', function () {
+    
+    // Grab the dynamic coordinates from the button
+    const lat = parseFloat(this.getAttribute('data-latitude'));
+    const lng = parseFloat(this.getAttribute('data-longitude'));
+    
+    // Update the global destination variable
+    currentDestination = [lat, lng];
+    
+    // Grab the title and donor name for the modal UI
+    const card  = btn.closest('.bookingCardDetails');
+    const title = card?.querySelector('.bookingCardFoodTitle')?.textContent || 'Directions';
+    const donor = card?.querySelector('.bookingCardFoodDonor')?.textContent || '';
+    
+    console.log("Navigating to: " + title + " at " + currentDestination);
+
+    // Open the modal
+    openMapModal(title, donor);
+  });
+});
+
 function openMapModal(bookingTitle, donorName) {
   document.getElementById('map-modal-title').textContent = bookingTitle || 'Directions';
   document.getElementById('map-modal-donor').textContent = donorName || '';
@@ -171,7 +256,8 @@ function openMapModal(bookingTitle, donorName) {
   mapModal.classList.remove('hidden');
 
   if (!leafletMap) {
-    leafletMap = L.map('directions-map', { zoomControl: false }).setView(FIXED_DEST, 14);
+    // 3. Update map initialization to use currentDestination
+    leafletMap = L.map('directions-map', { zoomControl: false }).setView(currentDestination, 14);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '©OpenStreetMap ©CartoDB'
     }).addTo(leafletMap);
@@ -182,10 +268,18 @@ function openMapModal(bookingTitle, donorName) {
       html: `<div style="width:16px;height:16px;background:#ff3b30;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);border:2.5px solid #fff;box-shadow:0 0 12px rgba(255,59,48,0.6)"></div>`,
       iconSize: [16, 16], iconAnchor: [8, 14]
     });
-    mapDestMarker = L.marker(FIXED_DEST, { icon: destIcon }).addTo(leafletMap);
-    L.circleMarker(FIXED_DEST, {
+    
+    // Update markers to use currentDestination
+    mapDestMarker = L.marker(currentDestination, { icon: destIcon }).addTo(leafletMap);
+    L.circleMarker(currentDestination, {
       radius: 24, color: '#ff3b30', weight: 1.5, fillColor: '#ff3b30', fillOpacity: 0.08
     }).addTo(leafletMap);
+  } else {
+    // If the map is already open from a previous click, we must move the camera and pin to the NEW destination
+    leafletMap.setView(currentDestination, 14);
+    if (mapDestMarker) {
+        mapDestMarker.setLatLng(currentDestination);
+    }
   }
 
   setTimeout(() => leafletMap.invalidateSize(), 60);
@@ -210,17 +304,21 @@ function mapGPSSuccess(pos) {
     mapUserMarker = L.circleMarker(mapCurrentPos, {
       radius: 8, fillColor: '#007AFF', color: '#fff', weight: 2.5, fillOpacity: 1
     }).addTo(leafletMap);
-    leafletMap.fitBounds([mapCurrentPos, FIXED_DEST], { padding: [48, 48] });
   } else {
     mapUserMarker.setLatLng(mapCurrentPos);
   }
+  
+  // Fit the camera bounds so both the user and the destination are visible
+  leafletMap.fitBounds([mapCurrentPos, currentDestination], { padding: [48, 48] });
+  
   mapUpdateRoute();
 }
 
 function mapUpdateRoute() {
   if (!mapCurrentPos) return;
   
-  const url = `get_distance.php?startLat=${mapCurrentPos.lat}&startLng=${mapCurrentPos.lng}&destLat=${FIXED_DEST[0]}&destLng=${FIXED_DEST[1]}`;
+  // 4. Update the API URL to use currentDestination
+  const url = `get_distance.php?startLat=${mapCurrentPos.lat}&startLng=${mapCurrentPos.lng}&destLat=${currentDestination[0]}&destLng=${currentDestination[1]}`;
   
   fetch(url)
     .then(r => r.json())
@@ -262,15 +360,6 @@ function mapGPSError() {
   document.getElementById('map-traffic').textContent = 'GPS unavailable';
   document.getElementById('map-traffic').style.color = '#bbb';
 }
-
-document.querySelectorAll('.Directions').forEach(btn => {
-  btn.addEventListener('click', function () {
-    const card  = btn.closest('.bookingCardDetails');
-    const title = card?.querySelector('.bookingCardFoodTitle')?.textContent || 'Directions';
-    const donor = card?.querySelector('.bookingCardFoodDonor')?.textContent || '';
-    openMapModal(title, donor);
-  });
-});
 
 mapCloseBtn.addEventListener('click', closeMapModal);
 mapModal.addEventListener('click', e => { if (e.target === mapModal) closeMapModal(); });
