@@ -93,7 +93,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException('A review has already been submitted for this collection.');
             mysqli_stmt_close($reviewStatement);
             $message = 'Your review has been submitted.';
-        } else {
+        } else { // report
+            // Check if a report already exists for this booking
+            $checkStmt = mysqli_prepare($dbConn, 'SELECT report_id FROM reports WHERE booking_id = ? LIMIT 1');
+            mysqli_stmt_bind_param($checkStmt, 'i', $bookingId);
+            mysqli_stmt_execute($checkStmt);
+            $existing = mysqli_fetch_assoc(mysqli_stmt_get_result($checkStmt));
+            mysqli_stmt_close($checkStmt);
+            if ($existing)
+                throw new RuntimeException('A report has already been submitted for this collection.');
+
             $issueType = trim((string) ($_POST['issue_type'] ?? ''));
             $comment = trim((string) ($_POST['comment'] ?? ''));
             if ($issueType === '' || $comment === '')
@@ -120,9 +129,41 @@ if (isset($_SESSION['history_notice'])) {
     unset($_SESSION['history_notice']);
 }
 
-$historyStatement = mysqli_prepare($dbConn, "SELECT b.booking_id, b.booking_time, d.food_name, d.image_url, u.full_name AS donor_name, r.rating, r.comment AS review_comment, r.review_image_url, r.created_at AS review_created_at, COUNT(rep.report_id) AS report_count
-    FROM bookings b INNER JOIN donations d ON d.donation_id = b.donation_id INNER JOIN users u ON u.user_id = d.donor_id LEFT JOIN reviews r ON r.booking_id = b.booking_id LEFT JOIN reports rep ON rep.booking_id = b.booking_id
-    WHERE b.receiver_id = ? AND b.status = 'collected' GROUP BY b.booking_id, b.booking_time, d.food_name, d.image_url, u.full_name, r.rating, r.comment, r.review_image_url, r.created_at ORDER BY b.booking_time DESC");
+// Fetch history with review and latest report details
+$historyStatement = mysqli_prepare($dbConn, "
+    SELECT
+        b.booking_id,
+        b.booking_time,
+        d.food_name,
+        d.image_url,
+        u.full_name AS donor_name,
+        r.rating,
+        r.comment AS review_comment,
+        r.review_image_url,
+        r.created_at AS review_created_at,
+        rep.report_id,
+        rep.issue_type,
+        rep.comment AS report_comment,
+        rep.evidence_image_url,
+        rep.status AS report_status,
+        rep.admin_message,
+        rep.created_at AS report_created_at
+    FROM bookings b
+    INNER JOIN donations d ON d.donation_id = b.donation_id
+    INNER JOIN users u ON u.user_id = d.donor_id
+    LEFT JOIN reviews r ON r.booking_id = b.booking_id
+    LEFT JOIN (
+        SELECT r1.*
+        FROM reports r1
+        INNER JOIN (
+            SELECT booking_id, MAX(created_at) AS max_created
+            FROM reports
+            GROUP BY booking_id
+        ) r2 ON r1.booking_id = r2.booking_id AND r1.created_at = r2.max_created
+    ) rep ON rep.booking_id = b.booking_id
+    WHERE b.receiver_id = ? AND b.status = 'collected'
+    ORDER BY b.booking_time DESC
+");
 mysqli_stmt_bind_param($historyStatement, 'i', $receiverId);
 mysqli_stmt_execute($historyStatement);
 $history = mysqli_fetch_all(mysqli_stmt_get_result($historyStatement), MYSQLI_ASSOC);
@@ -217,85 +258,246 @@ mysqli_stmt_close($historyStatement);
                                     </p>
                                 </div>
                                 <div class="card-actions">
-                                    <?php if ($item['rating'] !== null): ?><button class="text-action-btn review" type="button"
-                                            data-view-review data-rating="<?php echo (int) $item['rating']; ?>"
+                                    <?php if ($item['rating'] !== null): ?>
+                                        <button class="text-action-btn review" type="button" data-view-review
+                                            data-rating="<?php echo (int) $item['rating']; ?>"
                                             data-comment="<?php echo h($item['review_comment'] ?? ''); ?>"
-                                            data-image="<?php echo h(imagePath($item['review_image_url']) ?? ''); ?>">View
-                                            Review</button><?php else: ?><button class="text-action-btn review" type="button"
-                                            data-open="review" data-booking="<?php echo (int) $item['booking_id']; ?>"
-                                            data-food="<?php echo h($item['food_name']); ?>">Do Review</button><?php endif; ?>
-                                    <button class="text-action-btn report" type="button" data-open="report"
-                                        data-booking="<?php echo (int) $item['booking_id']; ?>"
-                                        data-food="<?php echo h($item['food_name']); ?>">Report</button><?php if ((int) $item['report_count']): ?><span
-                                            class="status-pill reported">Reported</span><?php endif; ?><span
-                                        class="status-pill collected">Collected</span>
+                                            data-image="<?php echo h(imagePath($item['review_image_url']) ?? ''); ?>">
+                                            View Review
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="text-action-btn review" type="button" data-open="review"
+                                            data-booking="<?php echo (int) $item['booking_id']; ?>"
+                                            data-food="<?php echo h($item['food_name']); ?>">
+                                            Do Review
+                                        </button>
+                                    <?php endif; ?>
+
+                                    <?php if ($item['report_id'] !== null): ?>
+                                        <?php
+                                        $formattedIssue = $item['issue_type']
+                                            ? ucfirst(str_replace('_', ' ', $item['issue_type']))
+                                            : '';
+                                        ?>
+                                        <button class="text-action-btn report" type="button" data-view-report
+                                            data-issue="<?php echo h($formattedIssue); ?>"
+                                            data-comment="<?php echo h($item['report_comment'] ?? ''); ?>"
+                                            data-evidence="<?php echo h(imagePath($item['evidence_image_url']) ?? ''); ?>"
+                                            data-status="<?php echo h($item['report_status'] ?? 'active'); ?>"
+                                            data-admin-message="<?php echo h($item['admin_message'] ?? ''); ?>">
+                                            View Report
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="text-action-btn report" type="button" data-open="report"
+                                            data-booking="<?php echo (int) $item['booking_id']; ?>"
+                                            data-food="<?php echo h($item['food_name']); ?>">
+                                            Report
+                                        </button>
+                                    <?php endif; ?>
+                                    <span class="status-pill collected">Collected</span>
                                 </div>
                             </article><?php endforeach; endif; ?>
                 </div>
             </section>
         </main>
     </div>
+
+    <!-- Review Form Modal -->
     <div class="modal-overlay hidden" id="reviewModal" role="dialog" aria-modal="true">
-        <form class="modal-card" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf_token"
-                value="<?php echo h($_SESSION['history_csrf']); ?>"><input type="hidden" name="action"
-                value="review"><input type="hidden" name="booking_id" id="reviewBooking">
+        <form class="modal-card" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo h($_SESSION['history_csrf']); ?>">
+            <input type="hidden" name="action" value="review">
+            <input type="hidden" name="booking_id" id="reviewBooking">
             <div class="modal-header">
                 <div><span class="modal-kicker">Review</span>
                     <h2 id="reviewTitle">Write a Review</h2>
-                </div><button type="button" class="icon-btn ghost" data-close>&times;</button>
+                </div>
+                <button type="button" class="icon-btn ghost" data-close>&times;</button>
             </div>
-            <div class="form-fields"><label>Rating <div class="rating-options" role="radiogroup"><input type="radio"
-                            name="rating" id="star5" value="5" required><label for="star5">5</label><input type="radio"
-                            name="rating" id="star4" value="4"><label for="star4">4</label><input type="radio"
-                            name="rating" id="star3" value="3"><label for="star3">3</label><input type="radio"
-                            name="rating" id="star2" value="2"><label for="star2">2</label><input type="radio"
-                            name="rating" id="star1" value="1"><label for="star1">1</label></div>
-                </label><label>Comment<textarea name="comment" rows="4" required
-                        placeholder="Share how the collection went..."></textarea></label><label>Picture <span
-                        class="upload-box"><input type="file" name="review_image" accept="image/*"><span
-                            class="upload-button">Choose Image</span></span></label></div>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" data-close>Cancel</button><button
-                    type="submit" class="btn btn-primary">Submit Review</button></div>
+            <div class="form-fields">
+                <label>Rating
+                    <div class="rating-options" role="radiogroup">
+                        <input type="radio" name="rating" id="star5" value="5" required><label for="star5">5</label>
+                        <input type="radio" name="rating" id="star4" value="4"><label for="star4">4</label>
+                        <input type="radio" name="rating" id="star3" value="3"><label for="star3">3</label>
+                        <input type="radio" name="rating" id="star2" value="2"><label for="star2">2</label>
+                        <input type="radio" name="rating" id="star1" value="1"><label for="star1">1</label>
+                    </div>
+                </label>
+                <label>Comment
+                    <textarea name="comment" rows="4" required
+                        placeholder="Share how the collection went..."></textarea>
+                </label>
+                <label>Picture
+                    <span class="upload-box">
+                        <input type="file" name="review_image" accept="image/*">
+                        <span class="upload-button">Choose Image</span>
+                    </span>
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" data-close>Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </div>
         </form>
     </div>
+
+    <!-- Report Form Modal -->
     <div class="modal-overlay hidden" id="reportModal" role="dialog" aria-modal="true">
-        <form class="modal-card" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf_token"
-                value="<?php echo h($_SESSION['history_csrf']); ?>"><input type="hidden" name="action"
-                value="report"><input type="hidden" name="booking_id" id="reportBooking">
+        <form class="modal-card" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo h($_SESSION['history_csrf']); ?>">
+            <input type="hidden" name="action" value="report">
+            <input type="hidden" name="booking_id" id="reportBooking">
             <div class="modal-header">
                 <div><span class="modal-kicker">Report</span>
                     <h2 id="reportTitle">Report a Problem</h2>
-                </div><button type="button" class="icon-btn ghost" data-close>&times;</button>
+                </div>
+                <button type="button" class="icon-btn ghost" data-close>&times;</button>
             </div>
-            <div class="form-fields"><label>Type of issue<select name="issue_type" required>
+            <div class="form-fields">
+                <label>Type of issue
+                    <select name="issue_type" required>
                         <option value="" selected disabled>Select an issue type</option>
                         <option value="spoiled_unsafe_food">Spoiled or unsafe food</option>
                         <option value="wrong_pickup_address">Wrong pickup address</option>
                         <option value="fake_inaccurate_listing">Fake or inaccurate listing</option>
                         <option value="other">Other</option>
-                    </select></label><label>Description<textarea name="comment" rows="4" required
-                        placeholder="Describe the problem..."></textarea></label><label>Evidence <span
-                        class="upload-box"><input type="file" name="evidence_image" accept="image/*"><span
-                            class="upload-button">Choose Image</span></span></label></div>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" data-close>Cancel</button><button
-                    type="submit" class="btn btn-primary">Submit Report</button></div>
+                    </select>
+                </label>
+                <label>Description
+                    <textarea name="comment" rows="4" required placeholder="Describe the problem..."></textarea>
+                </label>
+                <label>Evidence
+                    <span class="upload-box">
+                        <input type="file" name="evidence_image" accept="image/*">
+                        <span class="upload-button">Choose Image</span>
+                    </span>
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" data-close>Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Report</button>
+            </div>
         </form>
     </div>
-    <div class="modal-overlay hidden" id="viewModal" role="dialog" aria-modal="true">
+
+    <!-- View Review Modal -->
+    <div class="modal-overlay hidden" id="viewReviewModal" role="dialog" aria-modal="true">
         <div class="modal-card">
             <div class="modal-header">
                 <div><span class="modal-kicker">Your review</span>
                     <h2>Review details</h2>
-                </div><button type="button" class="icon-btn ghost" data-close>&times;</button>
+                </div>
+                <button type="button" class="icon-btn ghost" data-close>&times;</button>
             </div>
-            <div class="readonly-review"><strong id="viewRating"></strong>
-                <p id="viewComment"></p><a id="viewImageLink" class="review-image-link hidden" target="_blank"
-                    rel="noopener"><img id="viewImage" alt="Your uploaded review image"></a>
+            <div class="readonly-review">
+                <strong id="viewRating"></strong>
+                <p id="viewComment"></p>
+                <a id="viewImageLink" class="review-image-link hidden" target="_blank" rel="noopener">
+                    <img id="viewImage" alt="Your uploaded review image">
+                </a>
             </div>
         </div>
     </div>
+
+    <!-- View Report Modal -->
+    <div class="modal-overlay hidden" id="viewReportModal" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div><span class="modal-kicker">Your report</span>
+                    <h2>Report details</h2>
+                </div>
+                <button type="button" class="icon-btn ghost" data-close>&times;</button>
+            </div>
+            <div class="readonly-report">
+                <p><strong>Issue type:</strong><br><span id="viewIssueType"></span></p>
+                <p><span id="viewReportComment"></span></p>
+                <p>
+                    <a id="viewEvidenceLink" class="review-image-link hidden" target="_blank" rel="noopener">
+                        <img id="viewEvidenceImage" alt="Evidence image">
+                    </a>
+                    <span id="viewNoEvidence" class="hidden">None provided</span>
+                </p>
+                <hr>
+                <p><strong>Status:</strong> <span class="status-pill" id="viewReportStatus"></span></p>
+                <p><strong>Admin message:</strong> <br> <span id="viewAdminMessage"></span></p>
+            </div>
+        </div>
+    </div>
+
     <script src="../../assets/js/header.js"></script>
-    <script>const modals = { review: document.getElementById('reviewModal'), report: document.getElementById('reportModal'), view: document.getElementById('viewModal') }; document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => { let x = b.dataset.open; document.getElementById(x + 'Booking').value = b.dataset.booking; document.getElementById(x + 'Title').textContent = (x === 'review' ? 'Review ' : 'Report ') + b.dataset.food; modals[x].classList.remove('hidden') }); document.querySelectorAll('[data-view-review]').forEach(b => b.onclick = () => { document.getElementById('viewRating').textContent = b.dataset.rating + ' / 5 rating'; document.getElementById('viewComment').textContent = b.dataset.comment; const imageLink = document.getElementById('viewImageLink'), image = document.getElementById('viewImage'); if (b.dataset.image) { image.src = b.dataset.image; imageLink.href = b.dataset.image; imageLink.classList.remove('hidden') } else { image.removeAttribute('src'); imageLink.removeAttribute('href'); imageLink.classList.add('hidden') } modals.view.classList.remove('hidden') }); document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => Object.values(modals).forEach(m => m.classList.add('hidden'))); Object.values(modals).forEach(m => m.onclick = e => { if (e.target === m) m.classList.add('hidden') });</script>
+    <script>
+        // Modal elements
+        const modals = {
+            review: document.getElementById('reviewModal'),
+            report: document.getElementById('reportModal'),
+            viewReview: document.getElementById('viewReviewModal'),
+            viewReport: document.getElementById('viewReportModal')
+        };
+
+        // Open form modals (review / report)
+        document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => {
+            const type = b.dataset.open; // 'review' or 'report'
+            document.getElementById(type + 'Booking').value = b.dataset.booking;
+            document.getElementById(type + 'Title').textContent = (type === 'review' ? 'Review ' : 'Report ') + b.dataset
+                .food;
+            modals[type].classList.remove('hidden');
+        });
+
+        // View review
+        document.querySelectorAll('[data-view-review]').forEach(b => b.onclick = () => {
+            document.getElementById('viewRating').textContent = b.dataset.rating + ' / 5 rating';
+            document.getElementById('viewComment').textContent = b.dataset.comment;
+            const imageLink = document.getElementById('viewImageLink'),
+                image = document.getElementById('viewImage');
+            if (b.dataset.image) {
+                image.src = b.dataset.image;
+                imageLink.href = b.dataset.image;
+                imageLink.classList.remove('hidden');
+            } else {
+                image.removeAttribute('src');
+                imageLink.removeAttribute('href');
+                imageLink.classList.add('hidden');
+            }
+            modals.viewReview.classList.remove('hidden');
+        });
+
+        // View report
+        document.querySelectorAll('[data-view-report]').forEach(b => b.onclick = () => {
+            document.getElementById('viewIssueType').textContent = b.dataset.issue;
+            document.getElementById('viewReportComment').textContent = b.dataset.comment;
+            const evidenceLink = document.getElementById('viewEvidenceLink'),
+                evidenceImg = document.getElementById('viewEvidenceImage'),
+                noEvidence = document.getElementById('viewNoEvidence');
+            if (b.dataset.evidence) {
+                evidenceImg.src = b.dataset.evidence;
+                evidenceLink.href = b.dataset.evidence;
+                evidenceLink.classList.remove('hidden');
+                noEvidence.classList.add('hidden');
+            } else {
+                evidenceImg.removeAttribute('src');
+                evidenceLink.removeAttribute('href');
+                evidenceLink.classList.add('hidden');
+                noEvidence.classList.remove('hidden');
+            }
+            // Status pill
+            const statusPill = document.getElementById('viewReportStatus');
+            const statusText = b.dataset.status || 'active';
+            statusPill.textContent = statusText.charAt(0).toUpperCase() + statusText.slice(1);
+            statusPill.className = 'status-pill ' + statusText;
+            // Admin message
+            document.getElementById('viewAdminMessage').textContent = b.dataset.adminMessage || 'No admin message yet.';
+            modals.viewReport.classList.remove('hidden');
+        });
+
+        // Close all modals
+        document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => {
+            Object.values(modals).forEach(m => m.classList.add('hidden'));
+        });
+        Object.values(modals).forEach(m => m.onclick = e => {
+            if (e.target === m) m.classList.add('hidden');
+        });
+    </script>
 </body>
 
 </html>

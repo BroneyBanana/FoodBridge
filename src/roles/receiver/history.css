@@ -375,6 +375,65 @@
   padding: 10px 17px;
 }
 
+/* ---------- View Report Modal ---------- */
+.readonly-report {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-parchment);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.readonly-report p {
+  margin: 0.5rem 0;
+}
+
+.readonly-report hr {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Status pill inside the report modal */
+.readonly-report .status-pill {
+  font-size: 0.9rem;
+  padding: 0.3rem 1rem;
+  display: inline-flex;
+}
+
+/* Specific status colours (override if needed) */
+.readonly-report .status-pill.active {
+  background: #ffe0db;
+  color: #a63a2b;
+}
+
+.readonly-report .status-pill.resolved {
+  background: #d4f5e2;
+  color: #1a6b3a;
+}
+
+.readonly-report .status-pill.dismissed {
+  background: #f0f0f0;
+  color: #666;
+}
+
+/* Admin message */
+#viewAdminMessage {
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+/* Hide "No evidence" text when an image is shown */
+#viewNoEvidence.hidden {
+  display: none;
+}
+
+/* Ensure evidence image uses same styling as review image */
+#viewEvidenceLink.review-image-link {
+  display: inline-block;
+  margin-top: 6px;
+}
+
 @media (max-width: 760px) {
   .dashboard-content {
     padding: 28px 18px;
