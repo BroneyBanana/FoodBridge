@@ -310,17 +310,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       $passwordHash = password_hash($password, PASSWORD_DEFAULT);
       $status = 'active';
+      $defaultProfilePic = 'assets/images/profile.png';
+
       $insertStmt = mysqli_prepare(
         $dbConn,
-        'INSERT INTO users (role, full_name, email, password_hash, location, status)
-                 VALUES (?, ?, ?, ?, ?, ?)'
+        'INSERT INTO users (role, full_name, email, password_hash, location, status, profile_url)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)'
       );
 
       if (!$insertStmt) {
         respondJson(['success' => false, 'message' => 'Unable to create account.'], 500);
       }
 
-      mysqli_stmt_bind_param($insertStmt, 'ssssss', $role, $fullName, $email, $passwordHash, $location, $status);
+      mysqli_stmt_bind_param($insertStmt, 'sssssss', $role, $fullName, $email, $passwordHash, $location, $status, $defaultProfilePic);
       $created = mysqli_stmt_execute($insertStmt);
       $userId = mysqli_insert_id($dbConn);
       mysqli_stmt_close($insertStmt);
@@ -335,6 +337,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'role' => $role,
         'name' => $fullName,
         'email' => $email,
+        'avatarImage' => $defaultProfilePic,
       ];
 
       respondJson([
@@ -349,6 +352,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           'trustScore' => 100,
           'totalFoodDonated' => 0,
           'status' => $status,
+          'avatarImage' => $defaultProfilePic,
         ],
       ]);
     }
@@ -391,17 +395,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
     $status = 'active';
+    $defaultProfilePic = 'assets/images/profile.png';
     $insertStmt = mysqli_prepare(
       $dbConn,
-      'INSERT INTO users (role, full_name, email, password_hash, location, status)
-             VALUES (?, ?, ?, ?, ?, ?)'
+      'INSERT INTO users (role, full_name, email, password_hash, location, status, profile_url)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
     );
 
     if (!$insertStmt) {
       finishRegister(['success' => false, 'message' => 'Unable to create account.'], 500);
     }
 
-    mysqli_stmt_bind_param($insertStmt, 'ssssss', $role, $fullName, $email, $passwordHash, $location, $status);
+    mysqli_stmt_bind_param($insertStmt, 'sssssss', $role, $fullName, $email, $passwordHash, $location, $status);
     $created = mysqli_stmt_execute($insertStmt);
     $userId = mysqli_insert_id($dbConn);
     mysqli_stmt_close($insertStmt);
@@ -417,6 +422,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'role' => $role,
       'name' => $fullName,
       'email' => $email,
+      'avatarImage' => $defaultProfilePic,
     ];
 
     finishRegister([
@@ -431,6 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'trustScore' => 100,
         'totalFoodDonated' => 0,
         'status' => $status,
+        'avatarImage' => $defaultProfilePic,
       ],
     ]);
   } catch (FormRenderException $exception) {
