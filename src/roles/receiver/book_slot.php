@@ -1,30 +1,19 @@
 <?php
 session_start();
-require_once '../../../database/db.php'; 
-$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
-$userName = $_SESSION['user']['name'] ?? 'User';
-$initials = strtoupper(substr($userName, 0, 2));
-
-// if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'receiver') {
-//     http_response_code(403);
-//     echo json_encode(['error' => 'Not authorized']);
-//     exit();
-// }
-
-// $receiver_id = $_SESSION['user_id'];
+require_once '../../../database/db.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
-    header('Location: ../../auth/login.php'); // or the http_response_code/json version for the two AJAX files
+    http_response_code(403);
+    echo json_encode(['error' => 'Not authorized']);
     exit();
 }
 
 $receiver_id = $_SESSION['user']['id'];
 
-
 // pull the three values JS will send when the receiver confirms a booking
-$donation_id = filter_input(INPUT_POST, 'donation_id', FILTER_VALIDATE_INT);
+$donation_id    = filter_input(INPUT_POST, 'donation_id', FILTER_VALIDATE_INT);
 $pickup_slot_id = filter_input(INPUT_POST, 'pickup_slot_id', FILTER_VALIDATE_INT);
-$quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_FLOAT);
+$quantity       = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_FLOAT);
 
 if (!$donation_id || !$pickup_slot_id || !$quantity || $quantity <= 0) {
     http_response_code(400);
@@ -37,10 +26,10 @@ mysqli_begin_transaction($dbConn);
 
 try {
     // QUERY 3A: LOCK DONATION 
-    $sql_check = "SELECT quantity FROM donations WHERE donation_id = ? FOR UPDATE";
+    $sql_check = "SELECT quantity FROM donations WHERE donation_id = ? FOR UPDATE"; 
     $stmt_check = mysqli_prepare($dbConn, $sql_check);
     mysqli_stmt_bind_param($stmt_check, 'i', $donation_id);
-    mysqli_stmt_execute($stmt_check);
+    mysqli_stmt_execute($stmt_check); 
     $result_check = mysqli_stmt_get_result($stmt_check);
     $donation = mysqli_fetch_assoc($result_check);
 
@@ -48,6 +37,7 @@ try {
     if (!$donation || $donation['quantity'] < $quantity) {
         throw new Exception('Not enough quantity left');
     }
+
     // QUERY 3A-2: NO HOGGING — same rule as get_slots.php's Query 2,
     // checked again here because this is the real security boundary,
     // not just the dropdown. FOR UPDATE keeps it race-safe against
@@ -66,17 +56,14 @@ try {
         throw new Exception('You already have a booking on this donation');
     }
 
+
     // QUERY 3B: INSERT BOOKING
     $sql_insert = "INSERT INTO bookings (donation_id, pickup_slot_id, receiver_id, booking_time, quantity, status)
                    VALUES (?, ?, ?, NOW(), ?, 'reserved')";
 
     $stmt_insert = mysqli_prepare($dbConn, $sql_insert);
     mysqli_stmt_bind_param($stmt_insert, 'iiid', $donation_id, $pickup_slot_id, $receiver_id, $quantity);
-
-    // if sametime donation is being filled in by another ppl
-    if (!mysqli_stmt_execute($stmt_insert)) {
-        throw new Exception('This slot was just taken by someone else');
-    }
+    mysqli_stmt_execute($stmt_insert);
 
 
     // QUERY 3C: DEDUCT IF BOOKED 
