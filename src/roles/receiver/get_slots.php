@@ -1,10 +1,14 @@
+
 <?php
 session_start();
-require_once '../../../database/db.php'; 
-session_start();
-$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
-$userName = $_SESSION['user']['name'] ?? 'User';
-$initials = strtoupper(substr($userName, 0, 2));
+require_once '../../../database/db.php';
+
+// check receiver is logged in — this is an AJAX endpoint, still needs the same guard
+// if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'receiver') {
+//     http_response_code(403);
+//     echo json_encode(['error' => 'Not authorized']);
+//     exit();
+// }
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
     http_response_code(403);
