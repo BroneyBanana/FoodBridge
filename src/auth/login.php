@@ -254,7 +254,7 @@ $selectedRole = in_array($selectedRole, ['donor', 'receiver', 'admin'], true) ? 
               <input type="checkbox" name="remember">
               <span>Remember me</span>
             </label>
-            <a href="#">Forgot password?</a>
+            <a href="forgot.php" id="forgotPasswordLink">Forgot password?</a>
           </div>
 
           <p class="form-message" role="status" aria-live="polite">
