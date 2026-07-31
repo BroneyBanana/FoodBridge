@@ -76,9 +76,9 @@ function sendRegistrationOtpEmail(string $email, string $otpCode): bool
   $mail = new PHPMailer(true);
 
   try {
-    $smtpUser = $_ENV['email_server'] ?? '';
-    $smtpPort = $_ENV['email_port'] ?? '465';
-    $smtpPassword = $_ENV['email_password'] ?? '';
+    $smtpUser = $_ENV['EMAIL_SERVER'] ?? '';
+    $smtpPort = $_ENV['EMAIL_PORT'] ?? '465';
+    $smtpPassword = $_ENV['EMAIL_PASSWORD'] ?? '';
 
     if ($smtpUser === '' || $smtpPassword === '') {
       error_log('SMTP credentials are missing in .env');
@@ -122,9 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $jsonData = json_decode(file_get_contents('php://input'), true);
 
       if (is_array($jsonData)) {
-                $posted = $jsonData;
-            }
-        }
+        $posted = $jsonData;
+      }
+    }
 
     $role = inputValue($posted, 'accountRole');
     $fullName = inputValue($posted, 'fullName');
@@ -136,26 +136,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $longitude = 101.69820000;
 
     if (!empty($location)) {
-        $tomtomKey = $_ENV['TOMTOM_API_KEY'] ?? '';
+      $tomtomKey = $_ENV['TOMTOM_API_KEY'] ?? '';
 
-        if (!empty($tomtomKey)) {
-            $encodedLocation = urlencode($location);
-            // TomTom Geocoding API endpoint
-            $apiUrl = "https://api.tomtom.com/search/2/geocode/{$encodedLocation}.json?key={$tomtomKey}&limit=1";
-            
-            $response = @file_get_contents($apiUrl);
-            
-            if ($response !== false) {
-                $data = json_decode($response, true);
-                // Check if TomTom found valid results
-                if (!empty($data['results']) && isset($data['results'][0]['position'])) {
-                    $latitude = (float) $data['results'][0]['position']['lat'];
-                    $longitude = (float) $data['results'][0]['position']['lon'];
-                }
-            }
+      if (!empty($tomtomKey)) {
+        $encodedLocation = urlencode($location);
+        // TomTom Geocoding API endpoint
+        $apiUrl = "https://api.tomtom.com/search/2/geocode/{$encodedLocation}.json?key={$tomtomKey}&limit=1";
+
+        $response = @file_get_contents($apiUrl);
+
+        if ($response !== false) {
+          $data = json_decode($response, true);
+          // Check if TomTom found valid results
+          if (!empty($data['results']) && isset($data['results'][0]['position'])) {
+            $latitude = (float) $data['results'][0]['position']['lat'];
+            $longitude = (float) $data['results'][0]['position']['lon'];
+          }
         }
+      }
     }
-    
+
     $password = (string) ($posted['password'] ?? '');
     $confirmPassword = (string) ($posted['confirmPassword'] ?? '');
 
@@ -339,7 +339,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       respondJson([
         'success' => true,
-        'redirect' => "../roles/$role/profile.html",
+        'redirect' => "../roles/$role/dashboard.php",
         'user' => [
           'id' => (int) $userId,
           'role' => $role,
@@ -610,7 +610,8 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
           </div>
 
           <p class="form-message" id="registerMessage" role="status" aria-live="polite">
-            <?php echo htmlspecialchars($formError, ENT_QUOTES); ?></p>
+            <?php echo htmlspecialchars($formError, ENT_QUOTES); ?>
+          </p>
           <button class="primary-action" type="submit">Continue -></button>
         </div>
       </section>
