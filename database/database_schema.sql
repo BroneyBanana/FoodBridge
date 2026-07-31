@@ -235,4 +235,16 @@ CREATE TABLE trust_rule_settings (
   CHECK (suspension_threshold BETWEEN 0 AND 100)
 );
 
+-- ============================================================
+-- EXPIRY REMINDER LOG
+-- ============================================================
+CREATE TABLE expiry_reminder_log (
+    donation_id INT NOT NULL,
+    reminder_time ENUM('6h', '2h', '30m') NOT NULL,
+    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (donation_id, reminder_time),
+    CONSTRAINT fk_reminder_donation FOREIGN KEY (donation_id)
+        REFERENCES donations(donation_id) ON DELETE CASCADE
+);
+
 INSERT INTO trust_rule_settings (setting_id, suspension_threshold) VALUES (1, 30);
