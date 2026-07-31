@@ -78,60 +78,87 @@ DELIMITER ;
 -- 5. TRIGGERS (all with DECLARE at top)
 -- ============================================================
 
--- 5.1 After new booking
+-- 5.1 After new booking (FIXED – won't crash on missing donation)
 DELIMITER //
 
 CREATE TRIGGER after_booking_insert
 AFTER INSERT ON bookings
 FOR EACH ROW
 BEGIN
-    DECLARE donor_id INT;
-    DECLARE food_name VARCHAR(150);
+    DECLARE v_donor_id INT;
+    DECLARE v_food_name VARCHAR(150);
 
-    SELECT donor_id, food_name INTO donor_id, food_name
+    -- Get donor info from the donation
+    SELECT donor_id, food_name INTO v_donor_id, v_food_name
     FROM donations WHERE donation_id = NEW.donation_id;
 
-    CALL create_notification(
-        donor_id,
-        'New booking',
-        CONCAT('A receiver booked your donation "', food_name, '".')
-    );
+    -- Notify the donor only if the donation exists
+    IF v_donor_id IS NOT NULL THEN
+        CALL create_notification(
+            v_donor_id,
+            'New booking',
+            CONCAT('A receiver booked your donation "', v_food_name, '".')
+        );
+    END IF;
 
+    -- Notify the receiver (receiver_id is always NOT NULL)
     CALL create_notification(
         NEW.receiver_id,
         'Booking confirmed',
-        CONCAT('Your booking for "', food_name, '" is confirmed. Please pick it up on time.')
+        CONCAT('Your booking for "', v_food_name, '" is confirmed. Please pick it up on time.')
     );
 END //
 
 DELIMITER ;
 
--- 5.2 After booking status update (FIXED DECLARE)
+
+-- 5.2 After booking status update
 DELIMITER //
 
 CREATE TRIGGER after_booking_update
 AFTER UPDATE ON bookings
 FOR EACH ROW
 BEGIN
-    DECLARE food_name VARCHAR(150);
+    DECLARE v_food_name VARCHAR(150);
 
     IF NEW.status != OLD.status THEN
-        SELECT food_name INTO food_name FROM donations WHERE donation_id = NEW.donation_id;
+        -- Try to get the food name
+        SELECT food_name INTO v_food_name
+        FROM donations WHERE donation_id = NEW.donation_id;
 
-        CALL create_notification(
-            NEW.receiver_id,
-            CONCAT('Booking ', NEW.status),
-            CONCAT('Your booking for "', food_name, '" is now ', NEW.status, '.')
-        );
-
-        IF NEW.status IN ('cancelled', 'missed') THEN
+        -- Notify receiver – with fallback if food_name is NULL
+        IF v_food_name IS NOT NULL THEN
             CALL create_notification(
-                1,   -- replace with your admin's user_id
-                'Booking issue',
-                CONCAT('Booking #', NEW.booking_id, ' for "', food_name, '" is ', NEW.status)
+                NEW.receiver_id,
+                CONCAT('Booking ', NEW.status),
+                CONCAT('Your booking for "', v_food_name, '" is now ', NEW.status, '.')
+            );
+        ELSE
+            CALL create_notification(
+                NEW.receiver_id,
+                CONCAT('Booking ', NEW.status),
+                CONCAT('Your booking status is now ', NEW.status, '.')
             );
         END IF;
 
+        -- Notify admin for cancellations/missed
+        IF NEW.status IN ('cancelled', 'missed') THEN
+            IF v_food_name IS NOT NULL THEN
+                CALL create_notification(
+                    1,
+                    'Booking issue',
+                    CONCAT('Booking #', NEW.booking_id, ' for "', v_food_name, '" is ', NEW.status)
+                );
+            ELSE
+                CALL create_notification(
+                    1,
+                    'Booking issue',
+                    CONCAT('Booking #', NEW.booking_id, ' is ', NEW.status)
+                );
+            END IF;
+        END IF;
+
+        -- Penalty (doesn't depend on food_name)
         IF NEW.status = 'missed' AND OLD.status != 'missed' THEN
             CALL penalise_missed_pickup(NEW.receiver_id, NEW.booking_id);
         END IF;
@@ -396,6 +423,27 @@ BEGIN
     END LOOP;
 
     CLOSE cur_donations;
+END //
+
+DELIMITER ;
+
+-- ============================================================
+-- 7b. Scheduled event – marks missed bookings based on pickup slot
+--     Runs every 1 minute (as you set it)
+-- ============================================================
+DELIMITER //
+
+CREATE EVENT IF NOT EXISTS event_mark_missed_bookings
+ON SCHEDULE EVERY 1 MINUTE
+DO
+BEGIN
+    -- Update the status to 'missed' for any reserved booking 
+    -- where the current time has passed the actual pickup timeslot
+    UPDATE bookings b
+    JOIN pickup_slots p ON b.pickup_slot_id = p.pickup_slot_id
+    SET b.status = 'missed'
+    WHERE b.status = 'reserved' 
+      AND p.timeslot < NOW();
 END //
 
 DELIMITER ;
