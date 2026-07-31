@@ -71,7 +71,7 @@
 /* TRUST BOX */
 
 .trust-box {
-    margin-top: 30px;
+    margin: 30px auto 0;
     background: white;
     border-radius: 18px;
     padding: 40px;
@@ -178,7 +178,8 @@ input[type="range"]::-webkit-slider-thumb {
 /* USERS AT RISK */
 
 .risk-section {
-    margin-top: 40px;
+    max-width: 960px;
+    margin: 40px auto 0;
 }
 
 .risk-section h2 {
@@ -200,7 +201,7 @@ input[type="range"]::-webkit-slider-thumb {
     margin-top: 22px;
     display: grid;
     gap: 14px;
-    max-width: 960px;
+    width: 100%;
 }
 
 .risk-card {

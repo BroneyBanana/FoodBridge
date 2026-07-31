@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formMessage.classList.toggle("success", type === "success");
   }
 
-  function selectRole(tab, persist = true) { // CHANGED: added persist param
+  function selectRole(tab, persist = true) {
     roleTabs.forEach((item) => {
       item.classList.remove("active");
       item.setAttribute("aria-selected", "false");
@@ -40,18 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
     roleInput.value = tab.dataset.role;
     setMessage("");
 
-    // ADDED: remember the selected tab
     if (persist) {
       localStorage.setItem("foodbridgeSelectedRole", tab.dataset.role);
     }
   }
 
-  // ADDED: restore last selected role tab on page load
   const savedRole = localStorage.getItem("foodbridgeSelectedRole");
   if (savedRole) {
     const savedTab = document.querySelector(`.role-tab[data-role='${savedRole}']`);
     if (savedTab) {
-      selectRole(savedTab, false); // false = don't re-save, just restore
+      selectRole(savedTab, false);
     }
   }
 
@@ -114,7 +112,9 @@ document.addEventListener("DOMContentLoaded", () => {
       signInButton.disabled = false;
       signInButton.textContent = "Sign In";
     }
-    // Forgot Password modal logic
+  });
+
+  // Forgot Password modal logic
   const forgotLink = document.querySelector("#forgotPasswordLink");
   const forgotModal = document.querySelector("#forgotPasswordModal");
   const closeForgotModal = document.querySelector("#closeForgotModal");
@@ -224,5 +224,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  });
 });
