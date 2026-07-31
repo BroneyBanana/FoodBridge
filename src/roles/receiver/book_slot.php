@@ -2,13 +2,13 @@
 session_start();
 require_once '../../../database/db.php';
 
-// if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'receiver') {
-//     http_response_code(403);
-//     echo json_encode(['error' => 'Not authorized']);
-//     exit();
-// }
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'receiver') {
+    http_response_code(403);
+    echo json_encode(['error' => 'Not authorized']);
+    exit();
+}
 
-// $receiver_id = $_SESSION['user_id'];
+$receiver_id = $_SESSION['user_id'];
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
     header('Location: ../../auth/login.php'); // or the http_response_code/json version for the two AJAX files
@@ -34,6 +34,7 @@ mysqli_begin_transaction($dbConn);
 
 try {
     // QUERY 3A: LOCK DONATION 
+    // FOR UPDATE locks the row so cannot modified or updated
     $sql_check = "SELECT quantity FROM donations WHERE donation_id = ? FOR UPDATE"; 
     $stmt_check = mysqli_prepare($dbConn, $sql_check);
     mysqli_stmt_bind_param($stmt_check, 'i', $donation_id);
@@ -47,9 +48,7 @@ try {
     }
 
     // QUERY 3A-2: NO HOGGING — same rule as get_slots.php's Query 2,
-    // checked again here because this is the real security boundary,
-    // not just the dropdown. FOR UPDATE keeps it race-safe against
-    // two simultaneous requests from the same receiver.
+    // for update prevents 2 r - clicking simulatenuosly 
     $sql_dup = "SELECT booking_id FROM bookings
                 WHERE donation_id = ?
                 AND receiver_id = ?
@@ -108,5 +107,7 @@ try {
     echo json_encode(['error' => $e->getMessage()]);
 }
 
-
 ?>
+
+
+

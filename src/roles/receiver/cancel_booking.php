@@ -59,9 +59,8 @@ try {
 
     // ---------------- QUERY 3: restore donation quantity ---------------- //
     $sql_restore = "UPDATE donations 
-                     SET quantity = quantity + ?,
-                         status = CASE WHEN status = 'completed' THEN 'active' ELSE status END
-                     WHERE donation_id = ?";
+                 SET quantity = quantity + ?
+                 WHERE donation_id = ?";
     $stmt_restore = mysqli_prepare($dbConn, $sql_restore);
     mysqli_stmt_bind_param($stmt_restore, 'di', $quantity_to_restore, $donation_id);
     mysqli_stmt_execute($stmt_restore);
