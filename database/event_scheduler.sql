@@ -78,7 +78,7 @@ DELIMITER ;
 -- 5. TRIGGERS (all with DECLARE at top)
 -- ============================================================
 
--- 5.1 After new booking (FIXED – won't crash on missing donation)
+-- 5.1 After new booking
 DELIMITER //
 
 CREATE TRIGGER after_booking_insert
@@ -111,7 +111,6 @@ END //
 
 DELIMITER ;
 
-
 -- 5.2 After booking status update
 DELIMITER //
 
@@ -119,46 +118,25 @@ CREATE TRIGGER after_booking_update
 AFTER UPDATE ON bookings
 FOR EACH ROW
 BEGIN
-    DECLARE v_food_name VARCHAR(150);
+    DECLARE food_name VARCHAR(150);
 
     IF NEW.status != OLD.status THEN
-        -- Try to get the food name
-        SELECT food_name INTO v_food_name
-        FROM donations WHERE donation_id = NEW.donation_id;
+        SELECT food_name INTO food_name FROM donations WHERE donation_id = NEW.donation_id;
 
-        -- Notify receiver – with fallback if food_name is NULL
-        IF v_food_name IS NOT NULL THEN
-            CALL create_notification(
-                NEW.receiver_id,
-                CONCAT('Booking ', NEW.status),
-                CONCAT('Your booking for "', v_food_name, '" is now ', NEW.status, '.')
-            );
-        ELSE
-            CALL create_notification(
-                NEW.receiver_id,
-                CONCAT('Booking ', NEW.status),
-                CONCAT('Your booking status is now ', NEW.status, '.')
-            );
-        END IF;
+        CALL create_notification(
+            NEW.receiver_id,
+            CONCAT('Booking ', NEW.status),
+            CONCAT('Your booking for "', food_name, '" is now ', NEW.status, '.')
+        );
 
-        -- Notify admin for cancellations/missed
         IF NEW.status IN ('cancelled', 'missed') THEN
-            IF v_food_name IS NOT NULL THEN
-                CALL create_notification(
-                    1,
-                    'Booking issue',
-                    CONCAT('Booking #', NEW.booking_id, ' for "', v_food_name, '" is ', NEW.status)
-                );
-            ELSE
-                CALL create_notification(
-                    1,
-                    'Booking issue',
-                    CONCAT('Booking #', NEW.booking_id, ' is ', NEW.status)
-                );
-            END IF;
+            CALL create_notification(
+                1,   -- replace with your admin's user_id
+                'Booking issue',
+                CONCAT('Booking #', NEW.booking_id, ' for "', food_name, '" is ', NEW.status)
+            );
         END IF;
 
-        -- Penalty (doesn't depend on food_name)
         IF NEW.status = 'missed' AND OLD.status != 'missed' THEN
             CALL penalise_missed_pickup(NEW.receiver_id, NEW.booking_id);
         END IF;
@@ -434,7 +412,7 @@ DELIMITER ;
 DELIMITER //
 
 CREATE EVENT IF NOT EXISTS event_mark_missed_bookings
-ON SCHEDULE EVERY 1 MINUTE
+ON SCHEDULE EVERY 1 SECOND
 DO
 BEGIN
     -- Update the status to 'missed' for any reserved booking 
