@@ -1,10 +1,11 @@
+-- ===========================================================
 -- ============================================================
--- 1. Enable Event Scheduler (run once)
+-- 2. Enable Event Scheduler (run once)
 -- ============================================================
 SET GLOBAL event_scheduler = ON;
 
 -- ============================================================
--- 2. Create the expiry reminder log table
+-- 3. Create the expiry reminder log table (if not exists)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS expiry_reminder_log (
     donation_id INT NOT NULL,
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS expiry_reminder_log (
 );
 
 -- ============================================================
--- 3. Helper stored procedure to insert a notification
+-- 4. Helper stored procedure to insert a notification
 -- ============================================================
 DELIMITER //
 
@@ -33,7 +34,7 @@ END //
 DELIMITER ;
 
 -- ============================================================
--- 4. Stored procedure for trust-score penalty (hardcoded penalty)
+-- 5. Stored procedure for trust-score penalty
 -- ============================================================
 DELIMITER //
 
@@ -75,10 +76,10 @@ END //
 DELIMITER ;
 
 -- ============================================================
--- 5. TRIGGERS (all with DECLARE at top)
+-- 6. All TRIGGERS
 -- ============================================================
 
--- 5.1 After new booking
+-- 6.1 After new booking (safe)
 DELIMITER //
 
 CREATE TRIGGER after_booking_insert
@@ -88,11 +89,9 @@ BEGIN
     DECLARE v_donor_id INT;
     DECLARE v_food_name VARCHAR(150);
 
-    -- Get donor info from the donation
     SELECT donor_id, food_name INTO v_donor_id, v_food_name
     FROM donations WHERE donation_id = NEW.donation_id;
 
-    -- Notify the donor only if the donation exists
     IF v_donor_id IS NOT NULL THEN
         CALL create_notification(
             v_donor_id,
@@ -101,42 +100,71 @@ BEGIN
         );
     END IF;
 
-    -- Notify the receiver (receiver_id is always NOT NULL)
     CALL create_notification(
         NEW.receiver_id,
         'Booking confirmed',
-        CONCAT('Your booking for "', v_food_name, '" is confirmed. Please pick it up on time.')
+        CONCAT('Your booking for "', IFNULL(v_food_name, 'item'), '" is confirmed. Please pick it up on time.')
     );
 END //
 
 DELIMITER ;
 
--- 5.2 After booking status update
+-- 6.2 After booking status update (includes total_food_donated + safe notifications)
 DELIMITER //
 
 CREATE TRIGGER after_booking_update
 AFTER UPDATE ON bookings
 FOR EACH ROW
 BEGIN
-    DECLARE food_name VARCHAR(150);
+    DECLARE v_food_name VARCHAR(150);
+    DECLARE v_donor_id INT;
 
     IF NEW.status != OLD.status THEN
-        SELECT food_name INTO food_name FROM donations WHERE donation_id = NEW.donation_id;
+        SELECT food_name, donor_id INTO v_food_name, v_donor_id
+        FROM donations WHERE donation_id = NEW.donation_id;
 
-        CALL create_notification(
-            NEW.receiver_id,
-            CONCAT('Booking ', NEW.status),
-            CONCAT('Your booking for "', food_name, '" is now ', NEW.status, '.')
-        );
+        -- ---------- Update total_food_donated when collected ----------
+        IF NEW.status = 'collected' AND OLD.status != 'collected' THEN
+            IF v_donor_id IS NOT NULL THEN
+                UPDATE users
+                SET total_food_donated = total_food_donated + NEW.quantity
+                WHERE user_id = v_donor_id;
+            END IF;
+        END IF;
 
-        IF NEW.status IN ('cancelled', 'missed') THEN
+        -- ---------- Notify receiver ----------
+        IF v_food_name IS NOT NULL THEN
             CALL create_notification(
-                1,   -- replace with your admin's user_id
-                'Booking issue',
-                CONCAT('Booking #', NEW.booking_id, ' for "', food_name, '" is ', NEW.status)
+                NEW.receiver_id,
+                CONCAT('Booking ', NEW.status),
+                CONCAT('Your booking for "', v_food_name, '" is now ', NEW.status, '.')
+            );
+        ELSE
+            CALL create_notification(
+                NEW.receiver_id,
+                CONCAT('Booking ', NEW.status),
+                CONCAT('Your booking status is now ', NEW.status, '.')
             );
         END IF;
 
+        -- ---------- Notify admin for cancellations/missed ----------
+        IF NEW.status IN ('cancelled', 'missed') THEN
+            IF v_food_name IS NOT NULL THEN
+                CALL create_notification(
+                    1,
+                    'Booking issue',
+                    CONCAT('Booking #', NEW.booking_id, ' for "', v_food_name, '" is ', NEW.status)
+                );
+            ELSE
+                CALL create_notification(
+                    1,
+                    'Booking issue',
+                    CONCAT('Booking #', NEW.booking_id, ' is ', NEW.status)
+                );
+            END IF;
+        END IF;
+
+        -- ---------- Penalty for missed pickup ----------
         IF NEW.status = 'missed' AND OLD.status != 'missed' THEN
             CALL penalise_missed_pickup(NEW.receiver_id, NEW.booking_id);
         END IF;
@@ -145,7 +173,7 @@ END //
 
 DELIMITER ;
 
--- 5.3 After new donation
+-- 6.3 After new donation
 DELIMITER //
 
 CREATE TRIGGER after_donation_insert
@@ -163,7 +191,7 @@ END //
 
 DELIMITER ;
 
--- 5.4 After donation status update
+-- 6.4 After donation status update
 DELIMITER //
 
 CREATE TRIGGER after_donation_update
@@ -178,7 +206,7 @@ BEGIN
         );
 
         CALL create_notification(
-            1,   -- replace with your admin's user_id
+            1,
             'Donation status change',
             CONCAT('Donation #', NEW.donation_id, ' (', NEW.food_name, ') is now ', NEW.status)
         );
@@ -187,7 +215,7 @@ END //
 
 DELIMITER ;
 
--- 5.5 After trust score log entry
+-- 6.5 After trust score log entry
 DELIMITER //
 
 CREATE TRIGGER after_trust_log_insert
@@ -203,7 +231,7 @@ END //
 
 DELIMITER ;
 
--- 5.6 After new review
+-- 6.6 After new review
 DELIMITER //
 
 CREATE TRIGGER after_review_insert
@@ -228,7 +256,7 @@ END //
 
 DELIMITER ;
 
--- 5.7 After new report
+-- 6.7 After new report (notifies admin)
 DELIMITER //
 
 CREATE TRIGGER after_report_insert
@@ -236,7 +264,7 @@ AFTER INSERT ON reports
 FOR EACH ROW
 BEGIN
     CALL create_notification(
-        1,   -- replace with admin user_id
+        1,
         'New report filed',
         CONCAT('Report #', NEW.report_id, ' for booking #', NEW.booking_id, ' – ', NEW.issue_type)
     );
@@ -244,7 +272,42 @@ END //
 
 DELIMITER ;
 
--- 5.8 After new user
+-- 6.8 After report status update (notifies admin + reporter)
+DELIMITER //
+
+CREATE TRIGGER after_report_update
+AFTER UPDATE ON reports
+FOR EACH ROW
+BEGIN
+    DECLARE v_reporter_id INT;
+
+    IF NEW.status != OLD.status THEN
+        -- Get the receiver who filed this report
+        SELECT receiver_id INTO v_reporter_id
+        FROM bookings
+        WHERE booking_id = NEW.booking_id;
+
+        -- Notify admin
+        CALL create_notification(
+            1,
+            'Report status updated',
+            CONCAT('Report #', NEW.report_id, ' status changed from ', OLD.status, ' to ', NEW.status)
+        );
+
+        -- Notify the reporter (receiver) if found
+        IF v_reporter_id IS NOT NULL THEN
+            CALL create_notification(
+                v_reporter_id,
+                'Your report status updated',
+                CONCAT('Report #', NEW.report_id, ' is now ', NEW.status)
+            );
+        END IF;
+    END IF;
+END //
+
+DELIMITER ;
+
+-- 6.9 After user registration (pending verification)
 DELIMITER //
 
 CREATE TRIGGER after_user_insert
@@ -253,7 +316,7 @@ FOR EACH ROW
 BEGIN
     IF NEW.status = 'pending_verification' THEN
         CALL create_notification(
-            1,   -- replace with admin user_id
+            1,
             'New user pending verification',
             CONCAT('User "', NEW.full_name, '" (', NEW.email, ') needs approval.')
         );
@@ -262,7 +325,7 @@ END //
 
 DELIMITER ;
 
--- 5.9 After user status update
+-- 6.10 After user status update
 DELIMITER //
 
 CREATE TRIGGER after_user_update
@@ -277,7 +340,7 @@ BEGIN
         );
 
         CALL create_notification(
-            1,   -- replace with admin user_id
+            1,
             'User status change',
             CONCAT('User "', NEW.full_name, '" status changed to ', NEW.status)
         );
@@ -286,7 +349,7 @@ END //
 
 DELIMITER ;
 
--- 5.10 After new certificate
+-- 6.11 After new certificate
 DELIMITER //
 
 CREATE TRIGGER after_certificate_insert
@@ -302,7 +365,7 @@ END //
 
 DELIMITER ;
 
--- 5.11 After voucher redemption unlocked
+-- 6.12 After voucher redemption unlocked
 DELIMITER //
 
 CREATE TRIGGER after_voucher_redemption_update
@@ -321,8 +384,26 @@ END //
 
 DELIMITER ;
 
+-- 6.13 After platform settings update (maintenance mode)
+DELIMITER //
+
+CREATE TRIGGER after_platform_settings_update
+AFTER UPDATE ON platform_settings
+FOR EACH ROW
+BEGIN
+    IF NEW.maintenance_mode != OLD.maintenance_mode THEN
+        CALL create_notification(
+            1,
+            'Maintenance mode changed',
+            CONCAT('Platform maintenance mode set to ', NEW.maintenance_mode)
+        );
+    END IF;
+END //
+
+DELIMITER ;
+
 -- ============================================================
--- 6. Stored procedure for expiry reminders + auto‑missed
+-- 7. Stored procedure for expiry reminders + auto‑missed
 -- ============================================================
 DELIMITER //
 
@@ -406,17 +487,16 @@ END //
 DELIMITER ;
 
 -- ============================================================
--- 7b. Scheduled event – marks missed bookings based on pickup slot
---     Runs every 1 minute (as you set it)
+-- 8. Scheduled events
 -- ============================================================
+
+-- 8.1 Marks missed bookings based on pickup slot (every 1 second)
 DELIMITER //
 
 CREATE EVENT IF NOT EXISTS event_mark_missed_bookings
 ON SCHEDULE EVERY 1 SECOND
 DO
 BEGIN
-    -- Update the status to 'missed' for any reserved booking 
-    -- where the current time has passed the actual pickup timeslot
     UPDATE bookings b
     JOIN pickup_slots p ON b.pickup_slot_id = p.pickup_slot_id
     SET b.status = 'missed'
@@ -426,16 +506,14 @@ END //
 
 DELIMITER ;
 
--- ============================================================
--- 7. Scheduled event – runs every 30 minutes
--- ============================================================
+-- 8.2 Expiry reminders (every 30 minutes)
 CREATE EVENT IF NOT EXISTS process_expiry_reminders_event
 ON SCHEDULE EVERY 30 MINUTE
 DO
     CALL process_expiry_reminders();
 
 -- ============================================================
--- 8. Verification (optional)
+-- 9. Verification (optional)
 -- ============================================================
 -- SHOW TRIGGERS;
 -- SHOW EVENTS;
