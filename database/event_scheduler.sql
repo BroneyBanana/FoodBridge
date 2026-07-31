@@ -68,7 +68,7 @@ BEGIN
 
     IF (current_score - penalty) < threshold THEN
         UPDATE users
-        SET status = 'suspended'
+        SET status = 'banned'
         WHERE user_id = p_receiver_id;
     END IF;
 END //
