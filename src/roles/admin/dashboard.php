@@ -80,6 +80,30 @@ $res = mysqli_query($dbConn, "
     WHERE status = 'active'
 ");
 $activePartners = mysqli_fetch_assoc($res)['active_partners'];
+
+// ------------------------------------------------------------
+// 6. Reports by status (all-time, for chart)
+// ------------------------------------------------------------
+$res = mysqli_query($dbConn, "
+    SELECT status, COUNT(*) AS cnt
+    FROM reports
+    GROUP BY status
+");
+$reportStatusRows = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+$reportStatusLabels = [
+    'active'    => 'Pending',
+    'resolved'  => 'Resolved',
+    'dismissed' => 'Dismissed',
+];
+
+// Ensure all three statuses always appear, even if count is 0
+$reportStatusData = ['Pending' => 0, 'Resolved' => 0, 'Dismissed' => 0];
+foreach ($reportStatusRows as $row) {
+    $label = $reportStatusLabels[$row['status']] ?? ucfirst($row['status']);
+    $reportStatusData[$label] = (int)$row['cnt'];
+}
+$reportStatusJson = json_encode($reportStatusData);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -96,12 +120,19 @@ $activePartners = mysqli_fetch_assoc($res)['active_partners'];
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap"
     rel="stylesheet">
 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
   <!-- Global Styles -->
   <link rel="stylesheet" href="../../assets/css/global.css">
   <link rel="stylesheet" href="../../assets/css/header.css">
 
   <!-- Page Specific Styles -->
   <link rel="stylesheet" href="dashboard.css">
+  <script>
+    // Inject category data from PHP to JS
+    const reportStatusData = <?= $reportStatusJson ?>;
+  </script>
 </head>
 
 <body>
@@ -292,21 +323,26 @@ $activePartners = mysqli_fetch_assoc($res)['active_partners'];
           </section>
 
           <aside class="dashboard-side">
+            <!-- Reports by Status Chart -->
+            <section class="panel-card">
+              <div class="section-header">
+                <div>
+                  <h2>Reports by status</h2>
+                  <p class="muted-text">All-time breakdown of reports filed on the platform.</p>
+                </div>
+              </div>
+              <div style="position: relative; height: 220px; min-height: 220px; margin-top: 8px;">
+                <canvas id="reportStatusChart"></canvas>
+              </div>
+            </section>
+
+            <!-- Impact snapshot -->
             <section class="panel-card impact-panel">
               <h2>Impact snapshot</h2>
               <ul class="tag-list">
-                <li>
-                  <?= htmlspecialchars($openReports) ?> open report
-                  <?= $openReports == 1 ? '' : 's' ?>
-                </li>
-                <li>
-                  <?= htmlspecialchars($activePartners) ?> available donor
-                  <?= $activePartners == 1 ? '' : 's' ?>
-                </li>
-                <li>
-                  <?= htmlspecialchars($readyToday) ?> pickup
-                  <?= $readyToday == 1 ? '' : 's' ?> in 24h
-                </li>
+                <li><?= htmlspecialchars($openReports) ?> open report<?= $openReports == 1 ? '' : 's' ?></li>
+                <li><?= htmlspecialchars($activePartners) ?> available donor<?= $activePartners == 1 ? '' : 's' ?></li>
+                <li><?= htmlspecialchars($readyToday) ?> pickup<?= $readyToday == 1 ? '' : 's' ?> in 24h</li>
               </ul>
             </section>
           </aside>
