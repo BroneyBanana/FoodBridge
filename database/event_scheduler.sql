@@ -518,3 +518,24 @@ DO
 -- SHOW TRIGGERS;
 -- SHOW EVENTS;
 -- SHOW PROCEDURE STATUS WHERE Db = 'foodbridge';
+
+-- ============================================================
+-- 2. Create the Event to Mark Missed Bookings
+-- ============================================================
+DELIMITER //
+
+CREATE EVENT event_mark_missed_bookings
+ON SCHEDULE EVERY 5 MINUTE
+DO
+BEGIN
+    -- Update the status to 'missed' for any reserved booking 
+    -- where the current time has passed the actual pickup timeslot
+    UPDATE bookings b
+    JOIN pickup_slots p ON b.pickup_slot_id = p.pickup_slot_id
+    SET b.status = 'missed'
+    WHERE b.status = 'reserved' 
+      AND p.timeslot < NOW();
+      
+END //
+
+DELIMITER ;

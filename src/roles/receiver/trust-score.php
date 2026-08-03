@@ -132,7 +132,6 @@ $score = max(0, min(100, (int) $user['trust_score']));
                 collections.</p>
             <div class="content-body">
                 <section class="trust-score-panel" aria-label="Trust score summary">
-                    <h2>Trust Score</h2>
                     <div class="score-ring" style="--score: <?php echo $score; ?>"
                         aria-label="Trust score <?php echo $score; ?> out of 100">
                         <div class="score-ring-inner"><strong><?php echo $score; ?></strong><span>Score</span></div>
