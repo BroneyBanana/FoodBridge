@@ -4,7 +4,7 @@
   /* Poppins for headings and body on the register page */
   --font-display: "Poppins", sans-serif;
   --font-sans: "Poppins", sans-serif;
-  --font-syne: "Poppins", sans-serif;
+  --font-display: "Poppins", sans-serif;
 }
 
 body {
@@ -260,7 +260,7 @@ body {
 .intro-step h1,
 .step-heading h1,
 .form-card h1 {
-  font-family: var(--font-syne);
+  font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: 0;
   color: var(--color-forest);
@@ -767,7 +767,7 @@ body {
 }
 
 .success-heading h1 {
-  font-family: var(--font-syne);
+  font-family: var(--font-display);
   font-size: clamp(2.2rem, 4vw, 3rem);
   font-style: italic;
   font-weight: 800;
