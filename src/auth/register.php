@@ -561,19 +561,6 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
 
         <div class="form-card">
           <h1 id="profileTitle">Create your profile</h1>
-          <div class="photo-row">
-            <div class="upload-circle">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 16V8"></path>
-                <path d="m8 12 4-4 4 4"></path>
-                <path d="M20 16.5A4.5 4.5 0 0 1 15.5 21h-7A4.5 4.5 0 0 1 4 16.5"></path>
-              </svg>
-            </div>
-            <div>
-              <button class="small-button" type="button">Add Photo</button>
-              <span>Optional</span>
-            </div>
-          </div>
 
           <label class="field">
             <span>Full name</span>
