@@ -445,7 +445,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-$selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], true) ? $posted['accountRole'] : 'receiver';
+$selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], true) ? $posted['accountRole'] : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -470,10 +470,10 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
 
   <main class="register-page">
     <header class="register-topbar">
-      <a class="brand-pill" href="../../index.php" aria-label="FoodBridge home">
-        <span class="brand-mark">F</span>
-        <span>FoodBridge</span>
-      </a>
+    <a class="brand-pill" href="../../index.php" aria-label="FoodBridge home">
+      <img src="../assets/images/logo.png" alt="FoodBridge" class="brand-mark">
+      <span>FoodBridge</span>
+    </a>
 
       <div class="step-dots" aria-label="Registration progress">
         <span class="step-dot active" data-dot="0"></span>
@@ -494,9 +494,9 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
 
     <form class="register-flow" id="registerForm" action="register.php" method="post">
       <section class="register-step active intro-step" data-step="0" aria-labelledby="introTitle">
-        <div class="hero-logo" aria-hidden="true">
-          <span>F</span>
-        </div>
+      <div class="hero-logo" aria-hidden="true">
+        <img src="../assets/images/logo.png" alt="">
+      </div>
         <h1 id="introTitle">Every meal deserves a second chance.</h1>
         <p>FoodBridge connects surplus food from local donors to communities in need. Let's set up your account.</p>
 
@@ -514,7 +514,6 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
           <label class="role-card">
             <input type="radio" name="accountRole" value="donor" <?php echo $selectedRole === 'donor' ? 'checked' : ''; ?>>
             <span class="check-badge">&check;</span>
-            <span class="role-icon">+</span>
             <strong>Donate Food</strong>
             <span>Share surplus meals, ingredients, or bakery stock from your household or business.</span>
             <span class="tag-row">
@@ -532,7 +531,6 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
           <label class="role-card">
             <input type="radio" name="accountRole" value="receiver" <?php echo $selectedRole === 'receiver' ? 'checked' : ''; ?>>
             <span class="check-badge">&check;</span>
-            <span class="role-icon">&#9633;</span>
             <strong>Find Food</strong>
             <span>Discover food options nearby and book pickup slots that work for you.</span>
             <span class="tag-row">
