@@ -89,7 +89,7 @@ elseif ($trustScore < 50) $trustBadge = 'Warning';
 <body>
   <div class="noise-bg"></div>
   <header class="dashboard-header">
-    <a href="admin-overview.html" class="navbar-brand">
+    <a href="dashboard.php" class="navbar-brand">
       <div class="navbar-logo">
         <img src="../../assets/images/logo.png" alt="Logo" />
       </div>
@@ -281,7 +281,7 @@ elseif ($trustScore < 50) $trustBadge = 'Warning';
             <section class="panel-card actions-panel">
               <h2>Quick actions</h2>
               <div class="quick-actions">
-                <a href="users.html" class="action-link-item">
+                <a href="browse-donations.php" class="action-link-item">
                   <div class="link-left-content">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
                       stroke-linecap="round" stroke-linejoin="round" class="action-icon">
@@ -290,14 +290,14 @@ elseif ($trustScore < 50) $trustBadge = 'Warning';
                       <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                       <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
-                    <span>Manage users</span>
+                    <span>Browse Food</span>
                   </div>
                   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"
                     stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
                     <polyline points="9 18 15 12 9 6"></polyline>
                   </svg>
                 </a>
-                <a href="donations.html" class="action-link-item">
+                <a href="history.php" class="action-link-item">
                   <div class="link-left-content">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
                       stroke-linecap="round" stroke-linejoin="round" class="action-icon">
@@ -313,7 +313,7 @@ elseif ($trustScore < 50) $trustBadge = 'Warning';
                     <polyline points="9 18 15 12 9 6"></polyline>
                   </svg>
                 </a>
-                <a href="reports.html" class="action-link-item">
+                <a href="trust-score.php" class="action-link-item">
                   <div class="link-left-content">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
                       stroke-linecap="round" stroke-linejoin="round" class="action-icon">
@@ -322,7 +322,7 @@ elseif ($trustScore < 50) $trustBadge = 'Warning';
                       <line x1="16" y1="13" x2="8" y2="13"></line>
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                     </svg>
-                    <span>View reports</span>
+                    <span>View Trust Score</span>
                   </div>
                   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"
                     stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
