@@ -16,7 +16,13 @@ body {
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
 }
-
+.sig-signature {
+  font-family: 'Great Vibes', cursive;
+  font-size: 32px;
+  color: #1f3d2f; 
+  margin-bottom: 4px;
+  line-height: 1;
+}
 .cert-container {
   margin: 15mm;
   border: 3px solid #1b4d3e;
