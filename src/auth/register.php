@@ -76,9 +76,9 @@ function sendRegistrationOtpEmail(string $email, string $otpCode): bool
   $mail = new PHPMailer(true);
 
   try {
-    $smtpUser = $_ENV['email_server'] ?? '';
-    $smtpPort = $_ENV['email_port'] ?? '465';
-    $smtpPassword = $_ENV['email_password'] ?? '';
+    $smtpUser = $_ENV['EMAIL_SERVER'] ?? '';
+    $smtpPort = $_ENV['EMAIL_PORT'] ?? '465';
+    $smtpPassword = $_ENV['EMAIL_PASSWORD'] ?? '';
 
     if ($smtpUser === '' || $smtpPassword === '') {
       error_log('SMTP credentials are missing in .env');
@@ -122,9 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $jsonData = json_decode(file_get_contents('php://input'), true);
 
       if (is_array($jsonData)) {
-                $posted = $jsonData;
-            }
-        }
+        $posted = $jsonData;
+      }
+    }
 
     $role = inputValue($posted, 'accountRole');
     $fullName = inputValue($posted, 'fullName');
@@ -136,26 +136,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $longitude = 101.69820000;
 
     if (!empty($location)) {
-        $tomtomKey = $_ENV['TOMTOM_API_KEY'] ?? '';
+      $tomtomKey = $_ENV['TOMTOM_API_KEY'] ?? '';
 
-        if (!empty($tomtomKey)) {
-            $encodedLocation = urlencode($location);
-            // TomTom Geocoding API endpoint
-            $apiUrl = "https://api.tomtom.com/search/2/geocode/{$encodedLocation}.json?key={$tomtomKey}&limit=1";
-            
-            $response = @file_get_contents($apiUrl);
-            
-            if ($response !== false) {
-                $data = json_decode($response, true);
-                // Check if TomTom found valid results
-                if (!empty($data['results']) && isset($data['results'][0]['position'])) {
-                    $latitude = (float) $data['results'][0]['position']['lat'];
-                    $longitude = (float) $data['results'][0]['position']['lon'];
-                }
-            }
+      if (!empty($tomtomKey)) {
+        $encodedLocation = urlencode($location);
+        // TomTom Geocoding API endpoint
+        $apiUrl = "https://api.tomtom.com/search/2/geocode/{$encodedLocation}.json?key={$tomtomKey}&limit=1";
+
+        $response = @file_get_contents($apiUrl);
+
+        if ($response !== false) {
+          $data = json_decode($response, true);
+          // Check if TomTom found valid results
+          if (!empty($data['results']) && isset($data['results'][0]['position'])) {
+            $latitude = (float) $data['results'][0]['position']['lat'];
+            $longitude = (float) $data['results'][0]['position']['lon'];
+          }
         }
+      }
     }
-    
+
     $password = (string) ($posted['password'] ?? '');
     $confirmPassword = (string) ($posted['confirmPassword'] ?? '');
 
@@ -310,17 +310,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       $passwordHash = password_hash($password, PASSWORD_DEFAULT);
       $status = 'active';
+      $defaultProfilePic = 'assets/images/profile.png';
+
       $insertStmt = mysqli_prepare(
         $dbConn,
-        'INSERT INTO users (role, full_name, email, password_hash, location, status)
-                 VALUES (?, ?, ?, ?, ?, ?)'
+        'INSERT INTO users (role, full_name, email, password_hash, location, status, profile_url)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)'
       );
 
       if (!$insertStmt) {
         respondJson(['success' => false, 'message' => 'Unable to create account.'], 500);
       }
 
-      mysqli_stmt_bind_param($insertStmt, 'ssssss', $role, $fullName, $email, $passwordHash, $location, $status);
+      mysqli_stmt_bind_param($insertStmt, 'sssssss', $role, $fullName, $email, $passwordHash, $location, $status, $defaultProfilePic);
       $created = mysqli_stmt_execute($insertStmt);
       $userId = mysqli_insert_id($dbConn);
       mysqli_stmt_close($insertStmt);
@@ -335,11 +337,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'role' => $role,
         'name' => $fullName,
         'email' => $email,
+        'avatarImage' => $defaultProfilePic,
       ];
 
       respondJson([
         'success' => true,
-        'redirect' => "../roles/$role/profile.html",
+        'redirect' => "../roles/$role/dashboard.php",
         'user' => [
           'id' => (int) $userId,
           'role' => $role,
@@ -349,6 +352,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           'trustScore' => 100,
           'totalFoodDonated' => 0,
           'status' => $status,
+          'avatarImage' => $defaultProfilePic,
         ],
       ]);
     }
@@ -391,17 +395,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
     $status = 'active';
+    $defaultProfilePic = 'assets/images/profile.png';
     $insertStmt = mysqli_prepare(
       $dbConn,
-      'INSERT INTO users (role, full_name, email, password_hash, location, status)
-             VALUES (?, ?, ?, ?, ?, ?)'
+      'INSERT INTO users (role, full_name, email, password_hash, location, status, profile_url)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
     );
 
     if (!$insertStmt) {
       finishRegister(['success' => false, 'message' => 'Unable to create account.'], 500);
     }
 
-    mysqli_stmt_bind_param($insertStmt, 'ssssss', $role, $fullName, $email, $passwordHash, $location, $status);
+    mysqli_stmt_bind_param($insertStmt, 'sssssss', $role, $fullName, $email, $passwordHash, $location, $status);
     $created = mysqli_stmt_execute($insertStmt);
     $userId = mysqli_insert_id($dbConn);
     mysqli_stmt_close($insertStmt);
@@ -417,6 +422,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'role' => $role,
       'name' => $fullName,
       'email' => $email,
+      'avatarImage' => $defaultProfilePic,
     ];
 
     finishRegister([
@@ -431,6 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'trustScore' => 100,
         'totalFoodDonated' => 0,
         'status' => $status,
+        'avatarImage' => $defaultProfilePic,
       ],
     ]);
   } catch (FormRenderException $exception) {
@@ -438,7 +445,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-$selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], true) ? $posted['accountRole'] : 'receiver';
+$selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], true) ? $posted['accountRole'] : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -463,10 +470,10 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
 
   <main class="register-page">
     <header class="register-topbar">
-      <a class="brand-pill" href="../../index.php" aria-label="FoodBridge home">
-        <span class="brand-mark">F</span>
-        <span>FoodBridge</span>
-      </a>
+    <a class="brand-pill" href="../../index.php" aria-label="FoodBridge home">
+      <img src="../assets/images/logo.png" alt="FoodBridge" class="brand-mark">
+      <span>FoodBridge</span>
+    </a>
 
       <div class="step-dots" aria-label="Registration progress">
         <span class="step-dot active" data-dot="0"></span>
@@ -487,9 +494,9 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
 
     <form class="register-flow" id="registerForm" action="register.php" method="post">
       <section class="register-step active intro-step" data-step="0" aria-labelledby="introTitle">
-        <div class="hero-logo" aria-hidden="true">
-          <span>F</span>
-        </div>
+      <div class="hero-logo" aria-hidden="true">
+        <img src="../assets/images/logo.png" alt="">
+      </div>
         <h1 id="introTitle">Every meal deserves a second chance.</h1>
         <p>FoodBridge connects surplus food from local donors to communities in need. Let's set up your account.</p>
 
@@ -507,7 +514,6 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
           <label class="role-card">
             <input type="radio" name="accountRole" value="donor" <?php echo $selectedRole === 'donor' ? 'checked' : ''; ?>>
             <span class="check-badge">&check;</span>
-            <span class="role-icon">+</span>
             <strong>Donate Food</strong>
             <span>Share surplus meals, ingredients, or bakery stock from your household or business.</span>
             <span class="tag-row">
@@ -525,7 +531,6 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
           <label class="role-card">
             <input type="radio" name="accountRole" value="receiver" <?php echo $selectedRole === 'receiver' ? 'checked' : ''; ?>>
             <span class="check-badge">&check;</span>
-            <span class="role-icon">&#9633;</span>
             <strong>Find Food</strong>
             <span>Discover food options nearby and book pickup slots that work for you.</span>
             <span class="tag-row">
@@ -556,19 +561,6 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
 
         <div class="form-card">
           <h1 id="profileTitle">Create your profile</h1>
-          <div class="photo-row">
-            <div class="upload-circle">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 16V8"></path>
-                <path d="m8 12 4-4 4 4"></path>
-                <path d="M20 16.5A4.5 4.5 0 0 1 15.5 21h-7A4.5 4.5 0 0 1 4 16.5"></path>
-              </svg>
-            </div>
-            <div>
-              <button class="small-button" type="button">Add Photo</button>
-              <span>Optional</span>
-            </div>
-          </div>
 
           <label class="field">
             <span>Full name</span>
@@ -610,7 +602,8 @@ $selectedRole = in_array($posted['accountRole'] ?? '', ['donor', 'receiver'], tr
           </div>
 
           <p class="form-message" id="registerMessage" role="status" aria-live="polite">
-            <?php echo htmlspecialchars($formError, ENT_QUOTES); ?></p>
+            <?php echo htmlspecialchars($formError, ENT_QUOTES); ?>
+          </p>
           <button class="primary-action" type="submit">Continue -></button>
         </div>
       </section>

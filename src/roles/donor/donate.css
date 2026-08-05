@@ -120,10 +120,63 @@
     opacity: .8;
 }
 
-.upload-guidelines {
-    background: rgba(255, 255, 255, .05);
-    border-radius: 12px;
-    padding: 16px;
+.upload-default {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-default small {
+    display: block;
+    margin-top: 22px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Hidden until an image is selected */
+.upload-success-message {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    color: #ffffff;
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* The green tick */
+.upload-success-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #c8f04a;
+    color: #173d1c;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+/* Hide original content after selection */
+.upload-content.image-selected .upload-default {
+    display: none;
+}
+
+/* Show successful upload message */
+.upload-content.image-selected .upload-success-message {
+    display: flex;
+}
+
+.upload-guidelines{
+    background:rgba(255,255,255,.05);
+    border-radius:12px;
+    padding:16px;
 }
 
 .upload-guidelines h5 {

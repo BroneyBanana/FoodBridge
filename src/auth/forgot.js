@@ -25,18 +25,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetSubmitBtn = document.querySelector("#resetSubmitBtn");
 
   let userEmail = "";
-  let verifiedOtpCode = "";
+  let otpVerified = false;  // track whether OTP was successfully verified
   let timerInterval = null;
 
   // -------------------------------------------------------------
   // Countdown Timer Logic
   // -------------------------------------------------------------
   function startTimer(durationInSeconds) {
-    clearInterval(timerInterval); // Stop any running timer
+    clearInterval(timerInterval);
     let timeLeft = durationInSeconds;
 
     if (timerDisplay) {
-      timerDisplay.style.color = "#667085"; // Reset color to normal
+      timerDisplay.style.color = "#667085";
     }
 
     function updateTimer() {
@@ -58,8 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
       timeLeft--;
     }
 
-    updateTimer(); // Run once immediately so display updates instantly
-    timerInterval = setInterval(updateTimer, 1000); // Ticks every 1 second
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
   }
 
   // -------------------------------------------------------------
@@ -84,16 +84,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (data.success) {
           userEmail = forgotEmailInput.value;
-          
+          otpVerified = false; // reset verification flag
+
           // Switch view to Step 2
           stepEmail.hidden = true;
           stepOtp.hidden = false;
-          
+
           // Focus first OTP box
           if (otpBoxes[0]) otpBoxes[0].focus();
 
-          // START TIMER IMMEDIATELY WHEN DISPLAYING STEP 2
-          startTimer(90); // 90 seconds = 1:30
+          // Start the timer
+          startTimer(90);
         } else {
           forgotMessage.textContent = data.message || "Unable to send code.";
         }
@@ -110,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // STEP 2: OTP Input Navigation & Verification
   // -------------------------------------------------------------
   otpBoxes.forEach((box, index) => {
-    // Auto-advance cursor to next box
     box.addEventListener("input", (e) => {
       const val = e.target.value;
       if (val.length === 1 && index < otpBoxes.length - 1) {
@@ -118,14 +118,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Handle Backspace navigation
     box.addEventListener("keydown", (e) => {
       if (e.key === "Backspace" && !box.value && index > 0) {
         otpBoxes[index - 1].focus();
       }
     });
 
-    // Allow pasting a full 6-digit code
     box.addEventListener("paste", (e) => {
       e.preventDefault();
       const pastedData = (e.clipboardData || window.clipboardData).getData("text").trim();
@@ -138,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Verify OTP submit
   if (verifyOtpForm) {
     verifyOtpForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -166,9 +163,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         if (data.success) {
-          clearInterval(timerInterval); // Stop timer on successful verification
-          verifiedOtpCode = otpCode;
-          
+          clearInterval(timerInterval);
+          otpVerified = true;  // mark as verified
+
           // Switch view to Step 3
           stepOtp.hidden = true;
           stepPassword.hidden = false;
@@ -184,7 +181,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Resend Code button
     if (resendCodeBtn) {
       resendCodeBtn.addEventListener("click", async () => {
         otpMessage.textContent = "";
@@ -205,8 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (data.success) {
             otpMessage.style.color = "#54795e";
             otpMessage.textContent = "A new verification code has been sent.";
-            
-            // RESET TIMER BACK TO 1:30
+            otpVerified = false;  // new code invalidates previous verification
             startTimer(90);
           } else {
             otpMessage.style.color = "#d93025";
@@ -231,8 +226,19 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
       resetMessage.textContent = "";
 
+      // Ensure OTP was verified before allowing reset (extra safety)
+      if (!otpVerified) {
+        resetMessage.textContent = "You must verify your code first. Please go back.";
+        return;
+      }
+
       const newPassword = newPasswordInput.value;
       const confirmPassword = confirmPasswordInput.value;
+
+      if (newPassword.length < 8) {
+        resetMessage.textContent = "Password must be at least 8 characters.";
+        return;
+      }
 
       if (newPassword !== confirmPassword) {
         resetMessage.textContent = "Passwords do not match. Please try again.";
@@ -245,8 +251,8 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const formData = new FormData();
         formData.append("email", userEmail);
-        formData.append("otp", verifiedOtpCode);
-        formData.append("new_password", newPassword);
+        formData.append("password", newPassword);
+        formData.append("confirm_password", confirmPassword);
 
         const response = await fetch("reset-password.php", {
           method: "POST",
@@ -258,6 +264,8 @@ document.addEventListener("DOMContentLoaded", () => {
         resetMessage.textContent = data.message;
 
         if (data.success) {
+          // Optionally revoke the verified flag
+          otpVerified = false;
           setTimeout(() => {
             window.location.href = "login.php";
           }, 1500);

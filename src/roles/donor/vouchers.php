@@ -50,6 +50,9 @@ try {
         $total_donations = (int)($res_don['total_donated'] ?? 0);
         $stmt_don->close();
     }
+    $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+    $userName = $_SESSION['user']['name'] ?? 'User';
+    $initials = strtoupper(substr($userName, 0, 2));
 
     // 2. Fetch list of voucher IDs already redeemed by this donor
     $redemptions_sql = "SELECT voucher_id FROM voucher_redemptions WHERE donor_id = ?";

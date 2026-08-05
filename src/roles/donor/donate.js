@@ -1,3 +1,21 @@
+// 1. Change upload box after an image is selected
+const foodImageInput = document.getElementById('foodImage');
+const uploadContent = document.getElementById('uploadContent');
+const uploadedFileName = document.getElementById('uploadedFileName');
+
+foodImageInput.addEventListener('change', function () {
+    const selectedFile = this.files[0];
+
+    if (!selectedFile) {
+        uploadContent.classList.remove('image-selected');
+        uploadedFileName.textContent = '';
+        return;
+    }
+
+    uploadedFileName.textContent = selectedFile.name;
+    uploadContent.classList.add('image-selected');
+});
+
 // 2. Dynamic Pickup Slots Setup
 const addSlotButton = document.getElementById('addSlotButton');
 const slotsContainer = document.getElementById('slots');

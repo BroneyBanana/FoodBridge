@@ -1,3 +1,33 @@
+<?php
+require_once __DIR__ . '/database/db.php';
+session_start();
+// Already logged in? Skip the landing page and go straight to their dashboard.
+if (!empty($_SESSION['user']['role'])) {
+  header('Location: src/roles/' . $_SESSION['user']['role'] . '/dashboard.php');
+  exit;
+}
+
+// Live stats for the landing page
+$mealsRescued = 0;
+$activeDonors = 0;
+$receiversFed = 0;
+
+$result = mysqli_query($dbConn, "SELECT COUNT(*) AS total FROM donations");
+if ($result) {
+  $mealsRescued = (int) mysqli_fetch_assoc($result)['total'];
+}
+
+$result = mysqli_query($dbConn, "SELECT COUNT(*) AS total FROM users WHERE role = 'donor' AND status = 'active'");
+if ($result) {
+  $activeDonors = (int) mysqli_fetch_assoc($result)['total'];
+}
+
+$result = mysqli_query($dbConn, "SELECT COUNT(DISTINCT receiver_id) AS total FROM donations WHERE status = 'completed'");
+if ($result) {
+  $receiversFed = (int) mysqli_fetch_assoc($result)['total'];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

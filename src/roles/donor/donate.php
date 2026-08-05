@@ -120,16 +120,24 @@
             <h3>Food Photo</h3>
 
             <label class="image-upload">
-              <input type="file" name="foodImage" id="foodImage" accept="image/*" required>
-
-              <div class="upload-content">
-                <div class="upload-icon">
-                  <img src="../../assets/images/add.png" alt="Add Icon">
+              <input type="file" name="foodImage" id="foodImage" accept="image/jpeg,image/png,image/webp" required>
+              
+              <div class="upload-content" id="uploadContent">
+                <div class="upload-default" id="uploadDefault">
+                  <div class="upload-icon">
+                    <img src="../../assets/images/add.png" alt="Add Icon">
+                  </div>
+                  <h4>Upload Image</h4>
+                  <p>Click to upload your food image.</p>
+                  <small>Supports JPG, JPEG, PNG, WEBP (Max 5MB)</small>
                 </div>
-
-                <h4>Upload Image</h4>
-
-                <p>Drag and drop a clear photo of the food item</p>
+                <div class="upload-success-message" id="uploadSuccessMessage">
+                  <span class="upload-success-icon">✓</span>
+                  <span>
+                    <strong id="uploadedFileName"></strong>
+                    has been selected successfully!
+                  </span>
+                </div>
               </div>
             </label>
 
@@ -245,6 +253,7 @@
             <div class="form-submit">
               <button type="submit" class="submitButton">Add Food for Donation</button>
             </div>
+          </div>
         </form>
       </div>
       <div class="content-body"></div>
