@@ -8,9 +8,12 @@ if (!empty($_SESSION['user']['role'])) {
 }
 
 // Live stats for the landing page
-$mealsRescued = 0;
-$activeDonors = 0;
-$receiversFed = 0;
+$mealsRescued   = 0;
+$activeDonors   = 0;
+$receiversFed   = 0;
+$totalDonors    = 0;
+$totalQtyRescued = 0;
+$completionRate = 0;
 
 $result = mysqli_query($dbConn, "SELECT COUNT(*) AS total FROM donations");
 if ($result) {
@@ -22,9 +25,30 @@ if ($result) {
   $activeDonors = (int) mysqli_fetch_assoc($result)['total'];
 }
 
-$result = mysqli_query($dbConn, "SELECT COUNT(DISTINCT receiver_id) AS total FROM donations WHERE status = 'completed'");
+$result = mysqli_query($dbConn, "SELECT COUNT(DISTINCT receiver_id) AS total FROM bookings WHERE status = 'collected'");
 if ($result) {
   $receiversFed = (int) mysqli_fetch_assoc($result)['total'];
+}
+
+// Total registered donors (not just currently active) for the "Join X+ People Donate" tile
+$result = mysqli_query($dbConn, "SELECT COUNT(*) AS total FROM users WHERE role = 'donor'");
+if ($result) {
+  $totalDonors = (int) mysqli_fetch_assoc($result)['total'];
+}
+
+// Total food rescued via completed donations, for the surplus-rescued tile (all units combined)
+$result = mysqli_query($dbConn, "SELECT COALESCE(SUM(quantity), 0) AS total_qty FROM donations WHERE status = 'completed'");
+if ($result) {
+  $totalQtyRescued = (float) mysqli_fetch_assoc($result)['total_qty'];
+}
+
+// Completion rate (completed donations / total donations) for the "65%" tile
+$result = mysqli_query($dbConn, "SELECT COUNT(*) AS total, SUM(status = 'completed') AS completed FROM donations");
+if ($result) {
+  $row = mysqli_fetch_assoc($result);
+  $donationTotal     = (int) $row['total'];
+  $donationCompleted = (int) $row['completed'];
+  $completionRate    = $donationTotal > 0 ? round(($donationCompleted / $donationTotal) * 100) : 0;
 }
 ?>
 
@@ -95,14 +119,8 @@ if ($result) {
       <section class="tiles-body">
         <div class="bento-col col-1">
           <div class="bento-tile tile-forest tile-stat">
-            <h2 class="tile-number">65%</h2>
-            <p class="tile-desc">12 Thousand kg of surplus food rescued, preventing greenhouse gas emissions. FoodBridge thrives.</p>
-            <div class="tile-footer">
-              <span>Claim now</span>
-              <div class="arrow-circle bg-lime">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-              </div>
-            </div>
+            <h2 class="tile-number"><?php echo $completionRate; ?>%</h2>
+            <p class="tile-desc"><?php echo number_format($totalQtyRescued); ?> units of surplus food rescued, preventing greenhouse gas emissions. FoodBridge thrives.</p>
           </div>
     
           <div class="bento-tile tile-forest tile-heard">
@@ -124,13 +142,7 @@ if ($result) {
 
         <div class="bento-col col-3 offset-deep">
           <div class="bento-tile tile-light tile-donate">
-            <h2 class="tile-heading-medium">Join <span class="text-highlight">5000+</span> People Donate</h2>
-            <div class="tile-footer">
-              <span>Join community</span>
-              <div class="arrow-circle bg-forest">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-              </div>
-            </div>
+            <h2 class="tile-heading-medium">Join <span class="text-highlight"><?php echo number_format($totalDonors); ?>+</span> People Donate</h2>
           </div>
         </div>
 
@@ -145,12 +157,9 @@ if ($result) {
 
         <div class="bento-col col-5">
           <div class="bento-tile tile-lime tile-explore">
-            <div class="tile-footer">
+            <a href="./src/auth/register.php" class="tile-footer" style="text-decoration: none; color: inherit;">
               <span>Explore more</span>
-              <div class="arrow-circle bg-forest">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-              </div>
-            </div>
+            </a>
           </div>
 
           <div class="bento-tile tile-forest tile-surplus">
@@ -166,19 +175,19 @@ if ($result) {
         <div class="stats-grid">
           
           <div class="stat-item">
-            <div class="stat-number">+45,000</div>
+            <div class="stat-number">+<?php echo number_format($mealsRescued); ?></div>
             <div class="stat-divider"></div>
             <div class="stat-label">Meals Rescued</div>
           </div>
 
           <div class="stat-item">
-            <div class="stat-number">1,200</div>
+            <div class="stat-number"><?php echo number_format($activeDonors); ?></div>
             <div class="stat-divider"></div>
             <div class="stat-label">Active Donors</div>
           </div>
 
           <div class="stat-item">
-            <div class="stat-number">850</div>
+            <div class="stat-number"><?php echo number_format($receiversFed); ?></div>
             <div class="stat-divider"></div>
             <div class="stat-label">Receivers Fed</div>
           </div>
@@ -264,21 +273,21 @@ if ($result) {
               <img src="./src/assets/images/impact1.jpg" alt="Emergency Relief">
               <div class="impactCardContent">
                 <h3 class="impactCardTitle">EMERGENCY RELIEF</h3>
-                <p class="impactCardDesc">17 Thousand People Fed During Recent Floods</p>
+                <p class="impactCardDesc">People Fed During Recent Floods</p>
               </div>
             </div>
             <div class="impactCard">
               <img src="./src/assets/images/impact2.jpg" alt="Education">
               <div class="impactCardContent">
                 <h3 class="impactCardTitle">EDUCATION</h3>
-                <p class="impactCardDesc">Lifeskills for 2,587 Children</p>
+                <p class="impactCardDesc">No data</p>
               </div>
             </div>
             <div class="impactCard">
               <img src="./src/assets/images/impact3.jpg" alt="Community">
               <div class="impactCardContent">
                 <h3 class="impactCardTitle">COMMUNITY</h3>
-                <p class="impactCardDesc">5000+ Active Volunteers</p>
+                <p class="impactCardDesc">No data</p>
               </div>
             </div>
             <div class="impactCard">
