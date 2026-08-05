@@ -1,7 +1,13 @@
 function formatPeriod(startStr, endStr) {
-  // startStr / endStr look like "2026-01-01 00:00:00"
+  if (!startStr || !endStr) return "N/A";
+  
   const start = new Date(startStr.replace(" ", "T"));
   const end = new Date(endStr.replace(" ", "T"));
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return "Invalid Period";
+  }
+
   const opts = { month: "short", year: "numeric" };
   return `${start.toLocaleDateString("en-US", opts)} - ${end.toLocaleDateString("en-US", opts)}`;
 }
@@ -12,7 +18,7 @@ function satisfactionToRating(rate) {
     case "Good": return 4.0;
     case "Average": return 3.0;
     case "Poor": return 2.0;
-    default: return 0.0;
+    default: return typeof rate === "number" ? rate : 0.0;
   }
 }
 
@@ -23,6 +29,13 @@ function generateStarsHTML(rating) {
     starsHTML += i <= fullStars ? '<span class="star filled">★</span>' : '<span class="star">★</span>';
   }
   return starsHTML;
+}
+
+function escapeHTML(str) {
+  if (str === null || str === undefined) return "";
+  const div = document.createElement("div");
+  div.textContent = String(str);
+  return div.innerHTML;
 }
 
 function buildCertificateCard(cert) {
@@ -50,7 +63,7 @@ function buildCertificateCard(cert) {
       </div>
       <div class="metric-group text-right">
         <span class="metric-label">Donations</span>
-        <span class="metric-value highlight">${escapeHTML(String(cert.food_donated_count))}</span>
+        <span class="metric-value highlight">${escapeHTML(String(cert.food_donated_count ?? 0))}</span>
       </div>
     </div>
 
@@ -68,34 +81,90 @@ function buildCertificateCard(cert) {
   return article;
 }
 
-function escapeHTML(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
+function setupAutoCalculation() {
+  const donorSelect   = document.getElementById("certDonorSelect");
+  const startDateInput = document.getElementById("periodStart");
+  const endDateInput   = document.getElementById("periodEnd");
+  const donationsInput = document.getElementById("certDonations");
+  const ratingSelect   = document.getElementById("certRating");
 
-function setupDonorAutoFill() {
-  const selectMenu = document.getElementById("certDonorSelect");
-  if (!selectMenu) return;
+  async function calculate() {
+    const donorId   = donorSelect?.value?.trim() || "";
+    const startDate = startDateInput?.value?.trim() || "";   
+    const endDate   = endDateInput?.value?.trim() || "";
 
-  selectMenu.addEventListener("change", (e) => {
-    const selectedOption = e.target.selectedOptions[0];
-    if (!selectedOption) return;
-    const donations = selectedOption.getAttribute("data-donations");
-    if (donations !== null) {
-      document.getElementById("certDonations").value = donations;
+    // Clear fields when any required value is missing
+    if (!donorId || !startDate || !endDate) {
+      if (donationsInput) donationsInput.value = "";
+      if (ratingSelect)   ratingSelect.value = "Good";
+      return;
     }
-  });
+
+    if (startDate > endDate) {
+      alert("Start Date cannot be after End Date.");
+      return;
+    }
+
+    if (donationsInput) {
+      donationsInput.value = "";
+      donationsInput.placeholder = "Calculating...";
+    }
+
+    try {
+      const url = `certificates.php?action=calculate_metrics`
+                + `&donor_id=${encodeURIComponent(donorId)}`
+                + `&period_start=${encodeURIComponent(startDate)}`
+                + `&period_end=${encodeURIComponent(endDate)}`
+                + `&ajax=1`;
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (donationsInput) {
+          donationsInput.value = data.food_donated_count ?? 0;
+        }
+        if (ratingSelect) {
+          // PHP returns "Excellent" / "Good" / "Average" / "Poor"
+          ratingSelect.value = data.receiver_satisfaction_rate || "Good";
+        }
+      } else {
+        console.error("Calculation failed:", data.message);
+        if (donationsInput) donationsInput.value = 0;
+      }
+    } catch (err) {
+      console.error("Failed to fetch calculation:", err);
+      if (donationsInput) donationsInput.value = 0;
+    } finally {
+      if (donationsInput) donationsInput.placeholder = "0";
+    }
+  }
+
+  if (donorSelect)   donorSelect.addEventListener("change", calculate);
+  if (startDateInput) {
+    startDateInput.addEventListener("change", calculate);
+    startDateInput.addEventListener("blur", calculate);
+  }
+  if (endDateInput) {
+    endDateInput.addEventListener("change", calculate);
+    endDateInput.addEventListener("blur", calculate);
+  }
 }
 
 function setupModalEvents() {
-  const modal = document.getElementById("certModal");
+  const modal   = document.getElementById("certModal");
   const openBtn = document.getElementById("openModalBtn");
   const closeBtn = document.getElementById("closeModalBtn");
 
-  if (openBtn && modal && closeBtn) {
+  if (openBtn && modal) {
     openBtn.addEventListener("click", () => modal.classList.add("active"));
+  }
+  if (closeBtn && modal) {
     closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+  }
+  if (modal) {
     modal.addEventListener("click", (e) => {
       if (e.target === modal) modal.classList.remove("active");
     });
@@ -121,24 +190,28 @@ async function handleFormSubmit(event) {
       body: formData
     });
 
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
     if (data.success) {
       const container = document.getElementById("certificatesContainer");
-      const noDataMsg = container.querySelector(".no-data");
-      if (noDataMsg) noDataMsg.remove();
+      if (container) {
+        const noDataMsg = container.querySelector(".no-data");
+        if (noDataMsg) noDataMsg.remove();
 
-      const newCard = buildCertificateCard(data.certificate);
-      container.prepend(newCard);
+        const newCard = buildCertificateCard(data.certificate);
+        container.prepend(newCard);
+      }
 
       form.reset();
-      document.getElementById("certModal").classList.remove("active");
+      const modal = document.getElementById("certModal");
+      if (modal) modal.classList.remove("active");
     } else {
       alert(data.message || "Something went wrong while saving the certificate.");
     }
   } catch (err) {
     console.error("Create certificate failed:", err);
-    alert("Could not reach the server. Please try again.");
+    alert("Could not reach the server or parse the response. Please check server logs.");
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
@@ -161,6 +234,7 @@ async function revokeCertificate(certificateId) {
       body: formData
     });
 
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
     if (data.success) {
@@ -179,13 +253,13 @@ async function revokeCertificate(certificateId) {
     }
   } catch (err) {
     console.error("Revoke certificate failed:", err);
-    alert("Could not reach the server. Please try again.");
+    alert("Could not reach the server or process the revocation. Please try again.");
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   setupModalEvents();
-  setupDonorAutoFill();
+  setupAutoCalculation();
 
   const creationForm = document.getElementById("createCertificateForm");
   if (creationForm) {

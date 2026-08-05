@@ -1,27 +1,26 @@
 <?php
 session_start();
+require_once __DIR__ . "/../../../database/db.php";
 
-// ===== TEST MODE =====
-if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 2;
-    $_SESSION['role'] = 'donor';
+// Correct way based on your login system
+if (!isset($_SESSION['user']['id'])) {
+    die("Please login first.");
 }
 
-$donor_id = (int) $_SESSION['user_id'];
-$cert_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$donor_id = (int) $_SESSION['user']['id'];   // ← THIS is the correct key
+$cert_id  = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($cert_id <= 0) {
     die("Invalid Certificate ID.");
 }
 
-// Database connection
-require_once __DIR__ . "/../../../database/db.php";
-
-// Fetch certificate details ensuring it belongs to this donor
+// Fetch certificate + donor full_name
 $query = "
-    SELECT *
-    FROM certificates
-    WHERE certificate_id = ? AND donor_id = ?
+    SELECT c.*, 
+           COALESCE(NULLIF(u.full_name, ''), 'Valued Donor') AS donor_name
+    FROM certificates c
+    LEFT JOIN users u ON c.donor_id = u.user_id
+    WHERE c.certificate_id = ? AND c.donor_id = ?
     LIMIT 1";
 
 $stmt = $dbConn->prepare($query);
@@ -45,10 +44,10 @@ function satisfactionToRating($rate) {
     }
 }
 
-$rating = satisfactionToRating($cert['receiver_satisfaction_rate']);
+$rating    = satisfactionToRating($cert['receiver_satisfaction_rate']);
 $startDate = date("M Y", strtotime($cert['period_start']));
-$endDate = date("M Y", strtotime($cert['period_end']));
-$donorName = !empty($cert['donor_name']) ? $cert['donor_name'] : "Valued Donor";
+$endDate   = date("M Y", strtotime($cert['period_end']));
+$donorName = $cert['donor_name'];   // now comes from the JOIN
 ?>
 <!DOCTYPE html>
 <html lang="en">

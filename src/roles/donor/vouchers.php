@@ -1,72 +1,84 @@
 <?php
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$auth_path = __DIR__ . '/../../../auth.php';
+if (file_exists($auth_path)) {
+    include($auth_path);
+}
+
+// Direct MySQL fallback
+if (!isset($db_connect) || $db_connect === null) {
+    $db_host = "localhost";
+    $db_user = "root";
+    $db_pass = ""; 
+    $db_name = "foodbridge";
+
+    $db_connect = new mysqli($db_host, $db_user, $db_pass, $db_name);
+
+    if ($db_connect->connect_error) {
+        die("Database connection failed: " . $db_connect->connect_error);
+    }
+}
+
+// ===== FIXED: use the correct session key =====
+if (!isset($_SESSION['user']['id'])) {
+    header("Location: ../../auth/login.php");
+    exit();
+}
+
+$donor_id   = (int) $_SESSION['user']['id'];          // ← correct key
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName   = $_SESSION['user']['name'] ?? 'User';
+// ==============================================
+
+$vouchers_list = [];
+$redeemed_voucher_ids = [];
+$total_donations = 0;
+
+try {
+    // 1. Fetch total food donated by this donor directly from users table
+    $donations_sql = "SELECT COALESCE(total_food_donated, 0) AS total_donated 
+                      FROM users 
+                      WHERE user_id = ? AND role = 'donor'";
+    $stmt_don = $db_connect->prepare($donations_sql);
+    if ($stmt_don) {
+        $stmt_don->bind_param("i", $donor_id);
+        $stmt_don->execute();
+        $res_don = $stmt_don->get_result()->fetch_assoc();
+        $total_donations = (int)($res_don['total_donated'] ?? 0);
+        $stmt_don->close();
     }
 
-    $auth_path = __DIR__ . '/../../../auth.php';
-    if (file_exists($auth_path)) {
-        include($auth_path);
+    // 2. Fetch list of voucher IDs already redeemed by this donor
+    $redemptions_sql = "SELECT voucher_id FROM voucher_redemptions WHERE donor_id = ?";
+    $stmt_red = $db_connect->prepare($redemptions_sql);
+    if ($stmt_red) {
+        $stmt_red->bind_param("i", $donor_id);
+        $stmt_red->execute();
+        $res_red = $stmt_red->get_result();
+        while ($row = $res_red->fetch_assoc()) {
+            $redeemed_voucher_ids[] = (int)$row['voucher_id'];
+        }
+        $stmt_red->close();
     }
 
-    // Direct MySQL fallback
-    if (!isset($db_connect) || $db_connect === null) {
-        $db_host = "localhost";
-        $db_user = "root";
-        $db_pass = ""; 
-        $db_name = "foodbridge";
-
-        $db_connect = new mysqli($db_host, $db_user, $db_pass, $db_name);
-
-        if ($db_connect->connect_error) {
-            die("Database connection failed: " . $db_connect->connect_error);
-        }
+    // 3. Fetch all available vouchers from database
+    $vouchers_sql = "SELECT voucher_id, brand_name, reward_title, voucher_code, required_donations, expiration_date FROM vouchers";
+    $vouchers_result = $db_connect->query($vouchers_sql);
+    
+    if ($vouchers_result) {
+        while ($row = $vouchers_result->fetch_assoc()) {
+            $vouchers_list[] = $row;
+        }          
+    } else {
+        throw new Exception("Failed to retrieve vouchers data.");
     }
 
-    $donor_id = (int)$_SESSION["user_id"];
-    $vouchers_list = [];
-    $redeemed_voucher_ids = [];
-    $total_donations = 0;
-
-    try {
-        // 1. Fetch total food donated by this donor directly from users table
-        $donations_sql = "SELECT COALESCE(total_food_donated, 0) AS total_donated FROM users WHERE user_id = ? AND role = 'donor'";
-        $stmt_don = $db_connect->prepare($donations_sql);
-        if ($stmt_don) {
-            $stmt_don->bind_param("i", $donor_id);
-            $stmt_don->execute();
-            $res_don = $stmt_don->get_result()->fetch_assoc();
-            $total_donations = (int)($res_don['total_donated'] ?? 0);
-            $stmt_don->close();
-        }
-
-        // 2. Fetch list of voucher IDs already redeemed by this donor
-        $redemptions_sql = "SELECT voucher_id FROM voucher_redemptions WHERE donor_id = ?";
-        $stmt_red = $db_connect->prepare($redemptions_sql);
-        if ($stmt_red) {
-            $stmt_red->bind_param("i", $donor_id);
-            $stmt_red->execute();
-            $res_red = $stmt_red->get_result();
-            while($row = $res_red->fetch_assoc()){
-                $redeemed_voucher_ids[] = (int)$row['voucher_id'];
-            }
-            $stmt_red->close();
-        }
-
-        // 3. Fetch all available vouchers from database
-        $vouchers_sql = "SELECT voucher_id, brand_name, reward_title, voucher_code, required_donations, expiration_date FROM vouchers";
-        $vouchers_result = $db_connect->query($vouchers_sql);
-        
-        if($vouchers_result){
-            while($row = $vouchers_result->fetch_assoc()){
-                $vouchers_list[] = $row;
-            }          
-        } else {
-            throw new Exception("Failed to retrieve vouchers data.");
-        }
-
-    } catch(Exception $e){
-        error_log("Error retrieving voucher data: " . $e->getMessage());
-    }
+} catch (Exception $e) {
+    error_log("Error retrieving voucher data: " . $e->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
@@ -116,17 +128,10 @@
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
-        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
-      <a href="profile.php" class="profile-avatar">
-        <?php if (!empty($userAvatar)): ?>
-          <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
-            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-        <?php else: ?>
-          <?= htmlspecialchars($initials) ?>
-        <?php endif; ?>
-      </a>
+      <a href="profile.php" class="profile-avatar"><?php echo isset($_SESSION['user_initials']) ? htmlspecialchars($_SESSION['user_initials']) : 'DO'; ?></a>
       
       <a href="../../auth/logout.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -200,6 +205,7 @@
               <span class="partner-brand"><?php echo htmlspecialchars($row['brand_name']); ?></span>
               <h2 class="voucher-reward-title"><?php echo htmlspecialchars($row['reward_title']); ?></h2>
               <span class="expiry-stamp">VALID UNTIL <?php echo date("d/m/Y", strtotime($row['expiration_date'])); ?></span>
+              <span class="voucher-note">Redeemable at your nearest <?php echo htmlspecialchars($row['brand_name']); ?> store.</span>
             </div>
 
             <button 

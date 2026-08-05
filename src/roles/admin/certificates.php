@@ -1,5 +1,4 @@
 <?php
-// Include database connection (using __DIR__ to guarantee path resolution)
 require_once __DIR__ . "/../../../database/db.php";
 session_start();
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
@@ -8,21 +7,78 @@ $initials = strtoupper(substr($userName, 0, 2));
 $message = "";
 $messageType = "";
 
-// Detect AJAX requests coming from certificates.js (fetch sends ajax=1)
-$isAjax = (isset($_POST['ajax']) && $_POST['ajax'] == '1');
+$isAjax = (isset($_POST['ajax']) && $_POST['ajax'] == '1') || (isset($_GET['ajax']) && $_GET['ajax'] == '1');
 
-// 1. Handle Form Submission for Creating a New Certificate
+if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action']) && $_GET['action'] === 'calculate_metrics') {
+    header('Content-Type: application/json');
+
+    $donor_id     = filter_input(INPUT_GET, 'donor_id', FILTER_VALIDATE_INT);
+    $period_start = !empty($_GET['period_start']) ? trim($_GET['period_start']) : null;
+    $period_end   = !empty($_GET['period_end'])   ? trim($_GET['period_end'])   : null;
+
+    if (!$donor_id || !$period_start || !$period_end) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Donor ID and date range are required."
+        ]);
+        exit;
+    }
+
+    // Sum quantity of completed donations whose expiry_at falls in the period
+    $sql = "SELECT COALESCE(SUM(quantity), 0) AS total_donated
+            FROM donations
+            WHERE donor_id = ?
+              AND status = 'completed'
+              AND DATE(expiry_at) BETWEEN ? AND ?";
+
+    $stmt = $dbConn->prepare($sql);
+
+    if (!$stmt) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Prepare failed: " . $dbConn->error
+        ]);
+        exit;
+    }
+
+    $stmt->bind_param("iss", $donor_id, $period_start, $period_end);
+    $stmt->execute();
+    $res  = $stmt->get_result();
+    $data = $res->fetch_assoc();
+    $stmt->close();
+
+    $totalDonated = (float)($data['total_donated'] ?? 0);
+    $count = round($totalDonated);
+
+    // New grade rules based on quantity
+    if ($count >= 46) {
+        $satisfaction = 'Excellent';
+    } elseif ($count >= 26) {
+        $satisfaction = 'Good';
+    } elseif ($count >= 11) {
+        $satisfaction = 'Average';
+    } else {
+        $satisfaction = 'Poor';   // 0 - 10
+    }
+
+    echo json_encode([
+        "success"                    => true,
+        "food_donated_count"         => $count,
+        "receiver_satisfaction_rate" => $satisfaction
+    ]);
+    exit;
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action']) && $_POST['action'] === 'create_certificate') {
     $donor_id = filter_input(INPUT_POST, 'donor_id', FILTER_VALIDATE_INT);
     $certificate_name = isset($_POST['certificate_name']) ? trim(htmlspecialchars($_POST['certificate_name'], ENT_QUOTES, 'UTF-8')) : '';
     $issued_by = !empty($_POST['issued_by']) ? trim(htmlspecialchars($_POST['issued_by'], ENT_QUOTES, 'UTF-8')) : 'FoodBridge Admin';
 
-    // Format start and end dates to datetime format (YYYY-MM-DD 00:00:00)
-    $period_start = !empty($_POST['period_start']) ? $_POST['period_start'] . " 00:00:00" : NULL;
-    $period_end   = !empty($_POST['period_end'])   ? $_POST['period_end'] . " 23:59:59" : NULL;
+    $period_start = !empty($_POST['period_start']) ? $_POST['period_start'] . " 00:00:00" : null;
+    $period_end   = !empty($_POST['period_end'])   ? $_POST['period_end'] . " 23:59:59" : null;
 
     $food_donated_count = filter_input(INPUT_POST, 'food_donated_count', FILTER_VALIDATE_INT) ?: 0;
-    $receiver_satisfaction_rate = $_POST['receiver_satisfaction_rate'] ?? 'Good'; // Enum: 'Excellent', 'Good', 'Average', 'Poor'
+    $receiver_satisfaction_rate = $_POST['receiver_satisfaction_rate'] ?? 'Good';
 
     if ($donor_id && !empty($certificate_name) && !empty($period_start) && !empty($period_end)) {
         $sql = "INSERT INTO certificates (donor_id, certificate_name, issued_by, period_start, period_end, food_donated_count, receiver_satisfaction_rate) 
@@ -37,7 +93,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action']) && $_POST['
                 $newId = $dbConn->insert_id;
 
                 if ($isAjax) {
-                    // Look up the donor's name to send back for immediate rendering
                     $donorName = 'Unknown';
                     $dStmt = $dbConn->prepare("SELECT full_name FROM users WHERE user_id = ?");
                     $dStmt->bind_param("i", $donor_id);
@@ -97,7 +152,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action']) && $_POST['
     }
 }
 
-// 1b. Handle AJAX Delete (Revoke) Certificate Request
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action']) && $_POST['action'] === 'delete_certificate') {
     header('Content-Type: application/json');
 
@@ -119,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action']) && $_POST['
     exit;
 }
 
-// 2. Fetch Donors for the Select Dropdown using $dbConn
+
 $donorsQuery = "
     SELECT 
         user_id AS id, 
@@ -131,7 +185,7 @@ $donorsQuery = "
 
 $donorsResult = $dbConn->query($donorsQuery);
 
-// 3. Fetch Existing Certificates to Display using $dbConn
+
 $certificatesQuery = "
     SELECT c.*, 
            COALESCE(NULLIF(u.full_name, ''), 'Unknown') AS donor_name 
@@ -141,7 +195,6 @@ $certificatesQuery = "
 
 $certificatesResult = $dbConn->query($certificatesQuery);
 
-// Converts the enum satisfaction rating into a 1-5 numeric score for star display
 function satisfactionToRating($rate) {
     switch ($rate) {
         case 'Excellent': return 5.0;
@@ -161,6 +214,7 @@ function renderStars($rating) {
     return $html;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -209,17 +263,17 @@ function renderStars($rating) {
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
                     <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
                 </svg>
-                <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+                <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
             </a>
 
             <a href="profile.php" class="profile-avatar">
-        <?php if (!empty($userAvatar)): ?>
-          <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
-            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-        <?php else: ?>
-          <?= htmlspecialchars($initials) ?>
-        <?php endif; ?>
-      </a>
+                <?php if (!empty($userAvatar)): ?>
+                    <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+                        style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                <?php else: ?>
+                    <?= htmlspecialchars($initials) ?>
+                <?php endif; ?>
+            </a>
 
             <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
