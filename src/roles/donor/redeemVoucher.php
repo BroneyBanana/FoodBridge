@@ -27,12 +27,12 @@ if (!isset($db_connect) || $db_connect === null) {
 }
 
 // 2. Validate Donor Session (role stored lowercase in DB, e.g. 'donor')
-if (!isset($_SESSION['role']) || strtolower($_SESSION['role']) !== "donor" || !isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user']['role']) || strtolower($_SESSION['user']['role']) !== "donor" || !isset($_SESSION['user']['id'])) {
     echo json_encode(["status" => "error", "message" => "Unauthorized access."]);
     exit();
 }
 
-$donor_id = (int)$_SESSION["user_id"];
+$donor_id = (int) $_SESSION['user']['id'];
 
 // 3. Read JSON Body
 $data = json_decode(file_get_contents("php://input"), true);
@@ -42,7 +42,7 @@ if (!isset($data["voucher_id"]) || !filter_var($data['voucher_id'], FILTER_VALID
     exit();
 }
 
-$voucher_id = (int)$data["voucher_id"];
+$voucher_id = (int) $data["voucher_id"];
 
 try {
     $db_connect->begin_transaction();
@@ -53,7 +53,7 @@ try {
     $stmt1->bind_param("i", $donor_id);
     $stmt1->execute();
     $don_res = $stmt1->get_result()->fetch_assoc();
-    $total_donated = (int)($don_res['total_donated'] ?? 0);
+    $total_donated = (int) ($don_res['total_donated'] ?? 0);
     $stmt1->close();
 
     // 5. Fetch Required Donations & Voucher Code from Database
@@ -68,7 +68,7 @@ try {
     }
 
     $v_row = $v_result->fetch_assoc();
-    $required_donations = (int)$v_row["required_donations"];
+    $required_donations = (int) $v_row["required_donations"];
     $voucher_code = $v_row["voucher_code"];
     $stmt2->close();
 

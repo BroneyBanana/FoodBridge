@@ -33,6 +33,9 @@ $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName   = $_SESSION['user']['name'] ?? 'User';
 // ==============================================
 
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 $vouchers_list = [];
 $redeemed_voucher_ids = [];
 $total_donations = 0;
@@ -50,9 +53,6 @@ try {
         $total_donations = (int)($res_don['total_donated'] ?? 0);
         $stmt_don->close();
     }
-    $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
-    $userName = $_SESSION['user']['name'] ?? 'User';
-    $initials = strtoupper(substr($userName, 0, 2));
 
     // 2. Fetch list of voucher IDs already redeemed by this donor
     $redemptions_sql = "SELECT voucher_id FROM voucher_redemptions WHERE donor_id = ?";
@@ -134,9 +134,16 @@ try {
         <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
-      <a href="profile.php" class="profile-avatar"><?php echo isset($_SESSION['user_initials']) ? htmlspecialchars($_SESSION['user_initials']) : 'DO'; ?></a>
-      
-      <a href="../../auth/logout.php" class="action-btn-circle hide-mobile" title="Log Out">
+      <a href="profile.php" class="profile-avatar">
+        <?php if (!empty($userAvatar)): ?>
+          <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        <?php else: ?>
+          <?= htmlspecialchars($initials) ?>
+        <?php endif; ?>
+      </a>
+            
+      <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
       </a>
 
