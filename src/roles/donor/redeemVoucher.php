@@ -26,13 +26,13 @@ if (!isset($db_connect) || $db_connect === null) {
     }
 }
 
-// 2. Validate Donor Session
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== "DONOR" || !isset($_SESSION['user_id'])) {
+// 2. Validate Donor Session (role stored lowercase in DB, e.g. 'donor')
+if (!isset($_SESSION['user']['role']) || strtolower($_SESSION['user']['role']) !== "donor" || !isset($_SESSION['user']['id'])) {
     echo json_encode(["status" => "error", "message" => "Unauthorized access."]);
     exit();
 }
 
-$donor_id = (int)$_SESSION["user_id"];
+$donor_id = (int) $_SESSION['user']['id'];
 
 // 3. Read JSON Body
 $data = json_decode(file_get_contents("php://input"), true);
@@ -42,18 +42,18 @@ if (!isset($data["voucher_id"]) || !filter_var($data['voucher_id'], FILTER_VALID
     exit();
 }
 
-$voucher_id = (int)$data["voucher_id"];
+$voucher_id = (int) $data["voucher_id"];
 
 try {
     $db_connect->begin_transaction();
 
-    // 4. Fetch Total Donor Packs Donated
-    $donations_sql = "SELECT COALESCE(SUM(quantity), 0) AS total_donated FROM donations WHERE donor_id = ?";
+    // 4. Fetch Total Donor Packs Donated (stored directly on users table)
+    $donations_sql = "SELECT COALESCE(total_food_donated, 0) AS total_donated FROM users WHERE user_id = ? AND role = 'donor'";
     $stmt1 = $db_connect->prepare($donations_sql);
     $stmt1->bind_param("i", $donor_id);
     $stmt1->execute();
     $don_res = $stmt1->get_result()->fetch_assoc();
-    $total_donated = (int)($don_res['total_donated'] ?? 0);
+    $total_donated = (int) ($don_res['total_donated'] ?? 0);
     $stmt1->close();
 
     // 5. Fetch Required Donations & Voucher Code from Database
@@ -68,7 +68,7 @@ try {
     }
 
     $v_row = $v_result->fetch_assoc();
-    $required_donations = (int)$v_row["required_donations"];
+    $required_donations = (int) $v_row["required_donations"];
     $voucher_code = $v_row["voucher_code"];
     $stmt2->close();
 
@@ -93,7 +93,7 @@ try {
     $redeem_sql = "INSERT INTO voucher_redemptions (donor_id, voucher_id, status) VALUES (?, ?, ?)";
     $stmt4 = $db_connect->prepare($redeem_sql);
     $stmt4->bind_param("iis", $donor_id, $voucher_id, $status_value);
-    
+
     if (!$stmt4->execute()) {
         throw new Exception("Redemption insert failed.");
     }

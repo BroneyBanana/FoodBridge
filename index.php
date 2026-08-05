@@ -1,11 +1,6 @@
 <?php
 require_once __DIR__ . '/database/db.php';
 session_start();
-// Already logged in? Skip the landing page and go straight to their dashboard.
-if (!empty($_SESSION['user']['role'])) {
-  header('Location: src/roles/' . $_SESSION['user']['role'] . '/dashboard.php');
-  exit;
-}
 
 // Live stats for the landing page
 $mealsRescued   = 0;

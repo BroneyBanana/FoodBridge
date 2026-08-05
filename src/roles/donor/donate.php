@@ -59,7 +59,7 @@
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
         <span
-          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; ; border-radius: 50%;"></span>
+          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.php" class="profile-avatar">

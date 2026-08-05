@@ -359,8 +359,8 @@
 
 .review-image-link img {
   display: block;
-  width: 180px;
-  height: 120px;
+  width: 140px;
+  height: 94px;
   object-fit: cover;
 }
 
@@ -471,4 +471,11 @@
   .status-pill {
     width: 100%;
   }
+}
+
+.upload-file-name {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
 }

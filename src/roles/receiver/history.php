@@ -206,7 +206,7 @@ mysqli_stmt_close($historyStatement);
                     <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
                 </svg>
                 <span
-                    style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; ; border-radius: 50%;"></span>
+                    style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
             </a>
 
             <a href="profile.php" class="profile-avatar">
@@ -330,9 +330,10 @@ mysqli_stmt_close($historyStatement);
                 </label>
                 <label>Picture
                     <span class="upload-box">
-                        <input type="file" name="review_image" accept="image/*">
+                        <input type="file" name="review_image" id="reviewImageInput" accept="image/jpeg,image/png,image/gif,image/webp">
                         <span class="upload-button">Choose Image</span>
                     </span>
+                    <span class="upload-file-name" id="reviewImageName">No image selected</span>
                 </label>
             </div>
             <div class="modal-actions">
@@ -369,9 +370,10 @@ mysqli_stmt_close($historyStatement);
                 </label>
                 <label>Evidence
                     <span class="upload-box">
-                        <input type="file" name="evidence_image" accept="image/*">
+                        <input type="file" name="evidence_image" id="reportImageInput" accept="image/jpeg,image/png,image/gif,image/webp">
                         <span class="upload-button">Choose Image</span>
                     </span>
+                    <span class="upload-file-name" id="reportImageName">No image selected</span>
                 </label>
             </div>
             <div class="modal-actions">
@@ -460,6 +462,34 @@ mysqli_stmt_close($historyStatement);
                 imageLink.classList.add('hidden');
             }
             modals.viewReview.classList.remove('hidden');
+        });
+
+        const reviewImageInput = document.getElementById('reviewImageInput');
+        const reviewImageName = document.getElementById('reviewImageName');
+
+        reviewImageInput.addEventListener('change', () => {
+            const file = reviewImageInput.files[0];
+
+            if (!file) {
+                reviewImageName.textContent = 'No image selected';
+                return;
+            }
+
+            reviewImageName.textContent = file.name;
+        });
+
+        const reportImageInput = document.getElementById('reportImageInput');
+        const reportImageName = document.getElementById('reportImageName');
+
+        reportImageInput.addEventListener('change', () => {
+            const file = reportImageInput.files[0];
+
+            if (!file) {
+                reportImageName.textContent = 'No image selected';
+                return;
+            }
+
+            reportImageName.textContent = file.name;
         });
 
         // View report

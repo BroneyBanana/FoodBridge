@@ -346,7 +346,7 @@ elseif ($trustScore < 50)
             <section class="panel-card actions-panel">
               <h2>Quick actions</h2>
               <div class="quick-actions">
-                <a href="donate.html" class="action-link-item">
+                <a href="donate.php" class="action-link-item">
                   <div class="link-left-content">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
                       stroke-linecap="round" stroke-linejoin="round" class="action-icon">
@@ -360,7 +360,7 @@ elseif ($trustScore < 50)
                     <polyline points="9 18 15 12 9 6"></polyline>
                   </svg>
                 </a>
-                <a href="my-donations.html" class="action-link-item">
+                <a href="my-donations.php" class="action-link-item">
                   <div class="link-left-content">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
                       stroke-linecap="round" stroke-linejoin="round" class="action-icon">
@@ -376,7 +376,7 @@ elseif ($trustScore < 50)
                     <polyline points="9 18 15 12 9 6"></polyline>
                   </svg>
                 </a>
-                <a href="leaderboard.html" class="action-link-item">
+                <a href="leaderboard.php" class="action-link-item">
                   <div class="link-left-content">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
                       stroke-linecap="round" stroke-linejoin="round" class="action-icon">
