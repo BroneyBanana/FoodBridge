@@ -233,6 +233,19 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmPasswordInput.setCustomValidity(message);
   });
 
+let armedRole = null;
+
+roleInputs.forEach((input) => {
+  input.addEventListener("click", () => {
+    if (armedRole === input.value) {
+      goToStep(2); // this card was already armed from a prior click — confirm and advance
+    } else {
+      armedRole = input.value; // first click on this card — just arm it, show info
+      updatePreview();
+    }
+  });
+});
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     setMessage("", "error", currentStep === 3 ? "otp" : "register");

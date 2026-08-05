@@ -1,23 +1,12 @@
 <?php
-// Start session for local testing
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+session_start();
+$auth_path = __DIR__ . '/../../../auth.php';
+if (file_exists($auth_path)) {
+  include_once($auth_path);
 }
-
-// Force admin role & test session variables to bypass authentication checks
-$_SESSION['role'] = 'ADMIN';
-$_SESSION['user_id'] = 1;
-$_SESSION['user_initials'] = 'AD';
-
-/* 
- * Auth check temporarily bypassed for direct file testing.
- * Uncomment these lines when deploying to production:
- * 
- * $auth_path = __DIR__ . '/../../../auth.php';
- * if (file_exists($auth_path)) {
- *     include_once($auth_path);
- * }
- */
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +19,9 @@ $_SESSION['user_initials'] = 'AD';
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap"
+    rel="stylesheet">
 
   <!-- Global Styles -->
   <link rel="stylesheet" href="../../assets/css/global.css">
@@ -61,29 +52,18 @@ $_SESSION['user_initials'] = 'AD';
       </nav>
     </div>
 
+
     <div class="dashboard-actions">
-<<<<<<< HEAD:src/roles/admin/vouchers.php
-      <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.php">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-=======
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
         href="notifications.php">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
->>>>>>> 169593a4854735c579f78223aa5481e3ee4fa1f8:src/roles/admin/vouchers.html
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
-        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
-<<<<<<< HEAD:src/roles/admin/vouchers.php
-      <a href="profile.php" class="profile-avatar"><?php echo htmlspecialchars($_SESSION['user_initials']); ?></a>
-
-      <!-- Direct testing link to stay on page instead of redirecting to login.html -->
-      <a href="vouchers.php" class="action-btn-circle hide-mobile" title="Testing Mode Active">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-=======
       <a href="profile.php" class="profile-avatar">
         <?php if (!empty($userAvatar)): ?>
           <img src="../../<?= htmlspecialchars($userAvatar) ?>" alt="<?= htmlspecialchars($userName) ?>"
@@ -96,7 +76,6 @@ $_SESSION['user_initials'] = 'AD';
       <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
->>>>>>> 169593a4854735c579f78223aa5481e3ee4fa1f8:src/roles/admin/vouchers.html
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
           <polyline points="16 17 21 12 16 7"></polyline>
           <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -104,7 +83,8 @@ $_SESSION['user_initials'] = 'AD';
       </a>
 
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+          stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -122,7 +102,8 @@ $_SESSION['user_initials'] = 'AD';
           <p class="page-subheading">Configure, modify, and issue platform distribution vouchers.</p>
         </div>
         <button class="primary-action-btn" id="openCreateModalBtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
@@ -166,7 +147,8 @@ $_SESSION['user_initials'] = 'AD';
 
         <div class="form-group">
           <label for="donationField">Required Food Donations (Pax)</label>
-          <input type="number" id="donationField" min="0" placeholder="e.g., 5 (Enter 0 if unlocked by default)" required>
+          <input type="number" id="donationField" min="0" placeholder="e.g., 5 (Enter 0 if unlocked by default)"
+            required>
         </div>
 
         <div class="modal-actions-footer">

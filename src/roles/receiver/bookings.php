@@ -116,7 +116,7 @@ while ($row = mysqli_fetch_assoc($result_past)) {
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
           </svg>
-          <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+          <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
         </a>
 
         <a href="profile.php" class="profile-avatar">
@@ -300,6 +300,25 @@ while ($row = mysqli_fetch_assoc($result_past)) {
       <div class="cancel-modal-actions">
         <button class="cancel-modal-keep" id="cancel-keep-btn">Keep Booking</button>
         <button class="cancel-modal-confirm" id="cancel-confirm-btn">Yes, Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Scan Success Modal ── -->
+  <div id="success-modal" class="cancel-modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="cancel-modal-card" style="text-align: center;">
+      <!-- Green Checkmark Icon -->
+      <div style="background: rgba(46, 204, 113, 0.1); border-radius: 50%; padding: 16px; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 16px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <h2 class="cancel-modal-title">Scan Successful!</h2>
+      <p class="cancel-modal-desc" id="success-modal-msg">The booking status has been updated to collected.</p>
+      
+      <div class="cancel-modal-actions" style="justify-content: center; margin-top: 20px;">
+        <button class="cancel-modal-keep" id="success-done-btn" style="background: #2ecc71; color: white; border: none; width: 100%;">Done</button>
       </div>
     </div>
   </div>

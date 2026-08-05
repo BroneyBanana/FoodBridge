@@ -94,7 +94,7 @@ $score = max(0, min(100, (int) $user['trust_score']));
                     <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
                 </svg>
                 <span
-                    style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+                    style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
             </a>
 
             <a href="profile.php" class="profile-avatar">
@@ -132,7 +132,6 @@ $score = max(0, min(100, (int) $user['trust_score']));
                 collections.</p>
             <div class="content-body">
                 <section class="trust-score-panel" aria-label="Trust score summary">
-                    <h2>Trust Score</h2>
                     <div class="score-ring" style="--score: <?php echo $score; ?>"
                         aria-label="Trust score <?php echo $score; ?> out of 100">
                         <div class="score-ring-inner"><strong><?php echo $score; ?></strong><span>Score</span></div>

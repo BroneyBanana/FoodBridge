@@ -6,7 +6,7 @@ if (!isset($_SESSION['user']['id'])) {
 }
 $userId = (int) $_SESSION['user']['id'];
 
-require_once '../../../database/db.php'; 
+require_once '../../../database/db.php';
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));
@@ -86,7 +86,7 @@ $notificationsJson = json_encode($notificationsJsArray);
     <div class="nav-overlay" id="navOverlay">
       <nav class="dashboard-nav">
         <a href="dashboard.php" class="dashboard-nav-item">Overview</a>
-        <a href="browse-donations.php" class="dashboard-nav-item active">Browse Food</a>
+        <a href="browse-donations.php" class="dashboard-nav-item">Browse Food</a>
         <a href="bookings.php" class="dashboard-nav-item">My Bookings</a>
         <a href="trust-score.php" class="dashboard-nav-item">Trust Score</a>
         <a href="history.php" class="dashboard-nav-item">History</a>
@@ -102,7 +102,7 @@ $notificationsJson = json_encode($notificationsJsArray);
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
         <span
-          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.php" class="profile-avatar">

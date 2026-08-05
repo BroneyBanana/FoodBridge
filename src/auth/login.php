@@ -198,11 +198,6 @@ $selectedRole = in_array($selectedRole, ['donor', 'receiver', 'admin'], true) ? 
     </section>
 
     <section class="login-panel" aria-labelledby="login-title">
-      <div class="admin-access">
-        <a href="#admin" id="adminAccess">Admin Access</a>
-        <span>Use your database account</span>
-      </div>
-
       <div class="login-card">
         <div class="login-header">
           <p class="eyebrow">FoodBridge Login</p>
@@ -254,7 +249,7 @@ $selectedRole = in_array($selectedRole, ['donor', 'receiver', 'admin'], true) ? 
               <input type="checkbox" name="remember">
               <span>Remember me</span>
             </label>
-            <a href="#">Forgot password?</a>
+            <a href="forgot.php" id="forgotPasswordLink">Forgot password?</a>
           </div>
 
           <p class="form-message" role="status" aria-live="polite">
@@ -266,7 +261,7 @@ $selectedRole = in_array($selectedRole, ['donor', 'receiver', 'admin'], true) ? 
         <p class="signup-copy">Don't have an account? <a href="register.php">Sign Up</a></p>
       </div>
       <!-- Forgot Password Modal -->
-      <div class="modal-overlay" id="forgotPasswordModal" hidden>
+      <div class="modal-overlay" hidden>
         <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
           <button class="modal-close" type="button" id="closeForgotModal" aria-label="Close">&times;</button>
 

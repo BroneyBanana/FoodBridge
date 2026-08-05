@@ -5,6 +5,9 @@ const errorMsg    = document.getElementById('qr-error');
 const successMsg  = document.getElementById('qr-success-msg');
 const closeBtn    = document.getElementById('qr-close-btn');
 const scannerWrap = document.getElementById('qr-scanner-wrap');
+const successModal = document.getElementById('success-modal');
+const successModalMsg = document.getElementById('success-modal-msg');
+const successDoneBtn = document.getElementById('success-done-btn');
 
 let stream   = null;
 let rafId    = null;
@@ -66,45 +69,42 @@ function onQRDetected(data) {
   scanning = false;
   stopCamera();
 
-  // Show a loading state to the user
+  // Show a loading state to the user inside the scanner modal
   successMsg.textContent = 'Processing scan...';
   successMsg.style.display = 'block';
-  successMsg.style.color = '#f39c12'; // Orange/Yellow for processing
+  successMsg.style.color = '#f39c12'; 
   errorMsg.style.display = 'none';
 
-  // Prepare the data to send via POST
   const formData = new FormData();
   formData.append('qr_data', data);
 
-  // Send the data to your PHP file
   fetch('process_qr.php', {
     method: 'POST',
     body: formData
   })
-  .then(response => response.json()) // Expect a JSON response from PHP
+  .then(response => response.json()) 
   .then(result => {
     if (result.success) {
-      // 🟢 Success Path: Update UI and close scanner
-      scannerWrap.classList.add('success');
-      successMsg.textContent = result.message || 'Status updated successfully!';
-      successMsg.style.color = '#2ecc71'; // Green for success
+      // 🟢 Success Path: Close scanner and open the Success Modal
+      closeScanner();
       
-      // Close the modal and reload the page to refresh the dashboard data
-      setTimeout(() => {
-        closeScanner();
-        location.reload(); 
-      }, 1500);
+      successModalMsg.textContent = result.message || 'The booking status has been updated successfully!';
+      successModal.classList.remove('hidden');
+
+      // When the user clicks "Done", reload the page to refresh data
+      successDoneBtn.addEventListener('click', () => {
+        window.location.reload();
+      }, { once: true });
+
     } else {
       // 🔴 Error Path: The PHP script rejected the data
       successMsg.style.display = 'none';
       errorMsg.textContent = result.error || 'Failed to update status.';
       errorMsg.style.display = 'block';
-      
-      // Optionally, add a button to restart the camera here if they need to scan again
     }
   })
   .catch(error => {
-    // 🔴 Network Error Path: Could not reach the PHP script
+    // 🔴 Network Error Path
     successMsg.style.display = 'none';
     errorMsg.textContent = 'Network error. Please check your connection.';
     errorMsg.style.display = 'block';

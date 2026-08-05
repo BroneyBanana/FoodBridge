@@ -1,9 +1,6 @@
 <?php
 session_start();
-require_once '../../../database/db.php'; 
-$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
-$userName = $_SESSION['user']['name'] ?? 'User';
-$initials = strtoupper(substr($userName, 0, 2));
+require_once '../../../database/db.php';
 
 // check if the user aka receiver is logged in
 // if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'receiver') {
@@ -17,7 +14,9 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
   header('Location: ../../auth/login.php'); // or the http_response_code/json version for the two AJAX files
   exit();
 }
-
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 $receiver_id = $_SESSION['user']['id'];
 
 // ----- QUERY 1: ALL ACTIVE DONATIONS ---- //
@@ -25,16 +24,31 @@ $sql_donations = "SELECT donations.donation_id, donations.food_name, donations.c
       donations.quantity, donations.unit, donations.image_url, donations.pickup_address,
       users.full_name AS donor_name, users.trust_score, users.latitude, users.longitude,
       MAX(pickup_slots.timeslot) AS latest_slot,
-      GROUP_CONCAT(DISTINCT donation_allergy_tags.allergy_name) AS allergy_tags
+      GROUP_CONCAT(DISTINCT donation_allergy_tags.allergy_name) AS allergy_tags,
+      (donations.quantity - COALESCE(booked.booked_qty, 0)) AS available_quantity
     FROM donations
     JOIN users ON donations.donor_id = users.user_id
     JOIN pickup_slots ON pickup_slots.donation_id = donations.donation_id
     LEFT JOIN donation_allergy_tags ON donation_allergy_tags.donation_id = donations.donation_id
+    LEFT JOIN (
+        SELECT donation_id, SUM(quantity) AS booked_qty
+        FROM bookings
+        WHERE status IN ('reserved', 'collected')
+        GROUP BY donation_id
+    ) AS booked ON booked.donation_id = donations.donation_id
     WHERE donations.status = 'active' AND donations.expiry_at > NOW() AND pickup_slots.timeslot > NOW()
     GROUP BY donations.donation_id
+    HAVING available_quantity > 0
     ORDER BY latest_slot ASC";
 // MAX(timeslot) takes the latest pickup slot for each donation
 // GROUP_CONCAT combines multiple rows' values into one string (v1,v2,v3)
+// the "booked" subquery pre-sums reserved+collected quantity PER donation before
+// joining it in — doing the sum here avoids the fan-out problem you'd get if
+// bookings were joined directly alongside pickup_slots/allergy_tags (that would
+// multiply rows and make SUM() count each booking more than once)
+// HAVING available_quantity > 0 replaces the old "flip donations.status to
+// completed" logic — the card just stops appearing once the math says nothing's
+// left, recalculated fresh on every page load, no stored flag needed
 
 // execute the query 
 $result_donations = mysqli_query($dbConn, $sql_donations);
@@ -102,8 +116,7 @@ while ($row = mysqli_fetch_assoc($result_donations)) {
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
-        <span
-          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background-color: #ff4757; border-radius: 50%;"></span>
+        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.php" class="profile-avatar">
@@ -205,7 +218,7 @@ while ($row = mysqli_fetch_assoc($result_donations)) {
                         <?php endforeach; ?>
                       </div>
                       <button class="BookDonation" data-donation-id="<?php echo (int) $donation['donation_id']; ?>"
-                        data-quantity="<?php echo htmlspecialchars($donation['quantity']); ?>"
+                        data-quantity="<?php echo htmlspecialchars($donation['available_quantity']); ?>"
                         data-unit="<?php echo htmlspecialchars($donation['unit']); ?>">
                         Select Pickup Time
                       </button>
@@ -249,7 +262,7 @@ while ($row = mysqli_fetch_assoc($result_donations)) {
   <!-- Pass PHP data to JS -->
   <script>
     window.APP_CONFIG = {
-        donations: <?php echo json_encode($donations, JSON_NUMERIC_CHECK); ?>
+      donations: <?php echo json_encode($donations, JSON_NUMERIC_CHECK); ?>
     };
   </script>
 
@@ -257,4 +270,8 @@ while ($row = mysqli_fetch_assoc($result_donations)) {
   <script src="../../assets/js/header.js"></script>
   <script src="browse-donations.js"></script>
 </body>
+
+</html>
+</body>
+
 </html>

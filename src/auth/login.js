@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formMessage.classList.toggle("success", type === "success");
   }
 
-  function selectRole(tab, persist = true) { // CHANGED: added persist param
+  function selectRole(tab, persist = true) {
     roleTabs.forEach((item) => {
       item.classList.remove("active");
       item.setAttribute("aria-selected", "false");
@@ -40,18 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
     roleInput.value = tab.dataset.role;
     setMessage("");
 
-    // ADDED: remember the selected tab
     if (persist) {
       localStorage.setItem("foodbridgeSelectedRole", tab.dataset.role);
     }
   }
 
-  // ADDED: restore last selected role tab on page load
   const savedRole = localStorage.getItem("foodbridgeSelectedRole");
   if (savedRole) {
     const savedTab = document.querySelector(`.role-tab[data-role='${savedRole}']`);
     if (savedTab) {
-      selectRole(savedTab, false); // false = don't re-save, just restore
+      selectRole(savedTab, false);
     }
   }
 
@@ -114,115 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
       signInButton.disabled = false;
       signInButton.textContent = "Sign In";
     }
-    // Forgot Password modal logic
-  const forgotLink = document.querySelector("#forgotPasswordLink");
-  const forgotModal = document.querySelector("#forgotPasswordModal");
-  const closeForgotModal = document.querySelector("#closeForgotModal");
-
-  const stepEmail = document.querySelector("#forgotStepEmail");
-  const stepReset = document.querySelector("#forgotStepReset");
-
-  const forgotForm = document.querySelector("#forgotPasswordForm");
-  const forgotEmailInput = document.querySelector("#forgotEmail");
-  const forgotMessage = document.querySelector("#forgotMessage");
-  const forgotSubmitBtn = document.querySelector("#forgotSubmitBtn");
-
-  const resetForm = document.querySelector("#resetPasswordForm");
-  const resetOtpInput = document.querySelector("#resetOtp");
-  const resetNewPasswordInput = document.querySelector("#resetNewPassword");
-  const resetMessage = document.querySelector("#resetMessage");
-  const resetSubmitBtn = document.querySelector("#resetSubmitBtn");
-
-  let pendingResetEmail = "";
-
-  if (forgotLink && forgotModal) {
-    forgotLink.addEventListener("click", (event) => {
-      event.preventDefault();
-      forgotModal.hidden = false;
-      stepEmail.hidden = false;
-      stepReset.hidden = true;
-      forgotEmailInput.value = emailInput.value || "";
-      forgotEmailInput.focus();
-      forgotMessage.textContent = "";
-      forgotMessage.classList.remove("success");
-    });
-
-    closeForgotModal.addEventListener("click", () => {
-      forgotModal.hidden = true;
-    });
-
-    forgotModal.addEventListener("click", (event) => {
-      if (event.target === forgotModal) {
-        forgotModal.hidden = true;
-      }
-    });
-
-    forgotForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      forgotMessage.textContent = "";
-      forgotSubmitBtn.disabled = true;
-      forgotSubmitBtn.textContent = "Sending...";
-
-      try {
-        const response = await fetch("forgot-password.php", {
-          method: "POST",
-          headers: { Accept: "application/json" },
-          body: new FormData(forgotForm),
-        });
-        const data = await response.json();
-
-        if (data.success) {
-          pendingResetEmail = forgotEmailInput.value;
-          stepEmail.hidden = true;
-          stepReset.hidden = false;
-          resetMessage.textContent = "";
-          resetOtpInput.focus();
-        } else {
-          forgotMessage.textContent = data.message || "Unable to send code.";
-          forgotMessage.classList.remove("success");
-        }
-      } catch (error) {
-        forgotMessage.textContent = "Unable to reach the server. Please try again.";
-        forgotMessage.classList.remove("success");
-      } finally {
-        forgotSubmitBtn.disabled = false;
-        forgotSubmitBtn.textContent = "Send Code";
-      }
-    });
-
-    resetForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      resetMessage.textContent = "";
-      resetSubmitBtn.disabled = true;
-      resetSubmitBtn.textContent = "Resetting...";
-
-      try {
-        const formData = new FormData(resetForm);
-        formData.append("email", pendingResetEmail);
-
-        const response = await fetch("reset-password.php", {
-          method: "POST",
-          headers: { Accept: "application/json" },
-          body: formData,
-        });
-        const data = await response.json();
-
-        resetMessage.textContent = data.message;
-        resetMessage.classList.toggle("success", !!data.success);
-
-        if (data.success) {
-          setTimeout(() => {
-            forgotModal.hidden = true;
-          }, 1500);
-        }
-      } catch (error) {
-        resetMessage.textContent = "Unable to reach the server. Please try again.";
-        resetMessage.classList.remove("success");
-      } finally {
-        resetSubmitBtn.disabled = false;
-        resetSubmitBtn.textContent = "Reset Password";
-      }
-    });
-  }
   });
+
 });

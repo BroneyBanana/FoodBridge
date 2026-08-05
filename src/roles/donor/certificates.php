@@ -1,21 +1,14 @@
 <?php
 session_start();
-
-// ===== TEST MODE =====
-// ⚠️ This FORCES donor_id = 2 every time, overriding any existing session
-// (e.g. if you're already logged in for real as a different user, this
-// will still use donor_id 2 regardless). This is only for testing — remove
-// this whole block and restore a real session check before going anywhere
-// near production, or any logged-in donor could see donor_id 2's certs.
-// $_SESSION['user_id'] = 2;
-// $_SESSION['role'] = 'donor';
-
-$donor_id = (int) $_SESSION['user_id'];
-
-// Include database connection
-// NOTE: this file lives at src/roles/donor/certificates.php (2 levels under src),
-// so it's 3 levels up to reach the project-root /database folder.
 require_once __DIR__ . "/../../../database/db.php";
+
+// Correct way based on your login system
+if (!isset($_SESSION['user']['id'])) {
+    header("Location: ../../auth/login.php");
+    exit();
+}
+
+$donor_id = (int) $_SESSION['user']['id'];   // ← THIS is the correct key
 
 // Fetch only this donor's certificates
 $certificatesQuery = "
@@ -30,12 +23,9 @@ $stmt->execute();
 $certificatesResult = $stmt->get_result();
 
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
-$userName = $_SESSION['user']['name'] ?? 'User';
-$initials = strtoupper(substr($userName, 0, 2));
+$userName   = $_SESSION['user']['name'] ?? 'User';
+$initials   = strtoupper(substr($userName, 0, 2));
 
-// ===== DEBUG LINE (remove once everything works) =====
-// This prints exactly what donor_id is being used and how many rows matched,
-// so you can immediately tell if the problem is "wrong donor_id" vs "DB connection broken".
 echo "<!-- DEBUG: donor_id used = $donor_id | rows found = " . $certificatesResult->num_rows . " -->";
 
 // Converts the enum satisfaction rating into a 1-5 numeric score for star display
