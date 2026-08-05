@@ -54,8 +54,11 @@ $donorName = $cert['donor_name'];   // now comes from the JOIN
 <head>
   <meta charset="UTF-8">
   <title>Certificate - <?php echo htmlspecialchars($cert['certificate_name']); ?></title>
-  
-  <!-- External Stylesheet -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="generate-certificate.css">
 </head>
 <body>
@@ -97,6 +100,7 @@ $donorName = $cert['donor_name'];   // now comes from the JOIN
     <table class="footer-table">
       <tr>
         <td class="footer-cell">
+          <div class="sig-signature">JhYzz</div>
           <div class="sig-line"></div>
           <div class="sig-name"><?php echo htmlspecialchars($cert['issued_by']); ?></div>
           <div class="sig-title">Issuing Authority</div>
@@ -105,6 +109,7 @@ $donorName = $cert['donor_name'];   // now comes from the JOIN
           <div class="badge">★</div>
         </td>
         <td class="footer-cell">
+          <div class="sig-signature">IzW</div>
           <div class="sig-line"></div>
           <div class="sig-name">FoodBridge Board</div>
           <div class="sig-title">Verification Committee</div>
