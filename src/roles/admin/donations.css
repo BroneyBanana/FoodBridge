@@ -1,5 +1,4 @@
 /* Donations Specific Styles */
-/* Donations Specific Styles */
 .dashboard-container {
     padding: 20px 0;
 }
@@ -18,7 +17,7 @@
     align-items: center;
     padding: 0px 20px;
     flex: 1;
-    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .stats-icon {
@@ -42,7 +41,8 @@
     border-radius: 12px;
 }
 
-.stats-info p, .stats-info h2 {
+.stats-info p,
+.stats-info h2 {
     margin: 10px;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .filter-buttons button:hover:not(.active-button) {
-    background-color: rgb(222, 222, 222); 
+    background-color: rgb(222, 222, 222);
 }
 
 .active-button {
@@ -73,7 +73,7 @@
 
 .donation-table {
     width: 100%;
-    border-collapse: collapse;  
+    border-collapse: collapse;
 }
 
 .donation-table th {
@@ -83,7 +83,8 @@
     border-bottom: 1px solid rgb(213, 213, 213);
 }
 
-.donation-table th, .donation-table td {
+.donation-table th,
+.donation-table td {
     padding: 14px 16px;
     font-size: 0.8rem;
 }
@@ -102,18 +103,18 @@
 }
 
 .status-badge.active {
-    background-color: #E8F5E9; 
-    color: #26782a; 
+    background-color: #E8F5E9;
+    color: #26782a;
 }
 
 .status-badge.completed {
-    background-color: #E3F2FD; 
-    color: #1051b3;        
+    background-color: #E3F2FD;
+    color: #1051b3;
 }
 
 .status-badge.expired {
-    background-color: #FFEBEE; 
-    color: #e83434;  
+    background-color: #FFEBEE;
+    color: #e83434;
 }
 
 @media screen and (max-width: 768px) {
@@ -123,8 +124,8 @@
 
     .stats-section {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 14px; 
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
         margin-bottom: 24px;
     }
 
@@ -135,7 +136,7 @@
 
     .stats-icon {
         width: 36px;
-        height: 36px; 
+        height: 36px;
     }
 
     .stats-info h2 {
@@ -146,7 +147,7 @@
         gap: 10px;
         overflow-x: auto;
         white-space: nowrap;
-        padding-bottom: 8px; 
+        padding-bottom: 8px;
     }
 
     .filter-buttons button {
@@ -155,17 +156,18 @@
     }
 
     .donation-section {
-        padding: 16px; 
+        padding: 16px;
         width: 100%;
-        overflow-x: auto; 
-        -webkit-overflow-scrolling: touch; 
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .donation-table {
-        min-width: 500px; 
+        min-width: 500px;
     }
 
-    .donation-table th, .donation-table td {
-        padding: 12px 10px; 
+    .donation-table th,
+    .donation-table td {
+        padding: 12px 10px;
     }
 }

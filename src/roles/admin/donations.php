@@ -1,20 +1,20 @@
 <?php
-    session_start();
-    $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
-    $userName = $_SESSION['user']['name'] ?? 'User';
-    $initials = strtoupper(substr($userName, 0, 2));
+session_start();
+$userAvatar = $_SESSION['user']['avatarImage'] ?? '';
+$userName = $_SESSION['user']['name'] ?? 'User';
+$initials = strtoupper(substr($userName, 0, 2));
 
-    require_once "../../../database/db.php";
+require_once "../../../database/db.php";
 
-    if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
-        header('Location: ../../auth/login.php');
-        exit();
-    }
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
+  header('Location: ../../auth/login.php');
+  exit();
+}
 
-    $sqlDonations = "SELECT donations.*, users.full_name FROM donations JOIN users ON donations.donor_id = users.user_id ORDER BY expiry_at DESC";
-    $stmtDonations = mysqli_prepare($dbConn, $sqlDonations);
-    mysqli_stmt_execute($stmtDonations);
-    $result = mysqli_stmt_get_result($stmtDonations);
+$sqlDonations = "SELECT donations.*, users.full_name FROM donations JOIN users ON donations.donor_id = users.user_id ORDER BY expiry_at DESC";
+$stmtDonations = mysqli_prepare($dbConn, $sqlDonations);
+mysqli_stmt_execute($stmtDonations);
+$result = mysqli_stmt_get_result($stmtDonations);
 ?>
 
 <!DOCTYPE html>
@@ -58,6 +58,7 @@
         <a href="trust-rules.php" class="dashboard-nav-item">Trust Rules</a>
         <a href="reports.php" class="dashboard-nav-item">Reports</a>
         <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
+        <a href="donation-analytics.php" class="dashboard-nav-item">Analytics</a>
       </nav>
     </div>
 
@@ -69,8 +70,7 @@
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
-        <span
-          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; ; border-radius: 50%;"></span>
+        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; ; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.php" class="profile-avatar">
@@ -114,25 +114,25 @@
             <div class="stats-icon">
               <img src="../../assets/images/people.png" alt="This is Total Users Icon.">
             </div>
-            <?php 
-              $sqlUsers = "SELECT COUNT(*) AS totalUsers FROM users";
-              $resultUsers = mysqli_query($dbConn, $sqlUsers);
-              $totalUsers = mysqli_fetch_assoc($resultUsers); 
+            <?php
+            $sqlUsers = "SELECT COUNT(*) AS totalUsers FROM users";
+            $resultUsers = mysqli_query($dbConn, $sqlUsers);
+            $totalUsers = mysqli_fetch_assoc($resultUsers);
             ?>
             <div class="stats-info">
               <p>Total Users</p>
               <h2><?php echo $totalUsers['totalUsers']; ?></h2>
             </div>
           </div>
-          
+
           <div class="stats-card">
             <div class="stats-icon">
               <img src="../../assets/images/charity.png" alt="This is Donations Icon.">
             </div>
             <?php
-              $sqlCountDonations = "SELECT COUNT(*) AS totalDonations FROM donations";
-              $resultDonations = mysqli_query($dbConn, $sqlCountDonations);
-              $totalDonations = mysqli_fetch_assoc($resultDonations);
+            $sqlCountDonations = "SELECT COUNT(*) AS totalDonations FROM donations";
+            $resultDonations = mysqli_query($dbConn, $sqlCountDonations);
+            $totalDonations = mysqli_fetch_assoc($resultDonations);
             ?>
             <div class="stats-info">
               <p>Donations</p>
@@ -145,9 +145,9 @@
               <img src="../../assets/images/check.png" alt="This is Successful Pickup Icon.">
             </div>
             <?php
-              $sqlSuccessPickup = "SELECT COUNT(*) AS totalSuccessPickup FROM donations WHERE status = 'completed'";
-              $resultSuccessPickup = mysqli_query($dbConn, $sqlSuccessPickup);
-              $totalSuccessPickup = mysqli_fetch_assoc($resultSuccessPickup);
+            $sqlSuccessPickup = "SELECT COUNT(*) AS totalSuccessPickup FROM donations WHERE status = 'completed'";
+            $resultSuccessPickup = mysqli_query($dbConn, $sqlSuccessPickup);
+            $totalSuccessPickup = mysqli_fetch_assoc($resultSuccessPickup);
             ?>
             <div class="stats-info">
               <p>Success Pickups</p>
@@ -160,11 +160,11 @@
               <img src="../../assets/images/vegetarian.png" alt="This is Food Saved Icon.">
             </div>
             <?php
-              $sqlFoodSaved = "SELECT SUM(quantity) AS totalFoodSaved FROM donations WHERE unit = 'kg' && status = 'completed'";
-              $resultFoodSaved = mysqli_query($dbConn, $sqlFoodSaved);
-              $totalFoodSaved = mysqli_fetch_assoc($resultFoodSaved);
+            $sqlFoodSaved = "SELECT SUM(quantity) AS totalFoodSaved FROM donations WHERE unit = 'kg' && status = 'completed'";
+            $resultFoodSaved = mysqli_query($dbConn, $sqlFoodSaved);
+            $totalFoodSaved = mysqli_fetch_assoc($resultFoodSaved);
 
-              $quantityDisplay = (int) round($totalFoodSaved['totalFoodSaved']);
+            $quantityDisplay = (int) round($totalFoodSaved['totalFoodSaved']);
             ?>
             <div class="stats-info">
               <p>Food Saved (kg)</p>
@@ -189,22 +189,24 @@
               <th>STATUS</th>
             </tr>
             <?php
-              while ($row = mysqli_fetch_assoc($result)) {
-            ?>
-            <tr>
-              <td>
-                <b><?php echo htmlspecialchars($row['food_name']); ?></b><br>
-                <?php echo htmlspecialchars($row['category']); ?>
-              </td>
-              <td><?php echo htmlspecialchars($row['full_name']); ?></td>
-              <td><?php echo htmlspecialchars($row['expiry_at']); ?></td>
-              <td><?php echo htmlspecialchars($row['quantity']); ?> <?php echo htmlspecialchars($row['unit']); ?></td>
-              <td><span class="status-badge <?php echo htmlspecialchars($row['status']); ?>"><?php echo ucfirst(htmlspecialchars($row['status'])); ?></span></td>
-            </tr>
-            <?php
-              }
+            while ($row = mysqli_fetch_assoc($result)) {
+              ?>
+              <tr>
+                <td>
+                  <b><?php echo htmlspecialchars($row['food_name']); ?></b><br>
+                  <?php echo htmlspecialchars($row['category']); ?>
+                </td>
+                <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+                <td><?php echo htmlspecialchars($row['expiry_at']); ?></td>
+                <td><?php echo htmlspecialchars($row['quantity']); ?>   <?php echo htmlspecialchars($row['unit']); ?></td>
+                <td><span
+                    class="status-badge <?php echo htmlspecialchars($row['status']); ?>"><?php echo ucfirst(htmlspecialchars($row['status'])); ?></span>
+                </td>
+              </tr>
+              <?php
+            }
 
-              mysqli_stmt_close($stmtDonations);
+            mysqli_stmt_close($stmtDonations);
             ?>
           </table>
         </section>

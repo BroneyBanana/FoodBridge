@@ -13,58 +13,58 @@ $initials = strtoupper(substr($userName, 0, 2));
 
 // Handle AJAX POST requests for CRUD
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
-    
-    if (isset($input['action']) && isset($input['report_id'])) {
-        $reportId = (int)$input['report_id'];
-        
-        if ($input['action'] === 'resolve') {
-            $deduction = (int)($input['deduction'] ?? 0);
-            $rawNote = $input['note'] ?? '';
-            $note = $deduction > 0 ? $rawNote . " (-" . $deduction . ")" : $rawNote;
-            
-            // 1. Update report status and note
-            $q1 = "UPDATE reports SET status = 'resolved', admin_message = ? WHERE report_id = ?";
-            $s1 = mysqli_prepare($dbConn, $q1);
-            mysqli_stmt_bind_param($s1, "si", $note, $reportId);
-            mysqli_stmt_execute($s1);
-            
-            // 2. If there's a deduction, get the user being reported and reduce their score
-            if ($deduction > 0) {
-                // Find who the report is against (the donor)
-                $q2 = "SELECT d.donor_id FROM reports r JOIN bookings b ON r.booking_id = b.booking_id JOIN donations d ON b.donation_id = d.donation_id WHERE r.report_id = ?";
-                $s2 = mysqli_prepare($dbConn, $q2);
-                mysqli_stmt_bind_param($s2, "i", $reportId);
-                mysqli_stmt_execute($s2);
-                $res2 = mysqli_stmt_get_result($s2);
-                if ($row = mysqli_fetch_assoc($res2)) {
-                    $donorId = $row['donor_id'];
-                    // Update trust score
-                    $q3 = "UPDATE users SET trust_score = GREATEST(0, trust_score - ?) WHERE user_id = ?";
-                    $s3 = mysqli_prepare($dbConn, $q3);
-                    mysqli_stmt_bind_param($s3, "ii", $deduction, $donorId);
-                    mysqli_stmt_execute($s3);
-                    
-                    // Insert log
-                    $q4 = "INSERT INTO trust_score_log (user_id, description, points_change) VALUES (?, ?, ?)";
-                    $s4 = mysqli_prepare($dbConn, $q4);
-                    $desc = "Report resolved: " . $note;
-                    $negDeduction = -$deduction;
-                    mysqli_stmt_bind_param($s4, "isi", $donorId, $desc, $negDeduction);
-                    mysqli_stmt_execute($s4);
-                }
-            }
-            echo json_encode(['success' => true]);
-            exit;
-        } elseif ($input['action'] === 'dismiss') {
-            $q1 = "UPDATE reports SET status = 'dismissed' WHERE report_id = ?";
-            $s1 = mysqli_prepare($dbConn, $q1);
-            mysqli_stmt_bind_param($s1, "i", $reportId);
-            mysqli_stmt_execute($s1);
-            echo json_encode(['success' => true]);
-            exit;
+  $input = json_decode(file_get_contents('php://input'), true);
+
+  if (isset($input['action']) && isset($input['report_id'])) {
+    $reportId = (int) $input['report_id'];
+
+    if ($input['action'] === 'resolve') {
+      $deduction = (int) ($input['deduction'] ?? 0);
+      $rawNote = $input['note'] ?? '';
+      $note = $deduction > 0 ? $rawNote . " (-" . $deduction . ")" : $rawNote;
+
+      // 1. Update report status and note
+      $q1 = "UPDATE reports SET status = 'resolved', admin_message = ? WHERE report_id = ?";
+      $s1 = mysqli_prepare($dbConn, $q1);
+      mysqli_stmt_bind_param($s1, "si", $note, $reportId);
+      mysqli_stmt_execute($s1);
+
+      // 2. If there's a deduction, get the user being reported and reduce their score
+      if ($deduction > 0) {
+        // Find who the report is against (the donor)
+        $q2 = "SELECT d.donor_id FROM reports r JOIN bookings b ON r.booking_id = b.booking_id JOIN donations d ON b.donation_id = d.donation_id WHERE r.report_id = ?";
+        $s2 = mysqli_prepare($dbConn, $q2);
+        mysqli_stmt_bind_param($s2, "i", $reportId);
+        mysqli_stmt_execute($s2);
+        $res2 = mysqli_stmt_get_result($s2);
+        if ($row = mysqli_fetch_assoc($res2)) {
+          $donorId = $row['donor_id'];
+          // Update trust score
+          $q3 = "UPDATE users SET trust_score = GREATEST(0, trust_score - ?) WHERE user_id = ?";
+          $s3 = mysqli_prepare($dbConn, $q3);
+          mysqli_stmt_bind_param($s3, "ii", $deduction, $donorId);
+          mysqli_stmt_execute($s3);
+
+          // Insert log
+          $q4 = "INSERT INTO trust_score_log (user_id, description, points_change) VALUES (?, ?, ?)";
+          $s4 = mysqli_prepare($dbConn, $q4);
+          $desc = "Report resolved: " . $note;
+          $negDeduction = -$deduction;
+          mysqli_stmt_bind_param($s4, "isi", $donorId, $desc, $negDeduction);
+          mysqli_stmt_execute($s4);
         }
+      }
+      echo json_encode(['success' => true]);
+      exit;
+    } elseif ($input['action'] === 'dismiss') {
+      $q1 = "UPDATE reports SET status = 'dismissed' WHERE report_id = ?";
+      $s1 = mysqli_prepare($dbConn, $q1);
+      mysqli_stmt_bind_param($s1, "i", $reportId);
+      mysqli_stmt_execute($s1);
+      echo json_encode(['success' => true]);
+      exit;
     }
+  }
 }
 
 $query = "
@@ -88,29 +88,29 @@ $query = "
 $result = mysqli_query($dbConn, $query);
 $dbReports = [];
 if ($result) {
-    $dbReports = mysqli_fetch_all($result, MYSQLI_ASSOC);
+  $dbReports = mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 
 $reportsJsArray = [];
 foreach ($dbReports as $row) {
-    // Simple time formatting
-    $time = date('d M Y, H:i', strtotime($row['created_at']));
-    $issueType = ucfirst(str_replace('_', ' ', $row['issue_type']));
-    
-    $reportsJsArray[] = [
-        'id' => (int)$row['report_id'],
-        'from' => $row['receiver_name'],
-        'fromType' => 'receiver',
-        'against' => $row['donor_name'],
-        'againstType' => 'donor',
-        'issue' => $issueType,
-        'time' => $time,
-        'body' => $row['comment'] ? $row['comment'] : 'No comment provided.',
-        'status' => $row['status'] == 'active' ? 'pending' : $row['status'],
-        'deduction' => null,
-        'note' => $row['admin_message'] ? $row['admin_message'] : '',
-        'evidence' => $row['evidence_image_url']
-    ];
+  // Simple time formatting
+  $time = date('d M Y, H:i', strtotime($row['created_at']));
+  $issueType = ucfirst(str_replace('_', ' ', $row['issue_type']));
+
+  $reportsJsArray[] = [
+    'id' => (int) $row['report_id'],
+    'from' => $row['receiver_name'],
+    'fromType' => 'receiver',
+    'against' => $row['donor_name'],
+    'againstType' => 'donor',
+    'issue' => $issueType,
+    'time' => $time,
+    'body' => $row['comment'] ? $row['comment'] : 'No comment provided.',
+    'status' => $row['status'] == 'active' ? 'pending' : $row['status'],
+    'deduction' => null,
+    'note' => $row['admin_message'] ? $row['admin_message'] : '',
+    'evidence' => $row['evidence_image_url']
+  ];
 }
 $reportsJson = json_encode($reportsJsArray);
 ?>
@@ -159,6 +159,7 @@ $reportsJson = json_encode($reportsJsArray);
         <a href="trust-rules.php" class="dashboard-nav-item">Trust Rules</a>
         <a href="reports.php" class="dashboard-nav-item active">Reports</a>
         <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
+        <a href="donation-analytics.php" class="dashboard-nav-item">Analytics</a>
       </nav>
     </div>
 
@@ -170,8 +171,7 @@ $reportsJson = json_encode($reportsJsArray);
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
-        <span
-          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
+        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.php" class="profile-avatar">
