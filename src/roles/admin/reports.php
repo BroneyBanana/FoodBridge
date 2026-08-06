@@ -2,6 +2,11 @@
 require_once '../../../database/db.php';
 session_start();
 
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
+  header('Location: ../../auth/login.php');
+  exit();
+}
+
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));

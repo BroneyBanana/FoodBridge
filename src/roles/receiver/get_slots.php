@@ -3,12 +3,10 @@
 session_start();
 require_once '../../../database/db.php';
 
-// check receiver is logged in — this is an AJAX endpoint, still needs the same guard
-// if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'receiver') {
-//     http_response_code(403);
-//     echo json_encode(['error' => 'Not authorized']);
-//     exit();
-// }
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'receiver') {
+    header('Location: ../../auth/login.php');
+    exit();
+}
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
     http_response_code(403);

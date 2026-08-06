@@ -1,10 +1,10 @@
 <?php
   session_start();
   
-  if(!isset($_SESSION['user'])){
-    header("Location: ../../auth/login.php");
+  if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'donor') {
+    header('Location: ../../auth/login.php');
     exit();
-    }
+  }
     
   $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
   $userName = $_SESSION['user']['name'] ?? 'User';

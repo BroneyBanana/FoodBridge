@@ -5,9 +5,9 @@ session_start();
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));
-if (($_SESSION['user']['role'] ?? '') !== 'admin') {
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
   header('Location: ../../auth/login.php');
-  exit;
+  exit();
 }
 
 require_once __DIR__ . '/../../../database/db.php';

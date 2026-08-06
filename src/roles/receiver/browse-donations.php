@@ -2,12 +2,20 @@
 session_start();
 require_once '../../../database/db.php';
 
-// check if the user aka receiver is logged in
-// if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'receiver') {
-//     header('Location: ../../auth/login.php');
-//     exit();
-// }
-// $receiver_id = $_SESSION['user_id'];
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'receiver') {
+    header('Location: ../../auth/login.php');
+    exit();
+}
+
+$receiver_id = $_SESSION['user']['id'];
+
+// --- NEW: Get receiver's coordinates for distance calculation ---
+$sql_receiver = "SELECT latitude, longitude FROM users WHERE user_id = " . intval($receiver_id);
+$result_receiver = mysqli_query($dbConn, $sql_receiver);
+$receiver_coords = mysqli_fetch_assoc($result_receiver);
+$receiver_lat = $receiver_coords['latitude'] ?? 0;
+$receiver_lng = $receiver_coords['longitude'] ?? 0;
+// ----------------------------------------------------------------
 
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'receiver') {
@@ -205,8 +213,11 @@ while ($row = mysqli_fetch_assoc($result_donations)) {
                     <div class="donationDetails">
                       <div class="donationHeader">
                         <h3><?php echo htmlspecialchars($donation['food_name']); ?></h3>
-                        <span class="donationDistance">📍 1.2km</span>
-                        <!-- YEOH JEH HERNE HERE AH THE DISTANCE -->
+                        <span class="donationDistance async-distance" 
+                              data-dest-lat="<?php echo htmlspecialchars($donation['latitude']); ?>" 
+                              data-dest-lng="<?php echo htmlspecialchars($donation['longitude']); ?>">
+                          📍 Calculating...
+                        </span>
                       </div>
                       <p class="donationDonor">
                         By <?php echo htmlspecialchars($donation['donor_name']); ?> •
@@ -267,6 +278,14 @@ while ($row = mysqli_fetch_assoc($result_donations)) {
   </script>
 
   <!-- Page Specific Logic -->
+   <script>
+    window.APP_CONFIG = {
+      donations: <?php echo json_encode($donations, JSON_NUMERIC_CHECK); ?>,
+      // Add these two lines to pass the coordinates to your JS file:
+      receiverLat: <?php echo json_encode($receiver_lat); ?>,
+      receiverLng: <?php echo json_encode($receiver_lng); ?>
+    };
+  </script>
   <script src="../../assets/js/header.js"></script>
   <script src="browse-donations.js"></script>
 </body>

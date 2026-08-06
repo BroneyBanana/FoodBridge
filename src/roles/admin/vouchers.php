@@ -4,6 +4,12 @@ $auth_path = __DIR__ . '/../../../auth.php';
 if (file_exists($auth_path)) {
   include_once($auth_path);
 }
+
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
+  header('Location: ../../auth/login.php');
+  exit();
+}
+
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));

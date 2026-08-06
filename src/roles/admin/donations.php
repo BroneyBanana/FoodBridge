@@ -6,8 +6,8 @@
 
     require_once "../../../database/db.php";
 
-    if(!isset($_SESSION['user'])) {
-        header("Location: ../../auth/login.php");
+    if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
+        header('Location: ../../auth/login.php');
         exit();
     }
 

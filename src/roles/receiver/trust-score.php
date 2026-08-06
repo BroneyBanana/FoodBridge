@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 session_start();
-if (($_SESSION['user']['role'] ?? '') !== 'receiver') {
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'receiver') {
     header('Location: ../../auth/login.php');
-    exit;
+    exit();
 }
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';

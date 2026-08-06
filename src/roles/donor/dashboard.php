@@ -5,9 +5,9 @@ $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));
 
-if (!isset($_SESSION['user'])) {
-  header("Location: ../../auth/login.php");
-  exit;
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'donor') {
+    header('Location: ../../auth/login.php');
+    exit();
 }
 $userId = $_SESSION['user']['id'];
 

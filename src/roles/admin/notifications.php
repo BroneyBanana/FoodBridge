@@ -1,9 +1,9 @@
 <?php
 require_once '../../../database/db.php'; 
 session_start();
-if (!isset($_SESSION['user']['id'])) {
-  header('Location: ../../auth/login.php');
-  exit;
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
+    header('Location: ../../auth/login.php');
+    exit();
 }
 $userId = (int) $_SESSION['user']['id'];
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';

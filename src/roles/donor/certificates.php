@@ -3,8 +3,8 @@ session_start();
 require_once __DIR__ . "/../../../database/db.php";
 
 // Correct way based on your login system
-if (!isset($_SESSION['user']['id'])) {
-    header("Location: ../../auth/login.php");
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'donor') {
+    header('Location: ../../auth/login.php');
     exit();
 }
 
