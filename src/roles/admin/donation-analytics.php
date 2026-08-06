@@ -186,11 +186,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'donations') {
         </div>
         <div class="dashboard-actions">
             <a class="action-btn-circle hide-mobile" title="Notifications" href="notifications.php">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                </svg>
+                <img src="../../assets/icons/nav-bell.svg" alt="Notifications" width="20" height="20" />
                 <span
                     style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
             </a>
@@ -203,20 +199,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'donations') {
                 <?php endif; ?>
             </a>
             <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <polyline points="16 17 21 12 16 7" />
-                    <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
+                <img src="../../assets/icons/nav-logout.svg" alt="Log Out" width="20" height="20" />
             </a>
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
+                <img src="../../assets/icons/nav-menu.svg" alt="Menu" width="24" height="24" />
             </button>
         </div>
     </header>
@@ -236,12 +222,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'donations') {
                     <h1>Donation Analytics</h1>
                     <a href="?export=donations" class="btn btn-accent"
                         style="display:inline-flex;align-items:center;gap:0.5rem;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
+                        <img src="../../assets/icons/icon-download.svg" alt="Download" width="18" height="18" />
                         Export Report
                     </a>
                 </div>
@@ -295,13 +276,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'donations') {
                         <div class="card-header-with-icon">
                             <span class="summary-label">Total Donations</span>
                             <div class="icon-circle bg-lime-light">
-                                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-forest)"
-                                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                    <line x1="3" y1="10" x2="21" y2="10" />
-                                </svg>
+                                <img src="../../assets/icons/icon-donations.svg" alt="Donations" width="20" height="20" />
                             </div>
                         </div>
                         <strong><?= $totalDonations ?></strong>
@@ -312,13 +287,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'donations') {
                         <div class="card-header-with-icon">
                             <span class="summary-label">Average Quantity</span>
                             <div class="icon-circle bg-terracotta-light">
-                                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-terracotta)"
-                                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 21h18" />
-                                    <path d="M3 10h18" />
-                                    <path d="M5 10V5a2 2 0 0 1 4 0v5" />
-                                    <path d="M15 10V7a2 2 0 0 1 4 0v3" />
-                                </svg>
+                                <img src="../../assets/icons/icon-qty.svg" alt="Quantity" width="20" height="20" />
                             </div>
                         </div>
                         <strong><?= $avgQty ?></strong>
@@ -329,13 +298,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'donations') {
                         <div class="card-header-with-icon">
                             <span class="summary-label">Food Rescued</span>
                             <div class="icon-circle bg-forest-light">
-                                <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--color-forest)"
-                                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M7 7h10" />
-                                    <path d="M7 12h10" />
-                                    <path d="M7 17h6" />
-                                    <path d="M5 7c0 8 2.5 10 7 10s7-2 7-10" />
-                                </svg>
+                                <img src="../../assets/icons/icon-rescued.svg" alt="Rescued" width="20" height="20" />
                             </div>
                         </div>
                         <strong><?= $foodRescued ?> items</strong>

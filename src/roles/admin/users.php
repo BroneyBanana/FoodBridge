@@ -148,11 +148,7 @@ if ($result) {
     <div class="dashboard-actions">
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
         href="notifications.php">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-        </svg>
+        <img src="../../assets/icons/nav-bell.svg" alt="Notifications" width="20" height="20" />
         <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
@@ -166,21 +162,11 @@ if ($result) {
       </a>
 
       <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
+        <img src="../../assets/icons/nav-logout.svg" alt="Log Out" width="20" height="20" />
       </a>
 
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+        <img src="../../assets/icons/nav-menu.svg" alt="Menu" width="24" height="24" />
       </button>
     </div>
   </header>
@@ -201,11 +187,7 @@ if ($result) {
               <button class="filter-btn">Receiver</button>
             </div>
             <div class="search-box">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="search-icon">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
+              <img src="../../assets/icons/icon-search.svg" alt="Search" width="18" height="18" class="search-icon" />
               <input type="text" placeholder="Search users...">
             </div>
           </div>

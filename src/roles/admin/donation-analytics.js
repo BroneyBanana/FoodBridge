@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ------------------------------------------------------------------
-    // 3. Heatmap (Leaflet)
+    // 3. Heatmap (Leaflet) – Snapchat Style
     // ------------------------------------------------------------------
     let mapInitialized = false;
     let map;
@@ -72,25 +72,40 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Standard OpenStreetMap tiles (same theme as browse-donations.js)
         map = L.map('heatmapContainer').setView([3.0554, 101.6982], 10);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
         if (typeof heatmapDonations !== 'undefined' && heatmapDonations.length) {
-            const points = heatmapDonations.map(d => [d.latitude, d.longitude, 1]);
+            // Build points: [lat, lng, intensity] – intensity based on quantity (capped at 10)
+            const points = heatmapDonations.map(d => {
+                const intensity = Math.min(parseFloat(d.quantity) || 1) * 2;
+                return [d.latitude, d.longitude, intensity];
+            });
+
+            // Snapchat‑inspired heatmap settings: vibrant glow, smooth blending
             L.heatLayer(points, {
-                radius: 35,
-                blur: 20,
-                maxZoom: 14,
-                gradient: { 0.4: 'green', 0.7: 'yellow', 1.0: 'red' }
+                radius: 70,          // much wider so nearby points fuse into one blob
+                blur: 55,            // heavy blur softens edges into a smooth gradient
+                maxZoom: 18,
+                max: 1.0,            // lower "max" makes even 1-2 points saturate to red/green
+                minOpacity: 0.35,    // keeps faint outer glow visible instead of fading to nothing
+                gradient: {
+                    0.25: '#22c55e',  // green
+                    0.45: '#facc15',  // yellow
+                    0.65: '#f97316',  // orange
+                    0.85: '#ef4444'   // red (hot core)
+                }
             }).addTo(map);
 
             heatmapDonations.forEach(d => {
                 const marker = L.circleMarker([d.latitude, d.longitude], {
-                    radius: 5,
-                    color: '#1a5d38',
-                    fillOpacity: 0.7
+                    radius: 3,
+                    color: '#ffffff',
+                    fillOpacity: 0.2,
+                    weight: 0.5
                 }).addTo(map);
                 marker.bindPopup(`
                     <b>${d.food_name}</b><br>
@@ -100,8 +115,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     ⏳ ${d.next_slot ? new Date(d.next_slot).toLocaleString() : 'No upcoming slot'}
                 `);
             });
+
         }
 
+        // Try to centre map on user's location
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 pos => map.setView([pos.coords.latitude, pos.coords.longitude], 12),
