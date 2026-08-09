@@ -90,7 +90,7 @@
       echo '<div class = "success" id  = "success">
               <span class = "successIcon"><img src="../../assets/images/success.png" alt="Success Icon"></span>
               <span class = "successMessage">Food donation added successfully!</span>
-              <button class = "closeBtn" id = "closeBtn">&times;</button>      
+              <button class = "closeBtn" id = "closeBtn" type="button" aria-label="Close success notification" onclick="this.closest(\'#success\').remove()">&times;</button>      
             </div>';
       unset($_SESSION['success']);
     }
