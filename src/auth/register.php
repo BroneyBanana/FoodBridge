@@ -314,15 +314,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       $insertStmt = mysqli_prepare(
         $dbConn,
-        'INSERT INTO users (role, full_name, email, password_hash, location, status, profile_url)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)'
+        'INSERT INTO users (role, full_name, email, password_hash, location, status, profile_url, latitude, longitude)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
       );
 
       if (!$insertStmt) {
         respondJson(['success' => false, 'message' => 'Unable to create account.'], 500);
       }
 
-      mysqli_stmt_bind_param($insertStmt, 'sssssss', $role, $fullName, $email, $passwordHash, $location, $status, $defaultProfilePic);
+      // Changed binding types to 'sssssssdd' (7 strings, 2 doubles)
+      mysqli_stmt_bind_param($insertStmt, 'sssssssdd', $role, $fullName, $email, $passwordHash, $location, $status, $defaultProfilePic, $latitude, $longitude);
       $created = mysqli_stmt_execute($insertStmt);
       $userId = mysqli_insert_id($dbConn);
       mysqli_stmt_close($insertStmt);
@@ -398,15 +399,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $defaultProfilePic = 'assets/images/profile.png';
     $insertStmt = mysqli_prepare(
       $dbConn,
-      'INSERT INTO users (role, full_name, email, password_hash, location, status, profile_url)
-             VALUES (?, ?, ?, ?, ?, ?, ?)'
+      'INSERT INTO users (role, full_name, email, password_hash, location, status, profile_url, latitude, longitude)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
 
     if (!$insertStmt) {
       finishRegister(['success' => false, 'message' => 'Unable to create account.'], 500);
     }
 
-    mysqli_stmt_bind_param($insertStmt, 'sssssss', $role, $fullName, $email, $passwordHash, $location, $status);
+    // Changed binding types to 'sssssssdd' and added the missing $defaultProfilePic, $latitude, and $longitude
+    mysqli_stmt_bind_param($insertStmt, 'sssssssdd', $role, $fullName, $email, $passwordHash, $location, $status, $defaultProfilePic, $latitude, $longitude);
     $created = mysqli_stmt_execute($insertStmt);
     $userId = mysqli_insert_id($dbConn);
     mysqli_stmt_close($insertStmt);

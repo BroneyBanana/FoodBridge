@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $action = $_POST['action'] ?? '';
 
   // 1. Update profile (name, location, password)
+// 1. Update profile (name, location, password, lat, long)
   if ($action === 'update_profile') {
     $name = trim($_POST['name'] ?? '');
     $location = trim($_POST['location'] ?? '');
@@ -39,6 +40,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       echo json_encode(['success' => false, 'message' => 'Name and location cannot be empty.']);
       exit;
     }
+
+    // --- Start TomTom Geocoding ---
+    // Make sure we load the .env if it isn't loaded globally in db.php
+    if (!isset($_ENV['TOMTOM_API_KEY']) && file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
+        require_once __DIR__ . '/../../../vendor/autoload.php';
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
+        $dotenv->safeLoad();
+    }
+
+    $latitude = 3.05540000; // Default fallback
+    $longitude = 101.69820000; // Default fallback
+    $tomtomKey = $_ENV['TOMTOM_API_KEY'] ?? '';
+
+    if (!empty($location) && !empty($tomtomKey)) {
+      $encodedLocation = urlencode($location);
+      $apiUrl = "https://api.tomtom.com/search/2/geocode/{$encodedLocation}.json?key={$tomtomKey}&limit=1";
+      $response = @file_get_contents($apiUrl);
+
+      if ($response !== false) {
+        $data = json_decode($response, true);
+        if (!empty($data['results']) && isset($data['results'][0]['position'])) {
+          $latitude = (float) $data['results'][0]['position']['lat'];
+          $longitude = (float) $data['results'][0]['position']['lon'];
+        }
+      }
+    }
+    // --- End TomTom Geocoding ---
 
     // Fetch current password hash
     $stmt = mysqli_prepare($dbConn, "SELECT password_hash FROM users WHERE user_id = ?");
@@ -57,12 +85,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $updatePassword = true;
       $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
     }
+
+    // Update query with latitude and longitude included
     if ($updatePassword) {
-      $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ?, location = ?, password_hash = ? WHERE user_id = ?");
-      mysqli_stmt_bind_param($stmt, "sssi", $name, $location, $newHash, $userId);
+      $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ?, location = ?, password_hash = ?, latitude = ?, longitude = ? WHERE user_id = ?");
+      // Binding parameters: string, string, string, double, double, integer -> 'sssddi'
+      mysqli_stmt_bind_param($stmt, "sssddi", $name, $location, $newHash, $latitude, $longitude, $userId);
     } else {
-      $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ?, location = ? WHERE user_id = ?");
-      mysqli_stmt_bind_param($stmt, "ssi", $name, $location, $userId);
+      $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ?, location = ?, latitude = ?, longitude = ? WHERE user_id = ?");
+      // Binding parameters: string, string, double, double, integer -> 'ssddi'
+      mysqli_stmt_bind_param($stmt, "ssddi", $name, $location, $latitude, $longitude, $userId);
     }
 
     if (mysqli_stmt_execute($stmt)) {
