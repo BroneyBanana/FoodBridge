@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . "/../../../database/db.php";
 session_start();
+
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
+    header('Location: ../../auth/login.php');
+    exit();
+}
+
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));
@@ -12,9 +18,9 @@ $isAjax = (isset($_POST['ajax']) && $_POST['ajax'] == '1') || (isset($_GET['ajax
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action']) && $_GET['action'] === 'calculate_metrics') {
     header('Content-Type: application/json');
 
-    $donor_id     = filter_input(INPUT_GET, 'donor_id', FILTER_VALIDATE_INT);
+    $donor_id = filter_input(INPUT_GET, 'donor_id', FILTER_VALIDATE_INT);
     $period_start = !empty($_GET['period_start']) ? trim($_GET['period_start']) : null;
-    $period_end   = !empty($_GET['period_end'])   ? trim($_GET['period_end'])   : null;
+    $period_end = !empty($_GET['period_end']) ? trim($_GET['period_end']) : null;
 
     if (!$donor_id || !$period_start || !$period_end) {
         echo json_encode([
@@ -43,11 +49,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action']) && $_GET['act
 
     $stmt->bind_param("iss", $donor_id, $period_start, $period_end);
     $stmt->execute();
-    $res  = $stmt->get_result();
+    $res = $stmt->get_result();
     $data = $res->fetch_assoc();
     $stmt->close();
 
-    $totalDonated = (float)($data['total_donated'] ?? 0);
+    $totalDonated = (float) ($data['total_donated'] ?? 0);
     $count = round($totalDonated);
 
     // New grade rules based on quantity
@@ -62,8 +68,8 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action']) && $_GET['act
     }
 
     echo json_encode([
-        "success"                    => true,
-        "food_donated_count"         => $count,
+        "success" => true,
+        "food_donated_count" => $count,
         "receiver_satisfaction_rate" => $satisfaction
     ]);
     exit;
@@ -75,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action']) && $_POST['
     $issued_by = !empty($_POST['issued_by']) ? trim(htmlspecialchars($_POST['issued_by'], ENT_QUOTES, 'UTF-8')) : 'FoodBridge Admin';
 
     $period_start = !empty($_POST['period_start']) ? $_POST['period_start'] . " 00:00:00" : null;
-    $period_end   = !empty($_POST['period_end'])   ? $_POST['period_end'] . " 23:59:59" : null;
+    $period_end = !empty($_POST['period_end']) ? $_POST['period_end'] . " 23:59:59" : null;
 
     $food_donated_count = filter_input(INPUT_POST, 'food_donated_count', FILTER_VALIDATE_INT) ?: 0;
     $receiver_satisfaction_rate = $_POST['receiver_satisfaction_rate'] ?? 'Good';
@@ -195,17 +201,24 @@ $certificatesQuery = "
 
 $certificatesResult = $dbConn->query($certificatesQuery);
 
-function satisfactionToRating($rate) {
+function satisfactionToRating($rate)
+{
     switch ($rate) {
-        case 'Excellent': return 5.0;
-        case 'Good':      return 4.0;
-        case 'Average':   return 3.0;
-        case 'Poor':      return 2.0;
-        default:          return 0.0;
+        case 'Excellent':
+            return 5.0;
+        case 'Good':
+            return 4.0;
+        case 'Average':
+            return 3.0;
+        case 'Poor':
+            return 2.0;
+        default:
+            return 0.0;
     }
 }
 
-function renderStars($rating) {
+function renderStars($rating)
+{
     $full = round($rating);
     $html = '';
     for ($i = 1; $i <= 5; $i++) {
@@ -226,7 +239,9 @@ function renderStars($rating) {
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400..800&display=swap"
+        rel="stylesheet">
 
     <!-- Global Styles -->
     <link rel="stylesheet" href="../../assets/css/global.css">
@@ -254,16 +269,20 @@ function renderStars($rating) {
                 <a href="trust-rules.php" class="dashboard-nav-item">Trust Rules</a>
                 <a href="reports.php" class="dashboard-nav-item">Reports</a>
                 <a href="certificates.php" class="dashboard-nav-item active">Certificates</a>
+                <a href="donation-analytics.php" class="dashboard-nav-item">Analytics</a>
             </nav>
         </div>
 
         <div class="dashboard-actions">
-            <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;" href="notifications.php">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
+                href="notifications.php">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
                     <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
                 </svg>
-                <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; ; border-radius: 50%;"></span>
+                <span
+                    style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; ; border-radius: 50%;"></span>
             </a>
 
             <a href="profile.php" class="profile-avatar">
@@ -276,7 +295,8 @@ function renderStars($rating) {
             </a>
 
             <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                     <polyline points="16 17 21 12 16 7"></polyline>
                     <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -284,7 +304,8 @@ function renderStars($rating) {
             </a>
 
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -307,10 +328,12 @@ function renderStars($rating) {
                 <div class="hero-header-flex">
                     <div>
                         <h1 class="page-heading">Certificates of Impact</h1>
-                        <p class="page-subheading">Manage, create, and revoke corporate social responsibility (CSR) certificates for donors.</p>
+                        <p class="page-subheading">Manage, create, and revoke corporate social responsibility (CSR)
+                            certificates for donors.</p>
                     </div>
                     <button class="btn-create-trigger" id="openModalBtn" type="button">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
@@ -326,12 +349,13 @@ function renderStars($rating) {
                         $rating = satisfactionToRating($cert['receiver_satisfaction_rate']);
                         $startDate = date("M Y", strtotime($cert['period_start']));
                         $endDate = date("M Y", strtotime($cert['period_end']));
-                    ?>
-                        <article class="certificate-card" data-cert-id="<?php echo (int)$cert['certificate_id']; ?>">
+                        ?>
+                        <article class="certificate-card" data-cert-id="<?php echo (int) $cert['certificate_id']; ?>">
                             <div class="cert-badge-wrapper" aria-hidden="true">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <circle cx="12" cy="8" r="6"/>
-                                    <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <circle cx="12" cy="8" r="6" />
+                                    <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
                                 </svg>
                             </div>
 
@@ -341,11 +365,12 @@ function renderStars($rating) {
                             <div class="cert-metrics-row">
                                 <div class="metric-group">
                                     <span class="metric-label">Period</span>
-                                    <span class="metric-value"><?php echo htmlspecialchars($startDate . " - " . $endDate); ?></span>
+                                    <span
+                                        class="metric-value"><?php echo htmlspecialchars($startDate . " - " . $endDate); ?></span>
                                 </div>
                                 <div class="metric-group text-right">
                                     <span class="metric-label">Donations</span>
-                                    <span class="metric-value highlight"><?php echo (int)$cert['food_donated_count']; ?></span>
+                                    <span class="metric-value highlight"><?php echo (int) $cert['food_donated_count']; ?></span>
                                 </div>
                             </div>
 
@@ -357,7 +382,9 @@ function renderStars($rating) {
                                 <div class="score-text"><?php echo number_format($rating, 1); ?> / 5.0</div>
                             </div>
 
-                            <button class="btn-revoke" type="button" onclick="revokeCertificate(<?php echo (int)$cert['certificate_id']; ?>)">Revoke Certificate</button>
+                            <button class="btn-revoke" type="button"
+                                onclick="revokeCertificate(<?php echo (int) $cert['certificate_id']; ?>)">Revoke
+                                Certificate</button>
                         </article>
                     <?php endwhile; ?>
                 <?php else: ?>
@@ -395,7 +422,8 @@ function renderStars($rating) {
 
                 <div class="form-group">
                     <label for="certTitle">Certificate Title</label>
-                    <input type="text" id="certTitle" name="certificate_name" placeholder="e.g., Food Hero Q1 2026" required />
+                    <input type="text" id="certTitle" name="certificate_name" placeholder="e.g., Food Hero Q1 2026"
+                        required />
                 </div>
 
                 <div class="form-group">

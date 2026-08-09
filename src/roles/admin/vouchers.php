@@ -4,6 +4,12 @@ $auth_path = __DIR__ . '/../../../auth.php';
 if (file_exists($auth_path)) {
   include_once($auth_path);
 }
+
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
+  header('Location: ../../auth/login.php');
+  exit();
+}
+
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));
@@ -49,6 +55,7 @@ $initials = strtoupper(substr($userName, 0, 2));
         <a href="trust-rules.php" class="dashboard-nav-item">Trust Rules</a>
         <a href="reports.php" class="dashboard-nav-item">Reports</a>
         <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
+        <a href="donation-analytics.php" class="dashboard-nav-item">Analytics</a>
       </nav>
     </div>
 

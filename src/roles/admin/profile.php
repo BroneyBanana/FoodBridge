@@ -4,132 +4,135 @@ require_once '../../../database/db.php';
 
 // --- Authentication & Authorization ---
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    header('Location: ../../auth/login.php');
-    exit;
+  header('Location: ../../auth/login.php');
+  exit;
 }
 
 $userId = $_SESSION['user']['id'];
 
 // --- Helper: compute initials ---
-function getInitials($fullName) {
-    $parts = array_filter(explode(' ', trim($fullName)));
-    $initials = '';
-    if (count($parts) >= 1) $initials .= strtoupper(substr(array_shift($parts), 0, 1));
-    if (count($parts) >= 1) $initials .= strtoupper(substr(array_shift($parts), 0, 1));
-    return $initials ?: 'AD';
+function getInitials($fullName)
+{
+  $parts = array_filter(explode(' ', trim($fullName)));
+  $initials = '';
+  if (count($parts) >= 1)
+    $initials .= strtoupper(substr(array_shift($parts), 0, 1));
+  if (count($parts) >= 1)
+    $initials .= strtoupper(substr(array_shift($parts), 0, 1));
+  return $initials ?: 'AD';
 }
 
 // --- Handle POST AJAX requests ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
+  $action = $_POST['action'] ?? '';
 
-    // 1. Update profile (name, password) – no location for admin
-    if ($action === 'update_profile') {
-        $name = trim($_POST['name'] ?? '');
-        $currentPassword = $_POST['currentPassword'] ?? '';
-        $newPassword = $_POST['newPassword'] ?? '';
+  // 1. Update profile (name, password) – no location for admin
+  if ($action === 'update_profile') {
+    $name = trim($_POST['name'] ?? '');
+    $currentPassword = $_POST['currentPassword'] ?? '';
+    $newPassword = $_POST['newPassword'] ?? '';
 
-        if (empty($name)) {
-            echo json_encode(['success' => false, 'message' => 'Name cannot be empty.']);
-            exit;
-        }
-
-        // Fetch current password hash
-        $stmt = mysqli_prepare($dbConn, "SELECT password_hash FROM users WHERE user_id = ?");
-        mysqli_stmt_bind_param($stmt, "i", $userId);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        $dbUser = mysqli_fetch_assoc($result);
-        mysqli_stmt_close($stmt);
-
-        $updatePassword = false;
-        if (!empty($newPassword)) {
-            if (empty($currentPassword) || !password_verify($currentPassword, $dbUser['password_hash'])) {
-                echo json_encode(['success' => false, 'message' => 'Incorrect current password.']);
-                exit;
-            }
-            $updatePassword = true;
-            $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
-        }
-
-        if ($updatePassword) {
-            $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ?, password_hash = ? WHERE user_id = ?");
-            mysqli_stmt_bind_param($stmt, "ssi", $name, $newHash, $userId);
-        } else {
-            $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ? WHERE user_id = ?");
-            mysqli_stmt_bind_param($stmt, "si", $name, $userId);
-        }
-
-        if (mysqli_stmt_execute($stmt)) {
-            $_SESSION['user']['name'] = $name;
-            echo json_encode(['success' => true, 'message' => 'Profile updated successfully!', 'name' => $name]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to update profile.']);
-        }
-        mysqli_stmt_close($stmt);
-        exit;
+    if (empty($name)) {
+      echo json_encode(['success' => false, 'message' => 'Name cannot be empty.']);
+      exit;
     }
 
-    // 2. Upload avatar
-    if ($action === 'upload_avatar') {
-        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = __DIR__ . '/../../../src/uploads/profiles/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
+    // Fetch current password hash
+    $stmt = mysqli_prepare($dbConn, "SELECT password_hash FROM users WHERE user_id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $userId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $dbUser = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
 
-            if ($_FILES['avatar']['size'] > 2 * 1024 * 1024) {
-                echo json_encode(['success' => false, 'message' => 'Image size must be less than 2MB.']);
-                exit;
-            }
-
-            $fileType = mime_content_type($_FILES['avatar']['tmp_name']);
-            if (strpos($fileType, 'image/') !== 0) {
-                echo json_encode(['success' => false, 'message' => 'Please select a valid image file.']);
-                exit;
-            }
-
-            $fileName = 'avatar_' . $userId . '_' . time() . '.' . pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
-            $destination = $uploadDir . $fileName;
-
-            if (move_uploaded_file($_FILES['avatar']['tmp_name'], $destination)) {
-                $avatarUrl = 'uploads/profiles/' . $fileName;
-                $stmt = mysqli_prepare($dbConn, "UPDATE users SET profile_url = ? WHERE user_id = ?");
-                mysqli_stmt_bind_param($stmt, "si", $avatarUrl, $userId);
-                mysqli_stmt_execute($stmt);
-                mysqli_stmt_close($stmt);
-
-                $_SESSION['user']['avatarImage'] = $avatarUrl;
-                echo json_encode(['success' => true, 'avatarUrl' => $avatarUrl]);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Failed to move uploaded file.']);
-            }
-        } else {
-            echo json_encode(['success' => false, 'message' => 'No valid file uploaded.']);
-        }
+    $updatePassword = false;
+    if (!empty($newPassword)) {
+      if (empty($currentPassword) || !password_verify($currentPassword, $dbUser['password_hash'])) {
+        echo json_encode(['success' => false, 'message' => 'Incorrect current password.']);
         exit;
+      }
+      $updatePassword = true;
+      $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
     }
 
-    // 3. Update maintenance mode
-    if ($action === 'update_maintenance') {
-        $isMaintenance = filter_var($_POST['maintenance'] ?? 'false', FILTER_VALIDATE_BOOLEAN);
-        $mode = $isMaintenance ? 'on' : 'off';
-
-        mysqli_query($dbConn, "DELETE FROM platform_settings");
-        $stmt = mysqli_prepare($dbConn, "INSERT INTO platform_settings (maintenance_mode) VALUES (?)");
-        mysqli_stmt_bind_param($stmt, "s", $mode);
-
-        if (mysqli_stmt_execute($stmt)) {
-            echo json_encode(['success' => true, 'message' => 'Maintenance mode updated.']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to update maintenance mode.']);
-        }
-        mysqli_stmt_close($stmt);
-        exit;
+    if ($updatePassword) {
+      $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ?, password_hash = ? WHERE user_id = ?");
+      mysqli_stmt_bind_param($stmt, "ssi", $name, $newHash, $userId);
+    } else {
+      $stmt = mysqli_prepare($dbConn, "UPDATE users SET full_name = ? WHERE user_id = ?");
+      mysqli_stmt_bind_param($stmt, "si", $name, $userId);
     }
 
-    echo json_encode(['success' => false, 'message' => 'Invalid action.']);
+    if (mysqli_stmt_execute($stmt)) {
+      $_SESSION['user']['name'] = $name;
+      echo json_encode(['success' => true, 'message' => 'Profile updated successfully!', 'name' => $name]);
+    } else {
+      echo json_encode(['success' => false, 'message' => 'Failed to update profile.']);
+    }
+    mysqli_stmt_close($stmt);
     exit;
+  }
+
+  // 2. Upload avatar
+  if ($action === 'upload_avatar') {
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+      $uploadDir = __DIR__ . '/../../../src/uploads/profiles/';
+      if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+      }
+
+      if ($_FILES['avatar']['size'] > 2 * 1024 * 1024) {
+        echo json_encode(['success' => false, 'message' => 'Image size must be less than 2MB.']);
+        exit;
+      }
+
+      $fileType = mime_content_type($_FILES['avatar']['tmp_name']);
+      if (strpos($fileType, 'image/') !== 0) {
+        echo json_encode(['success' => false, 'message' => 'Please select a valid image file.']);
+        exit;
+      }
+
+      $fileName = 'avatar_' . $userId . '_' . time() . '.' . pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
+      $destination = $uploadDir . $fileName;
+
+      if (move_uploaded_file($_FILES['avatar']['tmp_name'], $destination)) {
+        $avatarUrl = 'uploads/profiles/' . $fileName;
+        $stmt = mysqli_prepare($dbConn, "UPDATE users SET profile_url = ? WHERE user_id = ?");
+        mysqli_stmt_bind_param($stmt, "si", $avatarUrl, $userId);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        $_SESSION['user']['avatarImage'] = $avatarUrl;
+        echo json_encode(['success' => true, 'avatarUrl' => $avatarUrl]);
+      } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to move uploaded file.']);
+      }
+    } else {
+      echo json_encode(['success' => false, 'message' => 'No valid file uploaded.']);
+    }
+    exit;
+  }
+
+  // 3. Update maintenance mode
+  if ($action === 'update_maintenance') {
+    $isMaintenance = filter_var($_POST['maintenance'] ?? 'false', FILTER_VALIDATE_BOOLEAN);
+    $mode = $isMaintenance ? 'on' : 'off';
+
+    mysqli_query($dbConn, "DELETE FROM platform_settings");
+    $stmt = mysqli_prepare($dbConn, "INSERT INTO platform_settings (maintenance_mode) VALUES (?)");
+    mysqli_stmt_bind_param($stmt, "s", $mode);
+
+    if (mysqli_stmt_execute($stmt)) {
+      echo json_encode(['success' => true, 'message' => 'Maintenance mode updated.']);
+    } else {
+      echo json_encode(['success' => false, 'message' => 'Failed to update maintenance mode.']);
+    }
+    mysqli_stmt_close($stmt);
+    exit;
+  }
+
+  echo json_encode(['success' => false, 'message' => 'Invalid action.']);
+  exit;
 }
 
 // --- Load admin data ---
@@ -140,8 +143,8 @@ $user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$user) {
-    header('Location: ../../auth/login.php');
-    exit;
+  header('Location: ../../auth/login.php');
+  exit;
 }
 
 $memberSince = date('F Y', strtotime($user['created_at']));
@@ -157,12 +160,12 @@ $maintenanceMode = ($settingsResult['maintenance_mode'] ?? 'off') === 'on';
 
 // --- JSON config for JavaScript ---
 $initData = json_encode([
-    'name' => $user['full_name'],
-    'email' => $user['email'],
-    'avatarImage' => $profileUrl,
-    'memberSince' => $memberSince,
-    'systemMaintenance' => $maintenanceMode,
-    'initials' => $initials
+  'name' => $user['full_name'],
+  'email' => $user['email'],
+  'avatarImage' => $profileUrl,
+  'memberSince' => $memberSince,
+  'systemMaintenance' => $maintenanceMode,
+  'initials' => $initials
 ]);
 ?>
 <!DOCTYPE html>
@@ -206,6 +209,7 @@ $initData = json_encode([
         <a href="trust-rules.php" class="dashboard-nav-item">Trust Rules</a>
         <a href="reports.php" class="dashboard-nav-item">Reports</a>
         <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
+        <a href="donation-analytics.php" class="dashboard-nav-item">Analytics</a>
       </nav>
     </div>
 
@@ -217,8 +221,7 @@ $initData = json_encode([
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
-        <span
-          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
+        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.php" class="profile-avatar">

@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 // 1. Auth and Database Include
 $auth_path = __DIR__ . '/../../../auth.php';
 if (file_exists($auth_path)) {

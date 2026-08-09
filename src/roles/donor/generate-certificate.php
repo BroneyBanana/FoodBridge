@@ -3,8 +3,9 @@ session_start();
 require_once __DIR__ . "/../../../database/db.php";
 
 // Correct way based on your login system
-if (!isset($_SESSION['user']['id'])) {
-    die("Please login first.");
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'donor') {
+    header('Location: ../../auth/login.php');
+    exit();
 }
 
 $donor_id = (int) $_SESSION['user']['id'];   // ← THIS is the correct key

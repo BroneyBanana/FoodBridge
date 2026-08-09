@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 session_start();
 
-if (($_SESSION['user']['role'] ?? '') !== 'donor') {
-  header('Location: ../../auth/login.php');
-  exit;
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'donor') {
+    header('Location: ../../auth/login.php');
+    exit();
 }
 
 require_once __DIR__ . '/../../../database/db.php';

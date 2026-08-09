@@ -1,0 +1,411 @@
+/* donation-analytics.css */
+
+/* === Overflow safety (defends against missing box-sizing upstream) === */
+#donationAnalytics,
+#donationAnalytics * {
+    box-sizing: border-box;
+}
+
+#donationAnalytics .dashboard-grid,
+#donationAnalytics .summary-grid {
+    min-width: 0;
+}
+
+#donationAnalytics .panel-card,
+#donationAnalytics .summary-card {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+#donationAnalytics canvas {
+    max-width: 100%;
+}
+
+/* === Summary Cards === */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+}
+
+.summary-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: var(--shadow-premium, 0 8px 32px rgba(0, 0, 0, 0.06));
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: var(--shadow-hover, 0 12px 40px rgba(0, 0, 0, 0.10));
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.card-header-with-icon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.summary-label {
+    color: var(--color-text-muted, #6b7a6f);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.summary-card:hover .icon-circle {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.bg-forest-light {
+    background-color: rgba(28, 43, 30, 0.06);
+}
+
+.bg-terracotta-light {
+    background-color: rgba(232, 67, 26, 0.06);
+}
+
+.bg-lime-light {
+    background-color: rgba(200, 240, 74, 0.15);
+}
+
+.summary-card strong {
+    display: block;
+    font-family: var(--font-sans, 'DM Sans', sans-serif);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-forest, #1C2B1E);
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.summary-card small {
+    color: var(--color-text-muted, #6b7a6f);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* === Panels & Cards === */
+.panel-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: var(--shadow-premium, 0 8px 32px rgba(0, 0, 0, 0.06));
+    transition: border-color 0.2s ease;
+}
+
+.panel-card:hover {
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.panel-card h2 {
+    font-family: var(--font-sans, 'DM Sans', sans-serif);
+    font-size: 1.55rem;
+    font-weight: 900;
+    line-height: 1.2;
+    color: var(--color-forest, #1C2B1E);
+    margin-bottom: 6px;
+}
+
+.muted-text {
+    color: var(--color-text-muted, #6b7a6f);
+}
+
+/* === Charts Row (Food Categories / Donation Trend) === */
+#donationAnalytics .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+}
+
+/* === Page Headings === */
+.page-heading {
+    font-family: var(--font-sans, 'DM Sans', sans-serif);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--color-forest, #1C2B1E);
+    margin-bottom: 0.25rem;
+}
+
+
+/* === Responsive === */
+@media (max-width: 992px) {
+
+    /* Remove the grid stacking at this breakpoint – only adjust card padding if needed */
+    .panel-card,
+    .summary-card {
+        padding: 24px;
+        /* slightly reduced on tablets, but keep columns */
+    }
+}
+
+@media (max-width: 576px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    #donationAnalytics .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .panel-card,
+    .summary-card {
+        padding: 20px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .summary-card strong {
+        font-size: 2rem;
+    }
+}
+
+/* donation-analytics.css */
+
+/* === Overflow safety (defends against missing box-sizing upstream) === */
+#donationAnalytics,
+#donationAnalytics * {
+    box-sizing: border-box;
+}
+
+#donationAnalytics .dashboard-grid,
+#donationAnalytics .summary-grid {
+    min-width: 0;
+}
+
+#donationAnalytics .panel-card,
+#donationAnalytics .summary-card {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+#donationAnalytics canvas {
+    max-width: 100%;
+}
+
+/* Leaflet positions its own canvases (heatmap layer, etc.) with exact
+   pixel width/height + inline top/left to align with map tiles.
+   The max-width:100% rule above breaks that alignment, so exclude
+   anything inside a Leaflet container from it. */
+#donationAnalytics .leaflet-container canvas {
+    max-width: none;
+    width: auto;
+    height: auto;
+}
+
+/* === Summary Cards === */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+}
+
+.summary-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: var(--shadow-premium, 0 8px 32px rgba(0, 0, 0, 0.06));
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: var(--shadow-hover, 0 12px 40px rgba(0, 0, 0, 0.10));
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.card-header-with-icon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.summary-label {
+    color: var(--color-text-muted, #6b7a6f);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.summary-card:hover .icon-circle {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.bg-forest-light {
+    background-color: rgba(28, 43, 30, 0.06);
+}
+
+.bg-terracotta-light {
+    background-color: rgba(232, 67, 26, 0.06);
+}
+
+.bg-lime-light {
+    background-color: rgba(200, 240, 74, 0.15);
+}
+
+.summary-card strong {
+    display: block;
+    font-family: var(--font-sans, 'DM Sans', sans-serif);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-forest, #1C2B1E);
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.summary-card small {
+    color: var(--color-text-muted, #6b7a6f);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* === Panels & Cards === */
+.panel-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: var(--shadow-premium, 0 8px 32px rgba(0, 0, 0, 0.06));
+    transition: border-color 0.2s ease;
+}
+
+.panel-card:hover {
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.panel-card h2 {
+    font-family: var(--font-sans, 'DM Sans', sans-serif);
+    font-size: 1.55rem;
+    font-weight: 900;
+    line-height: 1.2;
+    color: var(--color-forest, #1C2B1E);
+    margin-bottom: 6px;
+}
+
+.muted-text {
+    color: var(--color-text-muted, #6b7a6f);
+}
+
+/* === Charts Row (Food Categories / Donation Trend) === */
+#donationAnalytics .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+}
+
+/* === Page Headings === */
+.page-heading {
+    font-family: var(--font-sans, 'DM Sans', sans-serif);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--color-forest, #1C2B1E);
+    margin-bottom: 0.25rem;
+}
+
+
+/* === Responsive === */
+@media (max-width: 992px) {
+
+    /* Remove the grid stacking at this breakpoint – only adjust card padding if needed */
+    .panel-card,
+    .summary-card {
+        padding: 24px;
+        /* slightly reduced on tablets, but keep columns */
+    }
+}
+
+@media (max-width: 576px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    #donationAnalytics .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .panel-card,
+    .summary-card {
+        padding: 20px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .summary-card strong {
+        font-size: 2rem;
+    }
+}

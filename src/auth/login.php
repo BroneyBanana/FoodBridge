@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($selectedRole !== '' && $user['role'] !== $selectedRole) {
-      respond(['success' => false, 'message' => 'Please choose the correct account type for this email.'], 403);
+      respond(['success' => false, 'message' => 'Invalid email or password.'], 403);
     }
 
     if (in_array($user['status'], ['suspended', 'banned'], true)) {

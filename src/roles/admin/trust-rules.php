@@ -5,9 +5,9 @@ session_start();
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));
-if (($_SESSION['user']['role'] ?? '') !== 'admin') {
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'admin') {
   header('Location: ../../auth/login.php');
-  exit;
+  exit();
 }
 
 require_once __DIR__ . '/../../../database/db.php';
@@ -161,6 +161,7 @@ $adminName = (string) ($_SESSION['user']['name'] ?? 'Admin');
         <a href="trust-rules.php" class="dashboard-nav-item active">Trust Rules</a>
         <a href="reports.php" class="dashboard-nav-item">Reports</a>
         <a href="certificates.php" class="dashboard-nav-item">Certificates</a>
+        <a href="donation-analytics.php" class="dashboard-nav-item">Analytics</a>
       </nav>
     </div>
 
@@ -172,8 +173,7 @@ $adminName = (string) ($_SESSION['user']['name'] ?? 'Admin');
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
-        <span
-          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
+        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
 
       <a href="profile.php" class="profile-avatar">

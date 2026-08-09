@@ -222,3 +222,53 @@ document.getElementById('confirmBookingBtn').addEventListener('click', function 
       errorBox.textContent = 'Something went wrong. Please try again.';
     });
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+  // 1. Get starting coordinates from the global APP_CONFIG object
+  const startLat = window.APP_CONFIG.receiverLat;
+  const startLng = window.APP_CONFIG.receiverLng;
+  
+  const distanceElements = document.querySelectorAll('.async-distance');
+
+  // If we don't have valid starting coordinates, show N/A
+  if (!startLat || !startLng || startLat === 0) {
+    distanceElements.forEach(el => el.innerHTML = "📍 N/A");
+    return;
+  }
+
+  // 2. Fetch distances sequentially
+  async function calculateAllDistances() {
+    for (let el of distanceElements) {
+      const destLat = el.getAttribute('data-dest-lat');
+      const destLng = el.getAttribute('data-dest-lng');
+
+      if (destLat && destLng) {
+        try {
+          // IMPORTANT: Update this URL path to point to where your get_distance.php file actually is!
+          // For example: '../../api/get_distance.php'
+          const fetchUrl = `./get_distance.php?startLat=${startLat}&startLng=${startLng}&destLat=${destLat}&destLng=${destLng}`;
+          
+          const response = await fetch(fetchUrl);
+          
+          if (!response.ok) throw new Error('API Error');
+          
+          const data = await response.json();
+          
+          // Parse TomTom API response structure
+          if (data.routes && data.routes.length > 0) {
+            const meters = data.routes[0].summary.lengthInMeters;
+            const km = (meters / 1000).toFixed(1);
+            el.innerHTML = `📍 ${km} km`;
+          } else {
+            el.innerHTML = "📍 N/A";
+          }
+        } catch (error) {
+          console.error("Error fetching distance:", error);
+          el.innerHTML = "📍 N/A";
+        }
+      }
+    }
+  }
+
+  calculateAllDistances();
+});

@@ -1,6 +1,12 @@
 <?php
 require_once '../../../database/db.php'; 
 session_start();
+
+if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'donor') {
+    header('Location: ../../auth/login.php');
+    exit();
+}
+
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));
@@ -129,11 +135,7 @@ $leaderboardJson = json_encode($leaderboardRows);
     <div class="dashboard-actions">
       <a class="action-btn-circle hide-mobile" title="Notifications" style="position: relative;"
         href="notifications.php">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-        </svg>
+        <img src="../../assets/icons/nav-bell.svg" alt="Notifications" width="20" height="20" />
         <span
           style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
@@ -148,21 +150,11 @@ $leaderboardJson = json_encode($leaderboardRows);
       </a>
 
       <a href="../../auth/login.php" class="action-btn-circle hide-mobile" title="Log Out">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
+        <img src="../../assets/icons/nav-logout.svg" alt="Log Out" width="20" height="20" />
       </a>
 
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle mobile menu">
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+        <img src="../../assets/icons/nav-menu.svg" alt="Menu" width="24" height="24" />
       </button>
     </div>
   </header>
@@ -181,10 +173,7 @@ $leaderboardJson = json_encode($leaderboardRows);
         <?php if ($second): ?>
           <article class="podium-player second-place">
             <div class="award-icon silver" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="8" r="6" />
-                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
-              </svg>
+              <img src="../../assets/icons/icon-medal.svg" alt="Silver Medal" width="24" height="24" />
             </div>
             <div class="donor-avatar second-avatar">
               <?= getAvatarHtml($second) ?>
@@ -207,10 +196,7 @@ $leaderboardJson = json_encode($leaderboardRows);
         <?php if ($first): ?>
           <article class="podium-player first-place">
             <div class="award-icon trophy" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                  d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a7 7 0 0 0-7 7c0 2.52 2 4.47 4.47 5.34h5.06C17 13.47 19 11.52 19 9a7 7 0 0 0-7-7z" />
-              </svg>
+              <img src="../../assets/icons/icon-trophy.svg" alt="Gold Trophy" width="28" height="28" />
             </div>
             <div class="donor-avatar main-avatar">
               <?= getAvatarHtml($first) ?>
@@ -233,10 +219,7 @@ $leaderboardJson = json_encode($leaderboardRows);
         <?php if ($third): ?>
           <article class="podium-player third-place">
             <div class="award-icon bronze" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="8" r="6" />
-                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
-              </svg>
+              <img src="../../assets/icons/icon-medal.svg" alt="Bronze Medal" width="24" height="24" />
             </div>
             <div class="donor-avatar third-avatar">
               <?= getAvatarHtml($first) ?>
