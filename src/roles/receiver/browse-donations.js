@@ -1,20 +1,20 @@
 // 2. Map & View Logic
 // Default center (e.g., Kuala Lumpur or user's current location)
-const mapCurrentPos = { lat: 3.0554, lng: 101.6982 }; 
+const mapCurrentPos = { lat: 3.0554, lng: 101.6982 };
 
 if ("geolocation" in navigator) {
   navigator.geolocation.getCurrentPosition(
-    function(position) {
+    function (position) {
       // Success! Update coordinates with the real location
       mapCurrentPos.lat = position.coords.latitude;
       mapCurrentPos.lng = position.coords.longitude;
-      
+
       // If the user already opened the map before the GPS located them, recenter it
       if (typeof mapInitialized !== 'undefined' && mapInitialized && map) {
         map.setView([mapCurrentPos.lat, mapCurrentPos.lng], 12);
       }
     },
-    function(error) {
+    function (error) {
       console.warn("Location access denied or unavailable. Using default coordinates.");
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -53,7 +53,7 @@ function switchView(view, btn) {
   if (view === 'map') {
     if (!mapInitialized) {
       map = L.map('map').setView([mapCurrentPos.lat, mapCurrentPos.lng], 12);
-      
+
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
       }).addTo(map);
@@ -74,16 +74,16 @@ function switchView(view, btn) {
       // 2. Build Dynamic Markers
       validLocations.forEach(donation => {
         const marker = L.marker([donation.latitude, donation.longitude], { icon: customPin }).addTo(map);
-        
+
         marker.on('click', async () => {
           marker.bindPopup(`
             <div class="popup-title">${donation.food_name}</div>
             <div class="popup-subtitle">By ${donation.donor_name}</div>
             <div class="popup-distance">⏳ Calculating...</div>
           `).openPopup();
-          
+
           const dist = await getDistance(donation.latitude, donation.longitude);
-          
+
           marker.setPopupContent(`
             <div class="popup-title">${donation.food_name}</div>
             <div class="popup-subtitle">By ${donation.donor_name}</div>
@@ -223,52 +223,40 @@ document.getElementById('confirmBookingBtn').addEventListener('click', function 
     });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-  // 1. Get starting coordinates from the global APP_CONFIG object
-  const startLat = window.APP_CONFIG.receiverLat;
-  const startLng = window.APP_CONFIG.receiverLng;
-  
+document.addEventListener("DOMContentLoaded", function () {
   const distanceElements = document.querySelectorAll('.async-distance');
 
-  // If we don't have valid starting coordinates, show N/A
-  if (!startLat || !startLng || startLat === 0) {
-    distanceElements.forEach(el => el.innerHTML = "📍 N/A");
-    return;
-  }
+  if (distanceElements.length === 0) return;
 
-  // 2. Fetch distances sequentially
+  // Fetch distances sequentially using the centralized mapCurrentPos coordinates
   async function calculateAllDistances() {
+    // If geolocation is still pending, give it a split second or fall back safely to mapCurrentPos
+    const startLat = mapCurrentPos.lat;
+    const startLng = mapCurrentPos.lng;
+
+    if (!startLat || !startLng) {
+      distanceElements.forEach(el => el.innerHTML = "📍 N/A");
+      return;
+    }
+
     for (let el of distanceElements) {
       const destLat = el.getAttribute('data-dest-lat');
       const destLng = el.getAttribute('data-dest-lng');
 
       if (destLat && destLng) {
         try {
-          // IMPORTANT: Update this URL path to point to where your get_distance.php file actually is!
-          // For example: '../../api/get_distance.php'
-          const fetchUrl = `./get_distance.php?startLat=${startLat}&startLng=${startLng}&destLat=${destLat}&destLng=${destLng}`;
-          
-          const response = await fetch(fetchUrl);
-          
-          if (!response.ok) throw new Error('API Error');
-          
-          const data = await response.json();
-          
-          // Parse TomTom API response structure
-          if (data.routes && data.routes.length > 0) {
-            const meters = data.routes[0].summary.lengthInMeters;
-            const km = (meters / 1000).toFixed(1);
-            el.innerHTML = `📍 ${km} km`;
-          } else {
-            el.innerHTML = "📍 N/A";
-          }
+          const km = await getDistance(destLat, destLng); // Added await!
+          el.innerHTML = km ? `📍 ${km} km` : "📍 N/A";
         } catch (error) {
           console.error("Error fetching distance:", error);
           el.innerHTML = "📍 N/A";
         }
+      } else {
+        el.innerHTML = "📍 N/A";
       }
     }
   }
 
-  calculateAllDistances();
+  // Small delay to allow geolocation to try and grab user position first
+  setTimeout(calculateAllDistances, 500);
 });

@@ -1,13 +1,13 @@
 <?php
 session_start();
-require_once '../../../database/db.php'; 
+require_once '../../../database/db.php';
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));
 
 if (!isset($_SESSION['user'])) {
-    header("Location: ../../auth/login.php");
-    exit;
+  header("Location: ../../auth/login.php");
+  exit;
 }
 $userId = $_SESSION['user']['id'];
 
@@ -61,8 +61,10 @@ mysqli_stmt_execute($stmt);
 $donorsSupported = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['active_donors'];
 
 $trustBadge = 'Good';
-if ($trustScore >= 90) $trustBadge = 'Excellent';
-elseif ($trustScore < 50) $trustBadge = 'Warning';
+if ($trustScore >= 90)
+  $trustBadge = 'Excellent';
+elseif ($trustScore < 50)
+  $trustBadge = 'Warning';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -113,8 +115,7 @@ elseif ($trustScore < 50) $trustBadge = 'Warning';
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
         </svg>
-        <span
-          style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
+        <span style="position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%;"></span>
       </a>
       <a href="profile.php" class="profile-avatar">
         <?php if (!empty($userAvatar)): ?>
@@ -242,7 +243,8 @@ elseif ($trustScore < 50) $trustBadge = 'Warning';
                       </span>
                       <h3><?= htmlspecialchars($item['food_name']) ?></h3>
                       <p class="pickup-desc">
-                        <span class="meta-item"><?= htmlspecialchars($item['quantity']) ?> <?= htmlspecialchars($item['unit']) ?></span>
+                        <span class="meta-item"><?= htmlspecialchars($item['quantity']) ?>
+                          <?= htmlspecialchars($item['unit']) ?></span>
                         <span class="meta-separator">•</span>
                         <span class="meta-item"><?= htmlspecialchars($item['pickup_address']) ?></span>
                         <span class="meta-separator">•</span>
@@ -275,9 +277,9 @@ elseif ($trustScore < 50) $trustBadge = 'Warning';
                 </div>
                 <span class="trust-percentage"><?= htmlspecialchars($trustScore) ?>%</span>
               </div>
-              <p class="muted-text">You have supported <?= htmlspecialchars($donorsSupported) ?> unique donor<?= $donorsSupported == 1 ? '' : 's' ?> so far.</p>
+              <p class="muted-text">You have supported <?= htmlspecialchars($donorsSupported) ?> unique
+                donor<?= $donorsSupported == 1 ? '' : 's' ?> so far.</p>
             </section>
-
             <section class="panel-card actions-panel">
               <h2>Quick actions</h2>
               <div class="quick-actions">
