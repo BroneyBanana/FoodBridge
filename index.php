@@ -275,14 +275,14 @@ if ($result) {
               <img src="./src/assets/images/impact2.jpg" alt="Education">
               <div class="impactCardContent">
                 <h3 class="impactCardTitle">EDUCATION</h3>
-                <p class="impactCardDesc">No data</p>
+                <p class="impactCardDesc">Lifeskills for childrem</p>
               </div>
             </div>
             <div class="impactCard">
               <img src="./src/assets/images/impact3.jpg" alt="Community">
               <div class="impactCardContent">
                 <h3 class="impactCardTitle">COMMUNITY</h3>
-                <p class="impactCardDesc">No data</p>
+                <p class="impactCardDesc">Community Food Drives in Action</p>
               </div>
             </div>
             <div class="impactCard">
