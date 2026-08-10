@@ -1,6 +1,15 @@
 // ============================================================
 // 1. SEGMENT SWITCH TOGGLER & COMPONENT VISIBILITY MANAGER LOOP
 // ============================================================
+const successNotification = document.getElementById('success');
+const closeSuccessButton = document.getElementById('closeBtn');
+
+if (successNotification && closeSuccessButton) {
+  closeSuccessButton.addEventListener('click', function () {
+    successNotification.remove();
+  });
+}
+
 const buttons = document.querySelectorAll('.donation-filter .filter-button');
 const cards = document.querySelectorAll('.my-donations .donations-card');
 
