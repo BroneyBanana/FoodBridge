@@ -9,6 +9,7 @@ erDiagram
         ENUM role
         VARCHAR full_name
         VARCHAR email
+        VARCHAR profile_url
         VARCHAR password_hash
         VARCHAR location
         DECIMAL latitude
@@ -121,12 +122,25 @@ erDiagram
         VARCHAR issue_type
         TEXT comment
         VARCHAR evidence_image_url
+        TEXT admin_message
         ENUM status
         DATETIME created_at
     }
 
     PLATFORM_SETTINGS {
         ENUM maintenance_mode PK
+    }
+
+    TRUST_RULE_SETTINGS {
+        TINYINT setting_id PK
+        TINYINT suspension_threshold
+        DATETIME updated_at
+    }
+
+    EXPIRY_REMINDER_LOG {
+        INT donation_id PK, FK
+        ENUM reminder_time PK
+        DATETIME sent_at
     }
 
     USERS ||--o{ DONATIONS : publishes
@@ -142,4 +156,5 @@ erDiagram
     USERS ||--o{ CERTIFICATES : earns
     BOOKINGS ||--o| REVIEWS : reviewed_after
     BOOKINGS ||--o{ REPORTS : reported_from
+    DONATIONS ||--o{ EXPIRY_REMINDER_LOG : has_reminders
 
