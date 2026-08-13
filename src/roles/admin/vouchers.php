@@ -166,6 +166,17 @@ $initials = strtoupper(substr($userName, 0, 2));
     </div>
   </div>
 
+    <div id="deleteConfirmModal" class="delete-confirm-overlay">
+    <div class="delete-confirm-box">
+      <h3>Remove Voucher</h3>
+      <p>Are you certain you want to remove this voucher reward entry?</p>
+      <div class="delete-confirm-actions">
+        <button id="cancelDeleteBtn" type="button">Cancel</button>
+        <button id="confirmDeleteBtn" type="button">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Script Logic -->
   <script src="../../assets/js/header.js"></script>
   <script src="vouchers.js"></script>

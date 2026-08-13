@@ -17,6 +17,13 @@ const openCreateModalBtn = document.getElementById("openCreateModalBtn");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const cancelFormBtn = document.getElementById("cancelFormBtn");
 
+// Delele Confirmation Modal Pointers
+const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+let pendingDeleteId = null;
+
 /**
  * Fetch and render vouchers from MySQL database
  */
@@ -151,11 +158,29 @@ window.initiateEditFlow = function(id, partner, reward, code, expiry, donation) 
  * Delete Target Execution Handlers (Database DELETE)
  */
 window.triggerDeleteOperation = function(id) {
-  if (confirm("Are you certain you want to remove this voucher reward entry?")) {
+  pendingDeleteId = id;
+  if (deleteConfirmModal) deleteConfirmModal.classList.add("active");
+};
+
+function closeDeleteConfirmModal() {
+  pendingDeleteId = null;
+  if (deleteConfirmModal) deleteConfirmModal.classList.remove("active");
+}
+
+if (cancelDeleteBtn) {
+  cancelDeleteBtn.addEventListener("click", closeDeleteConfirmModal);
+}
+
+if (confirmDeleteBtn) {
+  confirmDeleteBtn.addEventListener("click", () => {
+    if (pendingDeleteId === null) return;
+    const idToDelete = pendingDeleteId;
+    closeDeleteConfirmModal();
+
     fetch('vouchers_api.php?action=delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ voucher_id: parseInt(id, 10) })
+      body: JSON.stringify({ voucher_id: parseInt(idToDelete, 10) })
     })
     .then(res => res.json())
     .then(res => {
@@ -169,8 +194,8 @@ window.triggerDeleteOperation = function(id) {
       console.error("Delete Error:", err);
       alert("Could not connect to database.");
     });
-  }
-};
+  });
+}
 
 /**
  * Form Submit Processing (Save / Create Interceptions to Database)

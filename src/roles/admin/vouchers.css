@@ -306,6 +306,64 @@
   opacity: 0.9;
 }
 
+.delete-confirm-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-confirm-overlay.active {
+  display: flex;
+}
+
+.delete-confirm-box {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.delete-confirm-box h3 {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+}
+
+.delete-confirm-box p {
+  color: #666;
+  margin: 0 0 24px;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.delete-confirm-actions button {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#cancelDeleteBtn {
+  background: #ece6f0;
+  color: #333;
+}
+
+#confirmDeleteBtn {
+  background: #e53e3e;
+  color: #fff;
+}
+
 /* Mobile Screens Optimization Breakpoint */
 @media (max-width: 768px) {
   .page-header-row {
