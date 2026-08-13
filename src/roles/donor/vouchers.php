@@ -2,6 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require_once __DIR__ . '/../../../database/maintenance_guard.php';
 
 $auth_path = __DIR__ . '/../../../auth.php';
 if (file_exists($auth_path)) {

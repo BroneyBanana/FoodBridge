@@ -1,6 +1,7 @@
 <?php
 require_once '../../../database/db.php'; 
 session_start();
+require_once __DIR__ . '/../../../database/maintenance_guard.php';
 if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'donor') {
     header('Location: ../../auth/login.php');
     exit();

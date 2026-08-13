@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../../database/maintenance_guard.php';
 require_once '../../../database/db.php';
 
 if (!isset($_SESSION['user']['id']) || $_SESSION['user']['role'] !== 'receiver') {

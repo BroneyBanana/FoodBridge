@@ -1,6 +1,7 @@
 <?php
 require_once '../../../database/db.php'; 
 session_start();
+require_once __DIR__ . '/../../../database/maintenance_guard.php';
 $userAvatar = $_SESSION['user']['avatarImage'] ?? '';
 $userName = $_SESSION['user']['name'] ?? 'User';
 $initials = strtoupper(substr($userName, 0, 2));

@@ -5,6 +5,7 @@ error_reporting(0); // Prevent HTML errors from breaking JSON output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require_once __DIR__ . '/../../../database/maintenance_guard.php';
 
 
 // 1. Auth and Database Include

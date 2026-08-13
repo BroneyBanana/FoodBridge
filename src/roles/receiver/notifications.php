@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../../database/maintenance_guard.php';
 if (!isset($_SESSION['user']['id'])) {
   header('Location: ../../auth/login.php');
   exit;

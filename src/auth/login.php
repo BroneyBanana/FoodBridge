@@ -39,7 +39,9 @@ function cleanInput(?string $value): string
   return trim((string) $value);
 }
 
-$formError = '';
+$formError = isset($_GET['maintenance'])
+  ? 'The system is currently under maintenance. Please try again later.'
+  : '';
 $selectedRole = $_POST['role'] ?? 'donor';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -100,6 +102,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (in_array($user['status'], ['suspended', 'banned'], true)) {
       respond(['success' => false, 'message' => 'This account is not allowed to sign in.'], 403);
+    }
+
+    // The public homepage remains available during maintenance. Only donor and
+    // receiver sign-ins are blocked; admins can still access the control panel.
+    if (in_array($user['role'], ['donor', 'receiver'], true) && isMaintenanceModeEnabled($dbConn)) {
+      respond(['success' => false, 'message' => 'The system is currently under maintenance. Please try again later.'], 503);
     }
 
     $passwordInfo = password_get_info($user['password_hash']);
